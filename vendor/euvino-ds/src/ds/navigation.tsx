@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cn } from './cn';
 import { Icon, type IconName } from './icon';
 import { Avatar } from './display';
+import { BottleMark } from './brand-mark';
 
 export interface TopNavItem {
   /** Visible text. */
@@ -43,6 +44,8 @@ export interface SideNavItem {
   selected?: boolean;
   /** Counter badge text. */
   count?: number;
+  /** Counter colour: `info` (default) or `error` for something that needs attention. */
+  countStatus?: 'info' | 'error';
 }
 
 export interface SideNavProps {
@@ -54,21 +57,26 @@ export interface SideNavProps {
   collapsed?: boolean;
   /** Surface. `light` is white (default). `dark` is the navy rail from Figma's Side Nav Theme=Dark. */
   theme?: 'light' | 'dark';
+  /** Shows the bottle mark in a tile with a divider above the items (Figma Side Nav Logo). */
+  logo?: boolean;
+  /** Stays in view at full window height while the page scrolls. The nav itself never scrolls. */
+  sticky?: boolean;
   /** Footer slot, such as a help card. */
   footer?: React.ReactNode;
 }
 
 /** Left navigation between app sections, 240 wide or a 72 rail when collapsed. Counts show as a badge on the rail. */
-export function SideNav({ items, label, collapsed, theme = 'light', footer }: SideNavProps) {
+export function SideNav({ items, label, collapsed, theme = 'light', logo, sticky, footer }: SideNavProps) {
   return (
-    <nav aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', theme === 'dark' && 'eu-sidenav--dark')}>
+    <nav aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', theme === 'dark' && 'eu-sidenav--dark', sticky && 'is-sticky')}>
+      {logo ? <div className="eu-sidenav__brand"><span className="eu-sidenav__tile"><BottleMark className="eu-sidenav__mark" /></span><span className="eu-sidenav__rule" /></div> : null}
       <ul>
         {items.map((i) => (
           <li key={i.label}>
             <a href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined} aria-label={collapsed ? (i.count !== undefined ? `${i.label}, ${i.count}` : i.label) : undefined} onClick={i.onClick ? (e) => { e.preventDefault(); i.onClick?.(); } : undefined} className={cn('eu-sidenav__item eu-type-ui-card-title', i.selected && 'is-selected')}>
-              {i.icon ? <Icon name={i.icon} size="md" /> : null}
+              {i.icon ? <Icon name={i.icon} size={collapsed ? 'lg' : 'md'} /> : null}
               {collapsed ? null : <span className="eu-sidenav__text">{i.label}</span>}
-              {i.count !== undefined ? <span aria-hidden={collapsed || undefined} className="eu-type-body-micro eu-sidenav__count">{i.count}</span> : null}
+              {i.count !== undefined ? <span aria-hidden={collapsed || undefined} className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
             </a>
           </li>
         ))}
@@ -172,17 +180,19 @@ export interface UserMenuProps extends Omit<React.ButtonHTMLAttributes<HTMLButto
   subtitle?: string;
   /** Picture URL. Initials show without one. */
   src?: string;
-  /** Avatar only. Name stays available to screen readers. */
+  /** Avatar and chevron only. Name stays available to screen readers. */
   compact?: boolean;
+  /** `medium` 32 avatar (default) or `large` 48 avatar (Figma User Menu Size=Large). */
+  size?: 'medium' | 'large';
 }
 
 /** Profile trigger for the Header. Wrap it in Menu to add the account commands. */
-export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu({ name, subtitle, src, compact, className, ...rest }, ref) {
+export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu({ name, subtitle, src, compact, size = 'medium', className, ...rest }, ref) {
   return (
     <button {...rest} ref={ref} type="button" aria-label={compact ? name : undefined} className={cn('eu-usermenu', className)}>
-      <Avatar name={name} src={src} size="small" />
+      <Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} />
       {compact ? null : <span className="eu-usermenu__text"><span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>{subtitle ? <span className="eu-type-body-caption eu-check__desc">{subtitle}</span> : null}</span>}
-      {compact ? null : <Icon name="nav-down" size="sm" />}
+      <Icon name="nav-down" size={size === 'large' ? 'md' : 'sm'} />
     </button>
   );
 });
@@ -210,11 +220,13 @@ export interface HeaderProps {
   actions?: React.ReactNode;
   /** Height: `small` 56, `medium` 64, `large` 72. */
   size?: 'small' | 'medium' | 'large';
+  /** `fill`: the middle slot takes the free space (TopNav). `between`: the middle slot keeps its own width (size/field-lg) and sits between the ends, as for a search. */
+  layout?: 'fill' | 'between';
 }
 
 /** App header bar. Renders a `header` landmark. */
-export function Header({ brand, children, actions, size = 'medium' }: HeaderProps) {
-  return <header className={cn('eu-header', `eu-header--${size}`)}>{brand ?? <BrandLogo />}<div className="eu-header__mid">{children}</div><div className="eu-header__actions">{actions}</div></header>;
+export function Header({ brand, children, actions, size = 'medium', layout = 'fill' }: HeaderProps) {
+  return <header className={cn('eu-header', `eu-header--${size}`, layout === 'between' && 'eu-header--between')}>{brand ?? <BrandLogo />}<div className="eu-header__mid">{children}</div><div className="eu-header__actions">{actions}</div></header>;
 }
 
 export interface PageHeaderProps {

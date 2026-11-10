@@ -40,8 +40,10 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   error?: string;
   /** Success message below the field. */
   success?: string;
-  /** Height: `medium` 40 (default), `large` 48. */
+  /** Height: `medium` 40 (default), `large` 48. The `filled` variant is always 38. */
   size?: 'medium' | 'large';
+  /** `outline` white field with a border (default). `filled` tinted field for a header search (Figma Input Style=Filled). */
+  variant?: 'outline' | 'filled';
   /** Icon inside the field on the left. */
   iconLeft?: IconName;
   /** Shows a clear button while there is text. Called when it is pressed. */
@@ -52,14 +54,14 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 
 /** Single-line text entry. `type="password"` adds a built-in show or hide button, so never build one yourself. For choosing from a list use Dropdown. */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, hideLabel, help, error, success, size = 'medium', iconLeft, onClear, labels, id, className, type = 'text', required, value, ...rest }, ref,
+  { label, hideLabel, help, error, success, size = 'medium', variant = 'outline', iconLeft, onClear, labels, id, className, type = 'text', required, value, ...rest }, ref,
 ) {
   const f = useFieldIds(id);
   const [shown, setShown] = React.useState(false);
   const isPw = type === 'password';
   return (
     <FieldShell label={label} hideLabel={hideLabel} required={required} help={help} error={error} success={success} htmlFor={f.id} helpId={f.helpId} className={className}>
-      <span className={cn('eu-input', `eu-input--${size}`, error && 'is-error', success && !error && 'is-success', rest.disabled && 'is-disabled')}>
+      <span className={cn('eu-input', variant === 'filled' ? 'eu-input--filled' : `eu-input--${size}`, error && 'is-error', success && !error && 'is-success', rest.disabled && 'is-disabled')}>
         {iconLeft ? <Icon name={iconLeft} size="md" className="eu-input__icon" /> : null}
         <input {...rest} ref={ref} id={f.id} value={value} required={required} type={isPw && shown ? 'text' : type} aria-invalid={error ? true : undefined} aria-describedby={error || success || help ? f.helpId : rest['aria-describedby']} className="eu-input__el eu-type-body-small" />
         {onClear && value ? <button type="button" className="eu-input__btn" aria-label={labels?.clear ?? 'Clear'} onClick={onClear}><Icon name="close" size="sm" /></button> : null}
@@ -498,5 +500,93 @@ export function DatePicker({ label, placeholder = 'Select date', help, error, di
         {open ? <div role="dialog" aria-label={label} className="eu-dd__pop"><Calendar value={value} min={min} max={max} locale={locale} onChange={(d) => { onChange?.(d); setOpen(false); }} /></div> : null}
       </div>
     </FieldShell>
+  );
+}
+
+// ---- SearchField
+export interface SearchResult {
+  /** Unique id. */
+  id: string;
+  /** Main text, such as a name. */
+  label: string;
+  /** Second line, such as a company or an email. */
+  description?: string;
+  /** Icon before the text. */
+  icon?: IconName;
+  /** Group heading the result sits under, such as "Contacts". Results with the same group must be next to each other. */
+  group?: string;
+}
+
+export interface SearchFieldProps {
+  /** Accessible name. Hidden visually, like a header search. */
+  label: string;
+  /** Current text. */
+  value: string;
+  /** Called with the new text. Filter `results` from it. */
+  onChange: (value: string) => void;
+  /** Suggestions for the current text, already filtered. */
+  results: SearchResult[];
+  /** Called when a suggestion is chosen with click or Enter. */
+  onSelect: (result: SearchResult) => void;
+  /** Placeholder text. */
+  placeholder?: string;
+  /** Shown in the list when the text matches nothing. */
+  emptyText?: string;
+  /** Names of the built-in parts. Pass them in the page's language. `count` announces the number of suggestions. */
+  labels?: { clear?: string; count?: (n: number) => string };
+}
+
+/** Search box with a suggestion list (combobox). Type to see matches, arrow keys to move, Enter to open one, Escape to close. Width is size/field-lg. */
+export function SearchField({ label, value, onChange, results, onSelect, placeholder, emptyText = 'No matches', labels }: SearchFieldProps) {
+  const id = React.useId();
+  const [open, setOpen] = React.useState(false);
+  const [active, setActive] = React.useState(0);
+  const root = React.useRef<HTMLDivElement>(null);
+  const show = open && value.trim().length > 0;
+  React.useEffect(() => setActive(0), [value]);
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  const choose = (r: SearchResult) => { onSelect(r); setOpen(false); };
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive((a) => Math.min(a + 1, results.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
+    else if (e.key === 'Enter' && show && results[active]) { e.preventDefault(); choose(results[active]); }
+    else if (e.key === 'Escape') { if (show) { e.preventDefault(); setOpen(false); } else if (value) onChange(''); }
+  };
+  const listId = `${id}-list`;
+  return (
+    <div className="eu-search" ref={root}>
+      <label htmlFor={`${id}-input`} className="eu-sr">{label}</label>
+      <span className="eu-input eu-input--filled">
+        <Icon name="search" size="md" className="eu-input__icon" />
+        <input
+          id={`${id}-input`} type="search" role="combobox" autoComplete="off"
+          aria-expanded={show} aria-controls={listId} aria-autocomplete="list"
+          aria-activedescendant={show && results[active] ? `${id}-opt-${active}` : undefined}
+          className="eu-input__el eu-type-body-small" placeholder={placeholder} value={value}
+          onChange={(e) => { onChange(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} onKeyDown={onKeyDown}
+        />
+        {value ? <button type="button" className="eu-input__btn" aria-label={labels?.clear ?? 'Clear search'} onClick={() => { onChange(''); setOpen(false); }}><Icon name="close" size="sm" /></button> : null}
+      </span>
+      {show ? (
+        <ul id={listId} role="listbox" aria-label={label} className="eu-search__panel">
+          {results.length === 0 ? <li className="eu-search__empty eu-type-body-small" role="presentation">{emptyText}</li> : results.map((r, i) => (
+            <React.Fragment key={r.id}>
+              {r.group && r.group !== results[i - 1]?.group ? <li role="presentation" className="eu-search__group eu-type-body-caption-strong">{r.group}</li> : null}
+              <li id={`${id}-opt-${i}`} role="option" aria-selected={i === active} className={cn('eu-search__item', i === active && 'is-active')}
+                onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setActive(i)} onClick={() => choose(r)}>
+                {r.icon ? <Icon name={r.icon} size="md" className="eu-search__icon" /> : null}
+                <span className="eu-search__text"><span className="eu-type-ui-card-title eu-search__label">{r.label}</span>{r.description ? <span className="eu-type-body-caption eu-search__desc">{r.description}</span> : null}</span>
+              </li>
+            </React.Fragment>
+          ))}
+        </ul>
+      ) : null}
+      <span className="eu-sr" aria-live="polite">{show ? (labels?.count ?? ((n: number) => `${n} suggestions`))(results.length) : ''}</span>
+    </div>
   );
 }

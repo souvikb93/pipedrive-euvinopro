@@ -203,6 +203,10 @@ export interface TableColumn<T> {
   render: (row: T) => React.ReactNode;
   /** Align numbers right. */
   align?: 'left' | 'right';
+  /** Long text: `wrap` (default), `nowrap` keeps one line, `truncate` keeps one line and ends with an ellipsis. */
+  overflow?: 'wrap' | 'nowrap' | 'truncate';
+  /** Column takes only the width its content needs, such as counts, dates and actions. Free width goes to the other columns. */
+  fit?: boolean;
   /** Header is sortable and shows this state. */
   sort?: 'none' | 'ascending' | 'descending';
   /** Called when a sortable header is pressed. */
@@ -245,7 +249,7 @@ export function Table<T>({ columns, rows, rowKey, caption, selected, onSelectedC
           <tr>
             {selectable ? <th scope="col" className="eu-table__check"><label className="eu-check eu-check--small"><input type="checkbox" className="eu-check__el" aria-label={labels?.selectAll ?? 'Select all rows'} checked={all} ref={(el) => { if (el) el.indeterminate = some && !all; }} onChange={() => onSelectedChange?.(all ? [] : keys)} /><span className="eu-check__box" aria-hidden="true"><Icon name={some && !all ? 'minus' : 'check'} size="xs" /></span></label></th> : null}
             {columns.map((c) => (
-              <th key={c.key} scope="col" aria-sort={c.sort && c.sort !== 'none' ? c.sort : undefined} className={cn('eu-type-body-caption-strong', c.align === 'right' && 'is-right')}>
+              <th key={c.key} scope="col" aria-sort={c.sort && c.sort !== 'none' ? c.sort : undefined} className={cn('eu-type-body-caption-strong', c.align === 'right' && 'is-right', c.fit && 'is-fit')}>
                 {c.onSort ? <button type="button" className="eu-table__sort" onClick={c.onSort}>{c.header}<Icon name={c.sort === 'ascending' ? 'nav-up' : c.sort === 'descending' ? 'nav-down' : 'sort'} size="sm" /></button> : c.header}
               </th>
             ))}
@@ -257,7 +261,7 @@ export function Table<T>({ columns, rows, rowKey, caption, selected, onSelectedC
             return (
               <tr key={k} className={cn(on && 'is-selected')} aria-selected={selectable ? on : undefined}>
                 {selectable ? <td className="eu-table__check"><label className="eu-check eu-check--small"><input type="checkbox" className="eu-check__el" aria-label={labels?.selectRow?.(r) ?? `Select row ${k}`} checked={on} onChange={() => onSelectedChange?.(on ? sel.filter((x) => x !== k) : [...sel, k])} /><span className="eu-check__box" aria-hidden="true"><Icon name="check" size="xs" /></span></label></td> : null}
-                {columns.map((c) => <td key={c.key} className={cn('eu-type-body-small', c.align === 'right' && 'is-right')}>{c.render(r)}</td>)}
+                {columns.map((c) => <td key={c.key} className={cn('eu-type-body-small', c.align === 'right' && 'is-right', c.overflow === 'truncate' && 'is-truncate', c.overflow === 'nowrap' && 'is-nowrap', c.fit && 'is-fit')}>{c.render(r)}</td>)}
               </tr>
             );
           })}

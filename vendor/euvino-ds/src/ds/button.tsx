@@ -62,19 +62,19 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(f
 ) {
   return (
     <button {...rest} ref={ref} type={type} aria-label={label} title={label} className={cn('eu-btn', 'eu-btn--icon', `eu-btn--${variant}`, `eu-btn--${size}`, className)}>
-      <Icon name={icon} size={size === 'tiny' || size === 'small' ? 'sm' : 'md'} />
+      <Icon name={icon} size={size === 'tiny' || size === 'small' ? 'sm' : size === 'giant' ? 'lg' : 'md'} />
     </button>
   );
 });
 
 export interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  /** `primary` uses text/link, `secondary` uses text/body. */
-  variant?: 'primary' | 'secondary';
+  /** `primary` uses text/link, `secondary` uses text/body. `link` is an inline text link in foreground/link (emails, phone numbers): it keeps the surrounding text style. */
+  variant?: 'primary' | 'secondary' | 'link';
 }
 
 /** A text link that navigates. Use Button when it runs an action. */
 export function LinkButton({ variant = 'primary', className, ...rest }: LinkButtonProps) {
-  return <a {...rest} className={cn('eu-link', `eu-link--${variant}`, 'eu-type-ui-button', className)} />;
+  return <a {...rest} className={cn('eu-link', `eu-link--${variant}`, variant !== 'link' && 'eu-type-ui-button', className)} />;
 }
 
 export interface SegmentOption {
@@ -104,7 +104,7 @@ export function SegmentedControl({ options, value, onChange, label, className }:
   return (
     <div role="radiogroup" aria-label={label} className={cn('eu-seg', className)}>
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item eu-type-ui-button', o.value === value && 'is-selected')} onClick={() => onChange(o.value)}>
+        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item eu-type-body-small', o.value === value && 'is-selected')} onClick={() => onChange(o.value)}>
           {o.icon ? <Icon name={o.icon} size="sm" /> : null}
           {o.label}
         </button>

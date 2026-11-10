@@ -5,9 +5,9 @@ import {
   Button,
   Header,
   IconButton,
-  Input,
   LinkButton,
   Menu,
+  SearchField,
   SegmentedControl,
   SideNav,
   Stack,
@@ -15,6 +15,7 @@ import {
   Text,
   UserMenu,
   VisuallyHidden,
+  type SearchResult,
   type SideNavItem,
   type Status,
   type TableColumn,
@@ -22,14 +23,14 @@ import {
 import './app.css';
 import { contacts, TOTAL_CONTACTS, type Contact, type ContactLabel } from './data/contacts';
 
-// Figma: Side Nav, Content=Icon, Theme=Dark. Icons match the Figma layers; "Data Transfer" is the selected item.
+// Figma: Side Nav, Content=Icon, Theme=Dark, Logo on. Icons and counts as in the frame.
 const NAV: SideNavItem[] = [
   { label: 'Overview', icon: 'page-edit', href: '#' },
   { label: 'Product Catalog', icon: 'precision-tool', href: '#' },
   { label: 'Requests', icon: 'coin', href: '#' },
   { label: 'Data Validation', icon: 'chat-bubble-check', href: '#' },
   { label: 'Suppliers', icon: 'send-mail', href: '#', count: 1 },
-  { label: 'Trading Partners', icon: 'shop', href: '#', count: 3 },
+  { label: 'Trading Partners', icon: 'shop', href: '#', count: 3, countStatus: 'error' },
   { label: 'Data Transfer', icon: 'credit-cards', href: '#', selected: true },
   { label: 'Reports', icon: 'stats-down-square', href: '#' },
   { label: 'Settings', icon: 'box-iso', href: '#' },
@@ -52,38 +53,79 @@ const VIEWS = [
 
 const noop = () => {};
 
+/** Link text in foreground/link; the note in brackets stays normal body text. */
+function Linked({ links, note, scheme }: { links: string[]; note: string | null; scheme: 'mailto' | 'tel' }) {
+  return (
+    <>
+      {links.map((l, i) => (
+        <React.Fragment key={l}>
+          {i > 0 ? ' ' : null}
+          <LinkButton variant="link" href={`${scheme}:${scheme === 'tel' ? l.replace(/[^+\d]/g, '') : l}`}>{l}</LinkButton>
+        </React.Fragment>
+      ))}
+      {note ? ` (${note})` : null}
+    </>
+  );
+}
+
+function searchContacts(query: string): SearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const people = contacts
+    .filter((c) => [c.name, c.email, ...c.phones].some((v) => v.toLowerCase().includes(q)))
+    .slice(0, 5)
+    .map((c) => ({ id: c.id, label: c.name, description: `${c.organisation} · ${c.email}`, icon: 'user' as const, group: 'Kontakte' }));
+  const orgs = [...new Set(contacts.map((c) => c.organisation))]
+    .filter((o) => o.toLowerCase().includes(q))
+    .slice(0, 3)
+    .map((o) => ({
+      id: `org-${o}`,
+      label: o,
+      description: `${contacts.filter((c) => c.organisation === o).length} Kontaktpersonen`,
+      icon: 'group' as const,
+      group: 'Organisationen',
+    }));
+  return [...people, ...orgs];
+}
+
 export function App() {
   const [view, setView] = React.useState('contacts');
   const [query, setQuery] = React.useState('');
+  const [filter, setFilter] = React.useState<string | null>(null);
   const [selected, setSelected] = React.useState<string[]>([]);
 
+  const results = React.useMemo(() => searchContacts(query), [query]);
   const rows = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return contacts;
-    return contacts.filter((c) => [c.name, c.organisation, c.email].some((v) => v.toLowerCase().includes(q)));
-  }, [query]);
+    if (!filter) return contacts;
+    return contacts.filter((c) => c.id === filter || `org-${c.organisation}` === filter);
+  }, [filter]);
+
+  const onSelect = (r: SearchResult) => {
+    setFilter(r.id);
+    setQuery(r.label);
+  };
+  const onQuery = (v: string) => {
+    setQuery(v);
+    if (!v) setFilter(null);
+  };
 
   const columns: Array<TableColumn<Contact>> = [
-    { key: 'name', header: 'Name', render: (c) => <Text variant="label" tone="primary">{c.name}</Text> },
+    { key: 'name', header: 'Name', overflow: 'truncate', render: (c) => <Text as="span" variant="card-title" tone="strong-body">{c.name}</Text> },
+    { key: 'label', header: 'Label', fit: true, render: (c) => <Badge size="tiny" status={LABELS[c.label].status}>{LABELS[c.label].text}</Badge> },
+    { key: 'organisation', header: 'Organisation', overflow: 'truncate', render: (c) => c.organisation },
+    { key: 'email', header: 'E-Mail', overflow: 'truncate', render: (c) => <Linked links={[c.email]} note={c.emailType} scheme="mailto" /> },
+    { key: 'phone', header: 'Telefonnummer', overflow: 'truncate', render: (c) => <Linked links={c.phones} note={c.phoneType} scheme="tel" /> },
+    { key: 'won', header: 'Abgeschlossene Deals', fit: true, render: (c) => c.wonDeals },
+    { key: 'open', header: 'Offene Deals', fit: true, render: (c) => c.openDeals },
+    { key: 'next', header: 'Datum nächste Aktivität', fit: true, overflow: 'nowrap', render: (c) => c.nextActivity },
+    { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (c) => c.owner },
     {
-      key: 'label',
-      header: 'Label',
-      render: (c) => <Badge size="tiny" status={LABELS[c.label].status}>{LABELS[c.label].text}</Badge>,
-    },
-    { key: 'organisation', header: 'Organisation', render: (c) => c.organisation },
-    { key: 'email', header: 'E-Mail', render: (c) => <LinkButton variant="primary" href="#">{c.email}</LinkButton> },
-    { key: 'phone', header: 'Telefonnummer', render: (c) => <LinkButton variant="primary" href="#">{c.phone}</LinkButton> },
-    { key: 'won', header: 'Abgeschlossene Deals', align: 'right', render: (c) => c.wonDeals },
-    { key: 'open', header: 'Offene Deals', align: 'right', render: (c) => c.openDeals },
-    { key: 'next', header: 'Datum nächste Aktivität', render: (c) => c.nextActivity },
-    { key: 'owner', header: 'Besitzer', render: (c) => c.owner },
-    {
-      key: 'actions',
-      header: <IconButton icon="settings" label="Spalten anpassen" size="small" />,
+      key: 'actions', fit: true,
+      header: <IconButton icon="settings" label="Spalten anpassen" size="tiny" />,
       render: (c) => (
         <Menu
           label={`Aktionen für ${c.name}`}
-          trigger={<IconButton icon="more-horiz" label={`Aktionen für ${c.name}`} size="small" />}
+          trigger={<IconButton icon="more-horiz" label={`Aktionen für ${c.name}`} size="tiny" />}
           items={[
             { label: 'Bearbeiten', icon: 'edit', onSelect: noop },
             { label: 'E-Mail senden', icon: 'mail', onSelect: noop },
@@ -95,17 +137,18 @@ export function App() {
   ];
 
   return (
-    <Stack direction="horizontal" gap="0" align="stretch" className="app-shell">
-      <SideNav label="Hauptnavigation" items={NAV} collapsed theme="dark" />
+    <Stack direction="horizontal" gap="0" align="start" className="app-shell">
+      <SideNav label="Hauptnavigation" items={NAV} collapsed theme="dark" logo sticky />
 
       <Stack gap="0" className="app-main">
         <Header
           size="large"
+          layout="between"
           brand={<Breadcrumbs label="Pfad" items={[{ label: 'Kontakte', href: '#' }, { label: 'Kontakte' }]} />}
           actions={
             <>
-              <IconButton icon="shop" label="Marktplatz" size="large" />
-              <IconButton icon="help" label="Hilfe" size="large" />
+              <IconButton icon="shop" label="Marktplatz" size="giant" />
+              <IconButton icon="help" label="Hilfe" size="giant" />
               <Menu
                 label="Konto"
                 trigger={<UserMenu name="Anna" compact />}
@@ -117,19 +160,19 @@ export function App() {
             </>
           }
         >
-          <Input
-            label="Suche"
-            hideLabel
+          <SearchField
+            label="Kontakte und Organisationen suchen"
             placeholder="Search"
-            iconLeft="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onClear={() => setQuery('')}
-            labels={{ clear: 'Suche leeren' }}
+            onChange={onQuery}
+            results={results}
+            onSelect={onSelect}
+            emptyText="Keine Treffer"
+            labels={{ clear: 'Suche leeren', count: (n) => `${n} Vorschläge` }}
           />
         </Header>
 
-        <Stack as="main" gap="6" padding="6">
+        <Stack as="main" gap="6" className="app-content">
           <VisuallyHidden>
             <Text as="h1" variant="h1">Kontakte</Text>
           </VisuallyHidden>
@@ -137,23 +180,21 @@ export function App() {
           <Stack direction="horizontal" gap="4" justify="between" align="center" wrap>
             <SegmentedControl label="Ansicht" value={view} onChange={setView} options={VIEWS} />
             <Stack direction="horizontal" gap="4" align="center" wrap>
-              <Text variant="body" tone="body">{TOTAL_CONTACTS} Kontaktpersonen</Text>
+              <Text variant="body-small" tone="body">{filter ? `${rows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen</Text>
               <Button variant="secondary" icon="sort">Filter einstellen</Button>
               <Button variant="primary" icon="plus">Kontakte</Button>
             </Stack>
           </Stack>
 
-          <Stack gap="0" className="contacts-table">
-            <Table
-              caption="Kontaktpersonen"
-              rows={rows}
-              rowKey={(c) => c.id}
-              columns={columns}
-              selected={selected}
-              onSelectedChange={setSelected}
-              labels={{ selectAll: 'Alle auswählen', selectRow: (c) => `${c.name} auswählen` }}
-            />
-          </Stack>
+          <Table
+            caption="Kontaktpersonen"
+            rows={rows}
+            rowKey={(c) => c.id}
+            columns={columns}
+            selected={selected}
+            onSelectedChange={setSelected}
+            labels={{ selectAll: 'Alle auswählen', selectRow: (c) => `${c.name} auswählen` }}
+          />
         </Stack>
       </Stack>
     </Stack>

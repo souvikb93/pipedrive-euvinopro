@@ -245,24 +245,207 @@
   --eu-shadow-lg: 0px 10px 15px -3px #0000001a, 0px 4px 6px -4px #0000001a;
   --eu-shadow-2xl: 0px 25px 50px -12px #00000040;
   --eu-shadow-focus-ring: 0px 0px 0px 0px #aba1ffff;
+
+  /* Text styles: size, weight and line height per Figma text style. */
+  --eu-font-desktop-h1-size: 32px;
+  --eu-font-desktop-h1-weight: 700;
+  --eu-font-desktop-h1-line: 1.5;
+  --eu-font-desktop-h2-size: 28px;
+  --eu-font-desktop-h2-weight: 700;
+  --eu-font-desktop-h2-line: 1.5;
+  --eu-font-desktop-h3-size: 24px;
+  --eu-font-desktop-h3-weight: 700;
+  --eu-font-desktop-h3-line: 1.5;
+  --eu-font-desktop-h4-size: 20px;
+  --eu-font-desktop-h4-weight: 700;
+  --eu-font-desktop-h4-line: 1.5;
+  --eu-font-desktop-h5-size: 18px;
+  --eu-font-desktop-h5-weight: 700;
+  --eu-font-desktop-h5-line: 1.5;
+  --eu-font-desktop-h6-size: 16px;
+  --eu-font-desktop-h6-weight: 700;
+  --eu-font-desktop-h6-line: 1.5;
+  --eu-font-mobile-h1-size: 28px;
+  --eu-font-mobile-h1-weight: 700;
+  --eu-font-mobile-h1-line: 1.5;
+  --eu-font-mobile-h2-size: 20px;
+  --eu-font-mobile-h2-weight: 700;
+  --eu-font-mobile-h2-line: 1.5;
+  --eu-font-mobile-h3-size: 18px;
+  --eu-font-mobile-h3-weight: 700;
+  --eu-font-mobile-h3-line: 1.5;
+  --eu-font-mobile-h4-size: 16px;
+  --eu-font-mobile-h4-weight: 700;
+  --eu-font-mobile-h4-line: 1.5;
+  --eu-font-mobile-h5-size: 14px;
+  --eu-font-mobile-h5-weight: 700;
+  --eu-font-mobile-h5-line: 1.5;
+  --eu-font-mobile-h6-size: 13px;
+  --eu-font-mobile-h6-weight: 700;
+  --eu-font-mobile-h6-line: 1.5;
+  --eu-font-body-large-size: 18px;
+  --eu-font-body-large-weight: 400;
+  --eu-font-body-large-line: 1.5;
+  --eu-font-body-base-size: 16px;
+  --eu-font-body-base-weight: 400;
+  --eu-font-body-base-line: 1.5;
+  --eu-font-body-small-size: 14px;
+  --eu-font-body-small-weight: 400;
+  --eu-font-body-small-line: 1.5;
+  --eu-font-body-caption-size: 12px;
+  --eu-font-body-caption-weight: 400;
+  --eu-font-body-caption-line: 1.5;
+  --eu-font-body-caption-strong-size: 12px;
+  --eu-font-body-caption-strong-weight: 500;
+  --eu-font-body-caption-strong-line: 1.33;
+  --eu-font-body-micro-size: 10px;
+  --eu-font-body-micro-weight: 500;
+  --eu-font-body-micro-line: 1.4;
+  --eu-font-ui-button-size: 14px;
+  --eu-font-ui-button-weight: 700;
+  --eu-font-ui-button-line: 1.5;
+  --eu-font-ui-card-title-size: 14px;
+  --eu-font-ui-card-title-weight: 600;
+  --eu-font-ui-card-title-line: 1.375;
+  --eu-font-ui-footer-link-size: 14px;
+  --eu-font-ui-footer-link-weight: 400;
+  --eu-font-ui-footer-link-line: 1.5;
+  --eu-font-ui-label-size: 16px;
+  --eu-font-ui-label-weight: 600;
+  --eu-font-ui-label-line: 1.5;
+  --eu-font-ui-button-large-size: 16px;
+  --eu-font-ui-button-large-weight: 700;
+  --eu-font-ui-button-large-line: 1.5;
+  --eu-font-ui-button-small-size: 12px;
+  --eu-font-ui-button-small-weight: 700;
+  --eu-font-ui-button-small-line: 1.5;
+  --eu-font-ui-nav-link-desktop-size: 16px;
+  --eu-font-ui-nav-link-desktop-weight: 600;
+  --eu-font-ui-nav-link-desktop-line: 1.5;
+  --eu-font-ui-nav-link-mobile-size: 14px;
+  --eu-font-ui-nav-link-mobile-weight: 600;
+  --eu-font-ui-nav-link-mobile-line: 1.5;
+
+  /* Hydra primitives (new names). Never use directly in product code. */
+  --eu-prim-blue-gray-100: #000929;
+  --eu-prim-blue-gray-80: #32384a;
+  --eu-prim-blue-gray-70: #4d5369;
+  --eu-prim-blue-gray-60: #6c7389;
+  --eu-prim-blue-gray-10: #f2f6fb;
+  --eu-prim-blue-gray-surface: #f7f9fd;
+  --eu-prim-purple-80: #7a7fff;
+  --eu-prim-purple-60: #b1b4ff;
+  --eu-prim-purple-40: #d3d5ff;
+  --eu-prim-purple-20: #eaeaff;
+  --eu-prim-purple-10: #eeecff;
+  --eu-prim-purple-5: #f9f8ff;
+  --eu-prim-red-light: #ffe8e9;
+  --eu-prim-red-medium: #f9d2d2;
+  --eu-prim-red-base: #ff4e4e;
+  --eu-prim-red-dark: #c82b2b;
+  --eu-prim-red-darker: #a32020; /* Not in Hydra. Hover and pressed of the danger button. */
+  --eu-prim-green-light: #e1faf5;
+  --eu-prim-green-medium: #8eedd5;
+  --eu-prim-green-base: #00d487;
+  --eu-prim-green-dark: #00945e;
+  --eu-prim-green-darker: #007a4d; /* Not in Hydra. Darker green so success text passes 4.5:1. */
+  --eu-prim-blue-light: #f0fafc;
+  --eu-prim-blue-medium: #b0dbeb;
+  --eu-prim-blue-base: #0094ff;
+  --eu-prim-yellow-light: #fffded;
+  --eu-prim-yellow-medium: #ffe47a;
+  --eu-prim-yellow-base: #ffcd1b;
+  --eu-prim-yellow-dark: #a06a00;
+  --eu-prim-decoration-turquoise: #00e7e7;
+  --eu-prim-decoration-warm-gray-10: #fafafa;
+  --eu-prim-decoration-warm-gray-50: #f2f1ed;
+
+  /* Hydra colour (new names). Use these for new work. */
+  --eu-background-static-soft: #f2f6fb; /* blue-gray/10 */ /* Screen background. */
+  --eu-background-static-base: #ffffff; /* white */ /* Cards, inputs and dialogs. */
+  --eu-background-static-inverse: #000929; /* blue-gray/100 */ /* Dark surfaces. */
+  --eu-foreground-static-base: #000929; /* blue-gray/100 */ /* Headings and primary text. */
+  --eu-foreground-static-body: #4d5369; /* blue-gray/70 */ /* Reading text. */
+  --eu-foreground-static-neutral: #6c7389; /* blue-gray/60 */ /* Secondary text and meta lines. */
+  --eu-foreground-disabled: #b1b9cc; /* blue-gray/40 */ /* Disabled text only. Too light for normal text. */
+  --eu-foreground-static-invert: #ffffff; /* white */ /* Text on dark or coloured fills. */
+  --eu-foreground-interactive-default: #5844ff; /* purple/100 */ /* Links and interactive text. */
+  --eu-foreground-interactive-hover: #3018c5; /* purple/dark */ /* Hover of interactive text. */
+  --eu-border-static-subtle: #e4eaf3; /* blue-gray/20 */ /* Card hairlines. */
+  --eu-border-static-soft: #b1b9cc; /* blue-gray/40 */ /* Dividers. */
+  --eu-border-primary-focus: #3018c5; /* purple/dark */ /* Focus rings. 10.18:1 on white. */
+  --eu-background-primary-default: #5844ff; /* purple/100 */ /* Main action and interface accent. */
+  --eu-background-primary-hover: #3018c5; /* purple/dark */ /* Hover of the main action. */
+  --eu-background-accent-subtle: #eeecff; /* purple/10 */ /* Selected and hover tint. */
+  --eu-background-static-muted: #f7f9fd; /* blue-gray/surface */ /* Quiet areas inside a surface. */
+  --eu-background-disabled: #e4eaf3; /* blue-gray/20 */ /* Disabled fills. */
+  --eu-foreground-icon-default: #000929; /* blue-gray/100 */ /* Default icons. */
+  --eu-foreground-icon-muted: #6c7389; /* blue-gray/60 */ /* Secondary icons. */
+  --eu-foreground-icon-inverse: #ffffff; /* white */ /* Icons on dark or coloured fills. */
+  --eu-background-accent-strong: #d3d5ff; /* purple/40 */ /* Pressed tint. */
+  --eu-status-text-success: #007a4d; /* green/darker */ /* Status text and icons. */
+  --eu-status-text-warning: #a06a00; /* yellow/dark */ /* Status text and icons. */
+  --eu-status-text-error: #c82b2b; /* red/dark */ /* Status text and icons. */
+  --eu-status-text-info: #0072c5; /* blue/dark */ /* Status text and icons. */
+  --eu-border-static-neutral: #6c7389; /* blue-gray/60 */ /* Inputs, checkboxes and radios. 4.72:1 on white. */
+  --eu-background-danger-default: #c82b2b; /* red/dark */ /* Final irreversible action. White label. */
+  --eu-background-danger-hover: #a32020; /* red/darker */ /* Hover of danger. */
+  --eu-background-primary-pressed: #3018c5; /* purple/dark */ /* Pressed main action. */
+  --eu-background-static-neutral: #b1b9cc; /* blue-gray/40 */ /* Toggle track when off. */
+  --eu-background-danger-pressed: #a32020; /* red/darker */ /* Pressed danger action. */
+  --eu-background-static-inverse-hover: #32384a; /* blue-gray/80 */ /* Hover on dark surfaces. */
+  --eu-border-static-ondark: #32384a; /* blue-gray/80 */ /* Dividers on dark surfaces. */
+  --eu-foreground-link-default: #0072c5; /* blue/dark */ /* Text links such as email addresses and phone numbers in tables and lists. */
+  --eu-foreground-link-hover: #000929; /* blue-gray/100 */ /* Text link on hover. */
+
+  /* Hydra dimension (new names). */
+  --eu-spacing-3xs: 4px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-2xs: 8px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-xs: 12px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-s: 16px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-m: 24px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-l: 32px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-xl: 40px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-2xl: 48px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-4xl: 64px; /* Space between and inside elements, on a 4px base. */
+  --eu-spacing-5xl: 80px; /* Space between and inside elements, on a 4px base. */
+  --eu-radius-xs: 4px; /* Small parts: menu rows, checkboxes. */
+  --eu-spacing-4xs: 2px; /* Space between and inside elements, on a 4px base. */
+  --eu-size-icon-xxs: 12px; /* Hydra 2XS icon. */
+  --eu-spacing-6xl: 96px; /* Space between and inside elements, on a 4px base. */
+  --eu-radius-none: 0px;
+  --eu-radius-md: 16px;
+  --eu-spacing-none: 0px;
+  --eu-spacing-3xl: 56px;
+  --eu-size-button-sm: 28px; /* Hydra Tiny button height. */
+  --eu-size-button-md: 38px; /* Hydra Small button height. */
+  --eu-size-button-lg: 44px; /* Hydra Medium button height. */
+  --eu-size-control-xl: 56px; /* Largest square control and brand tile. */
+  --eu-size-icon-xl: 40px; /* Hydra XL icon. */
+  --eu-size-icon-xxl: 64px; /* Hydra 4XL icon. */
+  --eu-size-control-2xl: 64px; /* Tile for XL icons. */
+  --eu-size-control-3xl: 88px; /* Tile for XXL icons. */
+  --eu-size-sidebar-collapsed-lg: 80px; /* Icon rail with XL icons. */
+  --eu-size-sidebar-collapsed-xl: 104px; /* Icon rail with XXL icons. */
+  --eu-size-field-lg: 400px; /* Width of a header search field. */
 }
 
 /* Text styles */
-.eu-type-desktop-h1 { font-family: var(--eu-font-heading); font-size: 64px; font-weight: 700; line-height: 1.25; }
-.eu-type-desktop-h2 { font-family: var(--eu-font-heading); font-size: 44.8px; font-weight: 700; line-height: 1.5; }
-.eu-type-desktop-h3 { font-family: var(--eu-font-heading); font-size: 38.4px; font-weight: 700; line-height: 1.5; }
-.eu-type-desktop-h4 { font-family: var(--eu-font-heading); font-size: 32px; font-weight: 700; line-height: 1.5; }
-.eu-type-desktop-h5 { font-family: var(--eu-font-heading); font-size: 28.8px; font-weight: 700; line-height: 1.5; }
-.eu-type-desktop-h6 { font-family: var(--eu-font-heading); font-size: 25.6px; font-weight: 700; line-height: 1.5; }
-.eu-type-mobile-h1 { font-family: var(--eu-font-heading); font-size: 51.2px; font-weight: 700; line-height: 1.25; }
-.eu-type-mobile-h2 { font-family: var(--eu-font-heading); font-size: 32px; font-weight: 700; line-height: 1.5; }
-.eu-type-mobile-h3 { font-family: var(--eu-font-heading); font-size: 28.8px; font-weight: 700; line-height: 1.5; }
-.eu-type-mobile-h4 { font-family: var(--eu-font-heading); font-size: 25.6px; font-weight: 700; line-height: 1.5; }
-.eu-type-mobile-h5 { font-family: var(--eu-font-heading); font-size: 22.4px; font-weight: 700; line-height: 1.5; }
-.eu-type-mobile-h6 { font-family: var(--eu-font-heading); font-size: 20.8px; font-weight: 700; line-height: 1.5; }
-.eu-type-body-large { font-family: var(--eu-font-body); font-size: 18px; font-weight: 400; line-height: 1.625; }
-.eu-type-body-base { font-family: var(--eu-font-body); font-size: 16px; font-weight: 400; line-height: 1.625; }
-.eu-type-body-small { font-family: var(--eu-font-body); font-size: 14px; font-weight: 400; line-height: 1.625; }
+.eu-type-desktop-h1 { font-family: var(--eu-font-heading); font-size: 32px; font-weight: 700; line-height: 1.5; }
+.eu-type-desktop-h2 { font-family: var(--eu-font-heading); font-size: 28px; font-weight: 700; line-height: 1.5; }
+.eu-type-desktop-h3 { font-family: var(--eu-font-heading); font-size: 24px; font-weight: 700; line-height: 1.5; }
+.eu-type-desktop-h4 { font-family: var(--eu-font-heading); font-size: 20px; font-weight: 700; line-height: 1.5; }
+.eu-type-desktop-h5 { font-family: var(--eu-font-heading); font-size: 18px; font-weight: 700; line-height: 1.5; }
+.eu-type-desktop-h6 { font-family: var(--eu-font-heading); font-size: 16px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h1 { font-family: var(--eu-font-heading); font-size: 28px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h2 { font-family: var(--eu-font-heading); font-size: 20px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h3 { font-family: var(--eu-font-heading); font-size: 18px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h4 { font-family: var(--eu-font-heading); font-size: 16px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h5 { font-family: var(--eu-font-heading); font-size: 14px; font-weight: 700; line-height: 1.5; }
+.eu-type-mobile-h6 { font-family: var(--eu-font-heading); font-size: 13px; font-weight: 700; line-height: 1.5; }
+.eu-type-body-large { font-family: var(--eu-font-body); font-size: 18px; font-weight: 400; line-height: 1.5; }
+.eu-type-body-base { font-family: var(--eu-font-body); font-size: 16px; font-weight: 400; line-height: 1.5; }
+.eu-type-body-small { font-family: var(--eu-font-body); font-size: 14px; font-weight: 400; line-height: 1.5; }
 .eu-type-body-caption { font-family: var(--eu-font-body); font-size: 12px; font-weight: 400; line-height: 1.5; }
 .eu-type-body-caption-strong { font-family: var(--eu-font-body); font-size: 12px; font-weight: 500; line-height: 1.33; }
 .eu-type-body-micro { font-family: var(--eu-font-body); font-size: 10px; font-weight: 500; line-height: 1.4; }
