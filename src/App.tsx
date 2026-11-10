@@ -252,28 +252,28 @@ export function App() {
           </VisuallyHidden>
 
           <Stack direction="horizontal" gap="4" justify="between" align="center" wrap>
+            <SegmentedControl label="Ansicht" value={view} onChange={setView} options={VIEWS} />
             <Stack direction="horizontal" gap="4" align="center" wrap>
-              <Button variant="primary" icon="plus">Kontakte</Button>
-              <SegmentedControl label="Ansicht" value={view} onChange={setView} options={VIEWS} />
-            </Stack>
-            <Stack direction="horizontal" gap="2" align="center" wrap>
               <Text variant="body-small" tone="body">{narrowed ? `${rows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen</Text>
-              <Menu
-                label="Nach Label filtern"
-                trigger={<IconButton icon="filter" label={labelFilter ? `Filter einstellen (aktiv: ${LABELS[labelFilter].text})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(labelFilter)} />}
-                items={[
-                  { label: 'Alle Labels', selected: labelFilter === null, onSelect: () => setLabelFilter(null) },
-                  ...(Object.keys(LABELS) as ContactLabel[]).map((k) => ({ label: LABELS[k].text, selected: labelFilter === k, onSelect: () => setLabelFilter(k) })),
-                ]}
-              />
-              <Menu
-                label="Sortieren"
-                trigger={<IconButton icon="sort" label={sort ? `Sortieren (${SORTS.find((o) => o.key === sort)?.label})` : 'Sortieren'} variant="secondary" indicator={Boolean(sort)} />}
-                items={[
-                  { label: 'Standard', selected: sort === null, onSelect: () => setSort(null) },
-                  ...SORTS.map((o) => ({ label: o.label, selected: sort === o.key, onSelect: () => setSort(o.key) })),
-                ]}
-              />
+              <Stack direction="horizontal" gap="2" align="center">
+                <Button variant="primary" icon="plus">Kontakte</Button>
+                <Menu
+                  label="Nach Label filtern"
+                  trigger={<IconButton icon="filter" label={labelFilter ? `Filter einstellen (aktiv: ${LABELS[labelFilter].text})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(labelFilter)} />}
+                  items={[
+                    { label: 'Alle Labels', selected: labelFilter === null, onSelect: () => setLabelFilter(null) },
+                    ...(Object.keys(LABELS) as ContactLabel[]).map((k) => ({ label: LABELS[k].text, selected: labelFilter === k, onSelect: () => setLabelFilter(k) })),
+                  ]}
+                />
+                <Menu
+                  label="Sortieren"
+                  trigger={<IconButton icon="sort" label={sort ? `Sortieren (${SORTS.find((o) => o.key === sort)?.label})` : 'Sortieren'} variant="secondary" indicator={Boolean(sort)} />}
+                  items={[
+                    { label: 'Standard', selected: sort === null, onSelect: () => setSort(null) },
+                    ...SORTS.map((o) => ({ label: o.label, selected: sort === o.key, onSelect: () => setSort(o.key) })),
+                  ]}
+                />
+              </Stack>
             </Stack>
           </Stack>
 
