@@ -7,7 +7,6 @@ import {
   EmptyState,
   Icon,
   IconButton,
-  InlineEdit,
   Input,
   KeyValueList,
   LabelPicker,
@@ -48,11 +47,9 @@ export interface OrganisationDetailProps {
   labelId: string | null;
   onLabelChange: (id: string) => void;
   onLabelCreate: (name: string) => void;
-  /** Saves a changed field. */
-  onUpdate: (patch: Partial<Organisation>) => void;
 }
 
-export function OrganisationDetail({ organisation: o, people, labelOptions, labelId, onLabelChange, onLabelCreate, onUpdate }: OrganisationDetailProps) {
+export function OrganisationDetail({ organisation: o, people, labelOptions, labelId, onLabelChange, onLabelCreate }: OrganisationDetailProps) {
   const [fieldFilter, setFieldFilter] = React.useState('');
   const [composer, setComposer] = React.useState('notes');
   const [historyOpen, setHistoryOpen] = React.useState(true);
@@ -61,17 +58,13 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
 
   const q = fieldFilter.trim().toLowerCase();
   const match = (...v: string[]) => !q || v.some((x) => x.toLowerCase().includes(q));
-  const field = (label: string, key: keyof Organisation, value: string, display?: React.ReactNode, type: 'text' | 'tel' = 'text') => ({
-    label,
-    text: value,
-    value: <InlineEdit type={type} label={`Edit ${label.toLowerCase()}`} value={value} onChange={(v) => onUpdate({ [key]: v } as Partial<Organisation>)} display={value ? display : undefined} />,
-  });
+  const field = (label: string, value: string, display?: React.ReactNode) => ({ label, text: value, value: value ? display ?? value : '–' });
   const details = [
-    field('Website', 'website', o.website, <LinkButton variant="link" href={o.website} target="_blank" rel="noreferrer">{o.website}</LinkButton>),
-    field('Phone number', 'phone', o.phone, <LinkButton variant="link" href={`tel:${o.phone.replace(/[^+\d]/g, '')}`}>{o.phone.replace(/\s/g, '')}</LinkButton>, 'tel'),
-    field('Managing director', 'managingDirector', o.managingDirector, <LinkButton variant="link" href="#">{o.managingDirector}</LinkButton>),
-    field('Industry', 'industry', o.industry),
-    field('Postal code', 'postalCode', o.postalCode),
+    field('Website', o.website, <LinkButton variant="link" href={o.website} target="_blank" rel="noreferrer">{o.website}</LinkButton>),
+    field('Phone number', o.phone, <LinkButton variant="link" href={`tel:${o.phone.replace(/[^+\d]/g, '')}`}>{o.phone.replace(/\s/g, '')}</LinkButton>),
+    field('Managing director', o.managingDirector, <LinkButton variant="link" href="#">{o.managingDirector}</LinkButton>),
+    field('Industry', o.industry),
+    field('Postal code', o.postalCode),
     { label: 'Internal admin', text: 'backend', value: <LinkButton variant="link" href={`https://backend.euvinopro.eu/admin/vendors/${o.id}`} target="_blank" rel="noreferrer">{`https://backend.euvinopro.eu/admin/vendors/${o.id}`}</LinkButton> },
   ].filter((d) => match(d.label, d.text));
   const shownPeople = people.filter((p) => match(p.name, 'contacts'));
@@ -97,12 +90,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
               />
               <Text as="div" variant="body-small"><Stack direction="horizontal" gap="2" align="center">
                 <Icon name="globe" size="md" />
-                <InlineEdit
-                  label="Edit address"
-                  value={o.address}
-                  onChange={(v) => onUpdate({ address: v })}
-                  display={o.address ? <LinkButton variant="link" href={`https://maps.google.com/?q=${encodeURIComponent(o.address)}`} target="_blank" rel="noreferrer">{o.address}</LinkButton> : undefined}
-                />
+                {o.address ? <LinkButton variant="link" href={`https://maps.google.com/?q=${encodeURIComponent(o.address)}`} target="_blank" rel="noreferrer">{o.address}</LinkButton> : '–'}
               </Stack></Text>
             </Card>
           ) : null}

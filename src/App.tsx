@@ -247,7 +247,6 @@ export function App() {
 
   // ---- Organisations (own state; nothing here touches the contacts view)
   const [orgs, setOrgs] = React.useState<Organisation[]>(initialOrganisations);
-  const updateOrg = (id: string, patch: Partial<Organisation>) => setOrgs((list) => list.map((o) => (o.id === id ? { ...o, ...patch } : o)));
   const orgLabels = useLabels(orgs);
   const [orgLabelFilter, setOrgLabelFilter] = React.useState<string | null>(null);
   const [orgSort, setOrgSort] = React.useState<OrgSort | null>(null);
@@ -403,7 +402,6 @@ export function App() {
                 labelId={orgLabels.labelOf[detail.id] ?? null}
                 onLabelChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [detail.id]: id }))}
                 onLabelCreate={(n) => orgLabels.create(detail.id, n)}
-                onUpdate={(patch) => updateOrg(detail.id, patch)}
               />
             ) : (
               <Stack gap="4">
