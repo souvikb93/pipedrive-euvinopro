@@ -170,17 +170,27 @@ export function App() {
 
   return (
     <Stack direction="horizontal" gap="0" align="start" className="app-shell">
-      <SideNav label="Hauptnavigation" items={NAV} collapsed theme="dark" logo sticky />
+      <SideNav
+        label="Hauptnavigation"
+        items={NAV}
+        collapsed
+        expandable
+        theme="dark"
+        logo
+        logoLabel="EuvinoPRO"
+        sticky
+        labels={{ expand: 'Navigation ausklappen', collapse: 'Einklappen' }}
+      />
 
       <Stack gap="0" className="app-main">
         <Header
-          size="large"
+          size="small"
           layout="between"
           brand={<Breadcrumbs label="Pfad" items={[{ label: 'Kontakte', href: '#' }, { label: 'Kontakte' }]} />}
           actions={
             <>
-              <IconButton icon="shop" label="Marktplatz" size="giant" />
-              <IconButton icon="help" label="Hilfe" size="giant" />
+              <IconButton icon="shop" label="Marktplatz" />
+              <IconButton icon="help" label="Hilfe" />
               <Menu
                 label="Konto"
                 trigger={<UserMenu name="Anna" compact />}

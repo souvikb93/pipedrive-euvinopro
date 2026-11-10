@@ -258,25 +258,40 @@ button { font-family: inherit; }
 .eu-topnav__item { padding: var(--eu-spacing-3) 0; color: var(--eu-text-primary); text-decoration: none; border-bottom: var(--eu-border-width-md) solid transparent; margin-bottom: calc(-1 * var(--eu-border-width-sm)); }
 .eu-topnav__item:hover { border-bottom-color: var(--eu-border-strong); }
 .eu-topnav__item.is-selected { border-bottom-color: var(--eu-bg-inverse); }
-.eu-sidenav { display: flex; flex-direction: column; gap: var(--eu-spacing-s); width: var(--eu-size-sidebar); padding: var(--eu-spacing-2) var(--eu-spacing-3) var(--eu-spacing-6); background: var(--eu-bg-surface); border-right: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
-.eu-sidenav.is-collapsed { width: var(--eu-size-sidebar-collapsed); align-items: center; }
-.eu-sidenav.is-sticky { position: sticky; top: 0; align-self: flex-start; height: 100vh; overflow: hidden; flex: none; }
-.eu-sidenav__brand { display: flex; flex-direction: column; align-items: center; gap: var(--eu-spacing-2); width: 100%; }
-.eu-sidenav__tile { display: flex; align-items: center; justify-content: center; width: var(--eu-size-control-xl); height: var(--eu-size-control-xl); border-radius: var(--eu-radius-lg); color: var(--eu-text-primary); }
+.eu-sidenav { position: relative; z-index: 20; flex: none; width: var(--eu-size-sidebar); background: var(--eu-bg-surface); border-right: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
+.eu-sidenav.is-collapsed { width: var(--eu-size-sidebar-collapsed); }
+.eu-sidenav.is-open { z-index: 45; }
+.eu-sidenav.is-sticky { position: sticky; top: 0; align-self: flex-start; height: 100vh; }
+.eu-sidenav__panel { display: flex; flex-direction: column; gap: var(--eu-spacing-s); height: 100%; padding: 0 var(--eu-spacing-3) var(--eu-spacing-6); background: inherit; }
+.eu-sidenav:not(.eu-sidenav--dark) .eu-sidenav__panel { background: var(--eu-bg-surface); }
+.eu-sidenav.is-rail .eu-sidenav__panel { align-items: center; }
+.eu-sidenav.is-open .eu-sidenav__panel { position: absolute; z-index: 50; inset-block: 0; left: 0; width: var(--eu-size-sidebar); box-shadow: var(--eu-shadow-lg); animation: eu-sidenav-out .16s ease-out; }
+@keyframes eu-sidenav-out { from { width: var(--eu-size-sidebar-collapsed); } to { width: var(--eu-size-sidebar); } }
+@media (prefers-reduced-motion: reduce) { .eu-sidenav.is-open .eu-sidenav__panel { animation: none; } }
+.eu-sidenav__brand { display: flex; align-items: center; gap: var(--eu-spacing-3); flex: none; width: 100%; height: var(--eu-size-header-sm); border-bottom: var(--eu-border-width-sm) solid var(--eu-border-static-soft); }
+.eu-sidenav.is-rail .eu-sidenav__brand { justify-content: center; }
+.eu-sidenav__tile { display: flex; align-items: center; justify-content: center; flex: none; width: var(--eu-size-control-lg); height: var(--eu-size-control-lg); border-radius: var(--eu-radius-lg); color: var(--eu-text-primary); }
 .eu-sidenav__mark { height: var(--eu-size-icon-xl); }
-.eu-sidenav__rule { width: 100%; height: var(--eu-border-width-sm); background: var(--eu-border-static-soft); }
-.eu-sidenav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--eu-spacing-s); }
-.eu-sidenav__item { position: relative; display: flex; align-items: center; gap: var(--eu-spacing-3); padding: var(--eu-spacing-3); border-radius: var(--eu-radius-lg); color: var(--eu-foreground-icon-default); text-decoration: none; }
-.eu-sidenav.is-collapsed .eu-sidenav__item { justify-content: center; width: var(--eu-size-control-lg); height: var(--eu-size-control-lg); }
+.eu-sidenav__name { color: var(--eu-text-primary); white-space: nowrap; }
+.eu-sidenav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--eu-spacing-s); width: 100%; }
+.eu-sidenav.is-rail ul { align-items: center; }
+.eu-sidenav__item { position: relative; display: flex; align-items: center; gap: var(--eu-spacing-3); width: 100%; padding: var(--eu-spacing-3); border: 0; border-radius: var(--eu-radius-lg); background: transparent; color: var(--eu-foreground-icon-default); text-decoration: none; text-align: left; cursor: pointer; white-space: nowrap; }
+.eu-sidenav.is-collapsed .eu-sidenav__item { height: var(--eu-size-control-lg); }
+.eu-sidenav.is-rail .eu-sidenav__item { justify-content: center; width: var(--eu-size-control-lg); }
 .eu-sidenav__item:hover { background: var(--eu-bg-muted); }
 .eu-sidenav__item.is-selected { background: var(--eu-background-accent-subtle); color: var(--eu-foreground-icon-default); }
-.eu-sidenav__text { flex: 1; }
+.eu-sidenav__text { flex: 1; overflow: hidden; text-overflow: ellipsis; }
 .eu-sidenav__foot { margin-top: auto; }
+.eu-sidenav__toggle { margin-top: auto; }
+.eu-sidenav__foot + .eu-sidenav__toggle { margin-top: 0; }
 .eu-sidenav__count { display: inline-flex; align-items: center; justify-content: center; min-width: var(--eu-size-icon-sm); height: var(--eu-size-icon-sm); padding: 0 var(--eu-spacing-1); border-radius: var(--eu-radius-lg); border: var(--eu-border-width-sm) solid var(--eu-background-static-base); background: var(--eu-status-info); color: var(--eu-foreground-icon-inverse); font-size: var(--eu-font-body-micro-size); font-weight: var(--eu-font-body-micro-weight); line-height: var(--eu-font-body-micro-line); }
 .eu-sidenav__count.is-error { background: var(--eu-status-error); }
-.eu-sidenav.is-collapsed .eu-sidenav__count { position: absolute; top: var(--eu-spacing-1-5); right: var(--eu-spacing-1); }
+.eu-sidenav.is-rail .eu-sidenav__count { position: absolute; top: var(--eu-spacing-1-5); right: var(--eu-spacing-1); }
+.eu-sidenav .eu-tip-wrap { display: flex; }
+.eu-sidenav .eu-tip--right { left: calc(100% + var(--eu-spacing-4)); }
 .eu-sidenav--dark { background: var(--eu-background-static-inverse); }
 .eu-sidenav--dark .eu-sidenav__tile { color: var(--eu-foreground-icon-inverse); background: var(--eu-background-static-inverse); }
+.eu-sidenav--dark .eu-sidenav__name { color: var(--eu-foreground-static-invert); }
 .eu-sidenav--dark .eu-sidenav__item { color: var(--eu-foreground-icon-inverse); }
 .eu-sidenav--dark .eu-sidenav__item:hover { background: var(--eu-background-static-inverse-hover); }
 .eu-sidenav--dark .eu-sidenav__item.is-selected { background: var(--eu-background-accent-subtle); color: var(--eu-foreground-icon-default); }

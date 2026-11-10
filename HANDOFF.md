@@ -6,6 +6,7 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 ## State
 - Live: https://pipedrive-euvinopro.vercel.app (Vercel project `pipedrive-euvinopro`, Vercel Authentication protection is on). Repo: `souvikb93/pipedrive-euvinopro` (private). Older repo `souvikb93/pipedrive-euvino` is the remote `old-origin`.
 - Local: `npm run dev` on http://localhost:4340.
+- Header is 56 (size/header-sm, common SaaS height); side nav is an expandable rail (toggle or `[`); global search panel opens from the header.
 - Matches the frame: search 400 × 38 at the same position, side nav 72 with 48 tiles, 24 icons, 16 gaps, sticky and not scrollable; rows 38; links in `foreground/link`, "(Büro)" in body colour; Filter button white.
 
 ## Files
@@ -14,8 +15,8 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 
 ## Changed in the design system (`~/euvinopro-ds`, NOT committed: mixed with an earlier session's uncommitted work)
 - `figma/hydra.json` + `scripts/build-tokens.mjs`: Hydra tokens with new names, text-style variables. Text styles refreshed from Figma.
-- New: `SearchField`, `Input variant="filled"`, `LinkButton variant="link"`, `SideNav logo/sticky/countStatus/theme`, `Header layout="between"`, `UserMenu size` + chevron, `Table` column `overflow` and `fit`, 11 icons, bottle mark.
-- Figma (own file `eoPfuJuIddL9imDtGiK2oX` only): added variables `foreground/link/default`, `foreground/link/hover`, `size/field-lg`. Hydra file untouched.
+- New: `GlobalSearch` (panel with categories and highlighted hits, token background/highlight), `SideNav expandable`, `SearchField`, `Input variant="filled"`, `LinkButton variant="link"`, `SideNav logo/sticky/countStatus/theme`, `Header layout="between"`, `UserMenu size` + chevron, `Table` column `overflow` and `fit`, 11 icons, bottle mark.
+- Figma (own file `eoPfuJuIddL9imDtGiK2oX` only): added variables `foreground/link/default`, `foreground/link/hover`, `size/field-lg`, `background/highlight`; Segmented Control segments now Fill equally. Hydra file untouched.
 
 ## Failed / gotchas
 - The Pipedrive file still uses an older library version, so the frame mixes old names (`bg/page`, `text/body`, `radius/lg` = 8) and Hydra names. Code keeps old names at their old values; colliding Hydra names (radius-lg 40, icon sizes) were not imported.

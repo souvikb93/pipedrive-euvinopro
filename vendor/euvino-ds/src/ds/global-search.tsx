@@ -90,7 +90,8 @@ export function GlobalSearch({
 
   React.useEffect(() => setActive(0), [value, category]);
   React.useEffect(() => {
-    list.current?.querySelector(`[data-index="${active}"]`)?.scrollIntoView({ block: 'nearest' });
+    const el = list.current?.querySelector(`[data-index="${active}"]`) as HTMLElement | null;
+    el?.scrollIntoView?.({ block: 'nearest' });
   }, [active]);
 
   const close = () => { setOpen(false); input.current?.focus(); };

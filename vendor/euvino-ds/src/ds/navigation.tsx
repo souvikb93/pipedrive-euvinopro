@@ -3,6 +3,7 @@ import { cn } from './cn';
 import { Icon, type IconName } from './icon';
 import { Avatar } from './display';
 import { BottleMark } from './brand-mark';
+import { Tooltip } from './feedback';
 
 export interface TopNavItem {
   /** Visible text. */
@@ -53,35 +54,86 @@ export interface SideNavProps {
   items: SideNavItem[];
   /** Accessible name. */
   label: string;
-  /** Icon-only rail, 72 wide. */
+  /** Icon-only rail, 72 wide. Each icon shows its name in a tooltip. */
   collapsed?: boolean;
   /** Surface. `light` is white (default). `dark` is the navy rail from Figma's Side Nav Theme=Dark. */
   theme?: 'light' | 'dark';
-  /** Shows the bottle mark in a tile with a divider above the items (Figma Side Nav Logo). */
+  /** Shows the bottle mark in a tile with a divider above the items (Figma Side Nav Logo). The row is as tall as the small Header. */
   logo?: boolean;
+  /** Product name next to the mark while the nav is expanded. */
+  logoLabel?: string;
   /** Stays in view at full window height while the page scrolls. The nav itself never scrolls. */
   sticky?: boolean;
+  /**
+   * With `collapsed`: a toggle at the bottom (and the `[` key) slides the nav out over the page to show names and counts.
+   * Choosing an item, clicking outside or Escape folds it back. The page does not move.
+   */
+  expandable?: boolean;
+  /** Names of the toggle. Pass them in the page's language. */
+  labels?: { expand?: string; collapse?: string };
   /** Footer slot, such as a help card. */
   footer?: React.ReactNode;
 }
 
-/** Left navigation between app sections, 240 wide or a 72 rail when collapsed. Counts show as a badge on the rail. */
-export function SideNav({ items, label, collapsed, theme = 'light', logo, sticky, footer }: SideNavProps) {
+/** Left navigation between app sections, 240 wide or a 72 rail when collapsed. A collapsed rail can be `expandable`. */
+export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLabel, sticky, expandable, labels, footer }: SideNavProps) {
+  const [open, setOpen] = React.useState(false);
+  const nav = React.useRef<HTMLElement>(null);
+  const toggle = React.useRef<HTMLButtonElement>(null);
+  const canExpand = Boolean(collapsed && expandable);
+  const rail = Boolean(collapsed && !open);
+
+  React.useEffect(() => {
+    if (!canExpand) return;
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+      if (e.key === '[' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setOpen((o) => !o); }
+      if (e.key === 'Escape' && open) { setOpen(false); toggle.current?.focus(); }
+    };
+    const onDown = (e: MouseEvent) => { if (open && !nav.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown); };
+  }, [canExpand, open]);
+
+  const link = (i: SideNavItem) => (
+    <a
+      href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined}
+      aria-label={rail ? (i.count !== undefined ? `${i.label}, ${i.count}` : i.label) : undefined}
+      onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } setOpen(false); }}
+      className={cn('eu-sidenav__item eu-type-ui-card-title', i.selected && 'is-selected')}
+    >
+      {i.icon ? <Icon name={i.icon} size={collapsed ? 'lg' : 'md'} /> : null}
+      {rail ? null : <span className="eu-sidenav__text">{i.label}</span>}
+      {i.count !== undefined ? <span aria-hidden={rail || undefined} className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
+    </a>
+  );
+
   return (
-    <nav aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', theme === 'dark' && 'eu-sidenav--dark', sticky && 'is-sticky')}>
-      {logo ? <div className="eu-sidenav__brand"><span className="eu-sidenav__tile"><BottleMark className="eu-sidenav__mark" /></span><span className="eu-sidenav__rule" /></div> : null}
-      <ul>
-        {items.map((i) => (
-          <li key={i.label}>
-            <a href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined} aria-label={collapsed ? (i.count !== undefined ? `${i.label}, ${i.count}` : i.label) : undefined} onClick={i.onClick ? (e) => { e.preventDefault(); i.onClick?.(); } : undefined} className={cn('eu-sidenav__item eu-type-ui-card-title', i.selected && 'is-selected')}>
-              {i.icon ? <Icon name={i.icon} size={collapsed ? 'lg' : 'md'} /> : null}
-              {collapsed ? null : <span className="eu-sidenav__text">{i.label}</span>}
-              {i.count !== undefined ? <span aria-hidden={collapsed || undefined} className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
-            </a>
-          </li>
-        ))}
-      </ul>
-      {footer ? <div className="eu-sidenav__foot">{footer}</div> : null}
+    <nav ref={nav} aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', rail && 'is-rail', open && 'is-open', theme === 'dark' && 'eu-sidenav--dark', sticky && 'is-sticky')}>
+      <div className="eu-sidenav__panel">
+        {logo ? (
+          <div className="eu-sidenav__brand">
+            <span className="eu-sidenav__tile"><BottleMark className="eu-sidenav__mark" /></span>
+            {!rail && logoLabel ? <span className="eu-type-desktop-h6 eu-sidenav__name">{logoLabel}</span> : null}
+          </div>
+        ) : null}
+        <ul>
+          {items.map((i) => <li key={i.label}>{rail ? <Tooltip content={i.label} position="right">{link(i)}</Tooltip> : link(i)}</li>)}
+        </ul>
+        {footer ? <div className="eu-sidenav__foot">{footer}</div> : null}
+        {canExpand ? (
+          <button
+            ref={toggle} type="button" aria-expanded={open} aria-keyshortcuts="["
+            aria-label={rail ? labels?.expand ?? 'Expand navigation' : undefined}
+            className="eu-sidenav__item eu-sidenav__toggle eu-type-ui-card-title" onClick={() => setOpen((o) => !o)}
+          >
+            <Icon name={open ? 'sidebar-collapse' : 'sidebar-expand'} size="lg" />
+            {rail ? null : <span className="eu-sidenav__text">{labels?.collapse ?? 'Collapse'}</span>}
+          </button>
+        ) : null}
+      </div>
     </nav>
   );
 }
