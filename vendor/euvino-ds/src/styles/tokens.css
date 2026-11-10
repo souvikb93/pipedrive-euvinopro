@@ -397,6 +397,7 @@
   --eu-border-static-ondark: #32384a; /* blue-gray/80 */ /* Dividers on dark surfaces. */
   --eu-foreground-link-default: #0072c5; /* blue/dark */ /* Text links such as email addresses and phone numbers in tables and lists. */
   --eu-foreground-link-hover: #000929; /* blue-gray/100 */ /* Text link on hover. */
+  --eu-background-highlight: #ffe47a; /* yellow/medium */ /* Marks the matched text in search results. */
 
   /* Hydra dimension (new names). */
   --eu-spacing-3xs: 4px; /* Space between and inside elements, on a 4px base. */

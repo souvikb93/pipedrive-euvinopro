@@ -3,12 +3,12 @@ import {
   Badge,
   Breadcrumbs,
   Button,
+  GlobalSearch,
   Header,
   Icon,
   IconButton,
   LinkButton,
   Menu,
-  SearchField,
   SegmentedControl,
   SideNav,
   Stack,
@@ -16,7 +16,8 @@ import {
   Text,
   UserMenu,
   VisuallyHidden,
-  type SearchResult,
+  type GlobalSearchCategory,
+  type GlobalSearchHit,
   type SideNavItem,
   type Status,
   type TableColumn,
@@ -69,24 +70,51 @@ function Linked({ links, note, scheme }: { links: string[]; note: string | null;
   );
 }
 
-function searchContacts(query: string): SearchResult[] {
+const CATEGORIES: Array<Omit<GlobalSearchCategory, 'count'>> = [
+  { id: 'all', label: 'Alle Kategorien', icon: 'view-grid' },
+  { id: 'deals', label: 'Deals', icon: 'coin' },
+  { id: 'leads', label: 'Leads', icon: 'star' },
+  { id: 'contacts', label: 'Kontakte', icon: 'user' },
+  { id: 'organisations', label: 'Organisationen', icon: 'building' },
+  { id: 'activities', label: 'Aktivitäten', icon: 'calendar' },
+  { id: 'products', label: 'Produkte', icon: 'box' },
+  { id: 'files', label: 'Dateien', icon: 'attachment' },
+  { id: 'knowledge', label: 'Knowledge Base', icon: 'book' },
+  { id: 'apps', label: 'Apps', icon: 'app-window' },
+];
+
+type Hit = GlobalSearchHit & { kind: 'contacts' | 'organisations'; lead: boolean };
+
+/** All hits for the text, organisations first, then people. */
+function searchAll(query: string): Hit[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
+  const has = (v: string) => v.toLowerCase().includes(q);
+  const orgs = [...new Set(contacts.map((c) => c.organisation))].flatMap((o): Hit[] => {
+    const members = contacts.filter((c) => c.organisation === o);
+    const viaEmail = members.filter((c) => has(c.email));
+    if (!has(o) && viaEmail.length === 0) return [];
+    const lines = [`${members.length} Kontaktpersonen`];
+    if (viaEmail.length) lines.push(`Gefundene Übereinstimmung in E-Mail: ${viaEmail.map((c) => c.email).join(', ')}`);
+    return [{ id: `org-${o}`, title: o, icon: 'building', lines, kind: 'organisations', lead: false }];
+  });
   const people = contacts
-    .filter((c) => [c.name, c.email, ...c.phones].some((v) => v.toLowerCase().includes(q)))
-    .slice(0, 5)
-    .map((c) => ({ id: c.id, label: c.name, description: `${c.organisation} · ${c.email}`, icon: 'user' as const, group: 'Kontakte' }));
-  const orgs = [...new Set(contacts.map((c) => c.organisation))]
-    .filter((o) => o.toLowerCase().includes(q))
-    .slice(0, 3)
-    .map((o) => ({
-      id: `org-${o}`,
-      label: o,
-      description: `${contacts.filter((c) => c.organisation === o).length} Kontaktpersonen`,
-      icon: 'group' as const,
-      group: 'Organisationen',
+    .filter((c) => [c.name, c.email, c.organisation, ...c.phones].some(has))
+    .map((c): Hit => ({
+      id: c.id,
+      title: c.name,
+      person: c.name,
+      lines: [`${c.organisation} · ${c.email}`, ...(c.phones.some(has) ? [c.phones.join(', ')] : [])],
+      kind: 'contacts',
+      lead: c.label === 'lead' || c.label === 'hot-lead',
     }));
-  return [...people, ...orgs];
+  return [...orgs, ...people];
+}
+
+function inCategory(hits: Hit[], id: string) {
+  if (id === 'all') return hits;
+  if (id === 'leads') return hits.filter((h) => h.lead);
+  return hits.filter((h) => h.kind === id);
 }
 
 export function App() {
@@ -95,15 +123,18 @@ export function App() {
   const [filter, setFilter] = React.useState<string | null>(null);
   const [selected, setSelected] = React.useState<string[]>([]);
 
-  const results = React.useMemo(() => searchContacts(query), [query]);
+  const [category, setCategory] = React.useState('all');
+  const hits = React.useMemo(() => searchAll(query), [query]);
+  const results = React.useMemo(() => inCategory(hits, category), [hits, category]);
+  const categories = CATEGORIES.map((c) => ({ ...c, count: query.trim() ? inCategory(hits, c.id).length : undefined }));
   const rows = React.useMemo(() => {
     if (!filter) return contacts;
     return contacts.filter((c) => c.id === filter || `org-${c.organisation}` === filter);
   }, [filter]);
 
-  const onSelect = (r: SearchResult) => {
-    setFilter(r.id);
-    setQuery(r.label);
+  const onSelect = (hit: GlobalSearchHit) => {
+    setFilter(hit.id);
+    setQuery(hit.title);
   };
   const onQuery = (v: string) => {
     setQuery(v);
@@ -161,15 +192,20 @@ export function App() {
             </>
           }
         >
-          <SearchField
-            label="Kontakte und Organisationen suchen"
+          <GlobalSearch
+            label="Kontakte, Organisationen und mehr suchen"
             placeholder="Search"
             value={query}
             onChange={onQuery}
+            categories={categories}
+            category={category}
+            onCategoryChange={setCategory}
             results={results}
             onSelect={onSelect}
-            emptyText="Keine Treffer"
-            labels={{ clear: 'Suche leeren', count: (n) => `${n} Vorschläge` }}
+            heading={category === 'all' ? 'Alle Suchergebnisse' : CATEGORIES.find((c) => c.id === category)?.label ?? ''}
+            emptyText="Keine Treffer in dieser Kategorie"
+            footer={<LinkButton variant="secondary" href="#">Schnellhilfe</LinkButton>}
+            labels={{ clear: 'Suche leeren', categories: 'Kategorien', count: (n) => `${n} Treffer` }}
           />
         </Header>
 

@@ -4,6 +4,7 @@ import {
   Filter, Globe, Group, HelpCircle, Home, InfoCircle, Link, Lock, LogOut, Mail, Menu, Minus, MoreHoriz, MoreVert, NavArrowDown,
   NavArrowLeft, NavArrowRight, NavArrowUp, Page, Plus, Refresh, Search, Settings, SidebarCollapse, SidebarExpand, Sort, Star,
   Trash, Upload, User, WarningCircle, WarningTriangle, Xmark,
+  AppWindow, Attachment, Book, Building, OpenNewWindow, Suitcase,
   BoxIso, ChatBubbleCheck, Coins, CreditCards, List, PageEdit, PrecisionTool, SendMail, Shop, StatsDownSquare, ViewGrid,
 } from 'iconoir-react';
 
@@ -18,6 +19,8 @@ const ICONS = {
   // Added for the CRM screens (Pipedrive New). Names match the Figma Iconoir layers.
   'box-iso': BoxIso, 'chat-bubble-check': ChatBubbleCheck, coin: Coins, 'credit-cards': CreditCards, list: List, 'page-edit': PageEdit,
   'precision-tool': PrecisionTool, 'send-mail': SendMail, shop: Shop, 'stats-down-square': StatsDownSquare, 'view-grid': ViewGrid,
+  // Search categories.
+  'app-window': AppWindow, attachment: Attachment, book: Book, building: Building, 'open-new-window': OpenNewWindow, suitcase: Suitcase,
 } as const;
 
 /** Every icon name the system ships. The Figma library's Iconoir set has more; add a name here when a screen needs it. */
