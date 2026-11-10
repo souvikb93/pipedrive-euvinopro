@@ -8,7 +8,7 @@ export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   if (parts[0] === 'organisationen' && parts[1]) return { name: 'organisation', id: parts[1] };
   if (parts[0] === 'organisationen') return { name: 'list', view: 'organisations' };
-  if (parts[0] === 'timeline') return { name: 'list', view: 'timeline' };
+  // Timeline has no page yet, so its address shows Kontakte.
   return { name: 'list', view: 'contacts' };
 }
 

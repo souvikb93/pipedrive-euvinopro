@@ -225,7 +225,8 @@ export function App() {
   const [route, go] = useRoute();
   const toast = useToast();
   const listView: View = route.name === 'list' ? route.view : 'organisations';
-  const onView = (v: string) => go(hrefFor.view(v as View));
+  // Timeline has no page yet: it looks like the other options, but choosing it keeps the current view.
+  const onView = (v: string) => { if (v !== 'timeline') go(hrefFor.view(v as View)); };
 
   // ---- Contacts (Kontakte and Timeline show this list, as before)
   const [people] = React.useState<Contact[]>(initialContacts);
