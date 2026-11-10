@@ -432,6 +432,22 @@
   --eu-size-field-lg: 400px; /* Width of a header search field. */
   --eu-blur-backdrop: 4px; /* Background blur behind overlays: modal, drawer, expanded side nav, search panel. */
 
+  /* Behaviour: motion durations, layers (z-index) and opacity. */
+  --eu-motion-duration-fast: 120ms;
+  --eu-motion-duration-medium: 160ms;
+  --eu-motion-duration-slow: 200ms;
+  --eu-motion-duration-spin: 800ms;
+  --eu-motion-duration-pulse: 1400ms;
+  --eu-opacity-pulse: 0.5;
+  --eu-layer-behind: -1;
+  --eu-layer-raised: 20;
+  --eu-layer-tooltip: 30;
+  --eu-layer-overlay: 40;
+  --eu-layer-nav-open: 45;
+  --eu-layer-nav-panel: 50;
+  --eu-layer-toast: 60;
+  --eu-layer-popover: 70;
+
   /* Icon Weight: default mode Regular. */
   --eu-icon-stroke-weight: 1.5; /* Icon line thickness. Regular 1.5, Selected 2. */
 }

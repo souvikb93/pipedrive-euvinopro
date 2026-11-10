@@ -143,10 +143,12 @@ export interface ActivityItemProps {
   footer?: React.ReactNode;
   /** Right of the subject: IconButtons and a Button such as Reply. */
   actions?: React.ReactNode;
+  /** Shows the whole preview text instead of one line. */
+  expanded?: boolean;
 }
 
 /** A rich event in a Timeline, such as an email or a call, shown as a card next to an icon marker. Figma: Email Activity Item. */
-export function ActivityItem({ icon, title, meta, children, footer, actions }: ActivityItemProps) {
+export function ActivityItem({ icon, title, meta, children, footer, actions, expanded }: ActivityItemProps) {
   return (
     <li className="eu-tl__item eu-activity">
       <span className="eu-activity__marker" aria-hidden="true"><Icon name={icon} size="sm" /></span>
@@ -156,7 +158,7 @@ export function ActivityItem({ icon, title, meta, children, footer, actions }: A
           {actions ? <div className="eu-activity__actions">{actions}</div> : null}
         </div>
         {meta ? <p className="eu-type-body-caption eu-activity__meta">{meta}</p> : null}
-        {children ? <p className="eu-type-body-small eu-activity__body">{children}</p> : null}
+        {children ? <p className={cn('eu-type-body-small eu-activity__body', expanded && 'is-expanded')}>{children}</p> : null}
         {footer ? <div className="eu-type-body-caption eu-activity__foot">{footer}</div> : null}
       </article>
     </li>
@@ -244,12 +246,14 @@ export function Card({ title, description, headerAction, footer, image, imageAlt
 export interface KeyValueListProps {
   /** Rows in order. Values can be text or a link. */
   items: Array<{ label: string; value: React.ReactNode }>;
+  /** `stacked`: label then value, wrapping (default). `columns`: labels in their own column, values beside them. */
+  layout?: 'stacked' | 'columns';
 }
 
 /** Label and value pairs, such as the details of a record. Figma: Key Value Pair. */
-export function KeyValueList({ items }: KeyValueListProps) {
+export function KeyValueList({ items, layout = 'stacked' }: KeyValueListProps) {
   return (
-    <dl className="eu-kv eu-type-body-small">
+    <dl className={cn('eu-kv eu-type-body-small', layout === 'columns' && 'eu-kv--columns')}>
       {items.map((i) => <div key={i.label} className="eu-kv__row"><dt className="eu-kv__label">{i.label}</dt><dd className="eu-kv__value">{i.value}</dd></div>)}
     </dl>
   );

@@ -6,6 +6,7 @@ import {
   Trash, Upload, User, WarningCircle, WarningTriangle, Xmark,
   AppWindow, Attachment, Book, Building, OpenNewWindow, Suitcase,
   ArrowSeparateVertical, ChatBubble, Phone, Reply, UserCircle,
+  Label, MapPin,
   BoxIso, ChatBubbleCheck, Coins, CreditCards, List, PageEdit, PrecisionTool, SendMail, Shop, StatsDownSquare, ViewGrid,
 } from 'iconoir-react';
 
@@ -36,6 +37,7 @@ const ICONS = {
   'app-window': AppWindow, attachment: Attachment, book: Book, building: Building, 'open-new-window': OpenNewWindow, suitcase: Suitcase,
   // Organisation detail.
   'arrow-separate-vertical': ArrowSeparateVertical, 'chat-bubble': ChatBubble, 'id-card': IdCard, phone: Phone, reply: Reply, 'user-circle': UserCircle,
+  label: Label, 'map-pin': MapPin,
 } as const;
 
 /** Every icon name the system ships. The Figma library's Iconoir set has more; add a name here when a screen needs it. */

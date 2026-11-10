@@ -398,15 +398,20 @@ export interface PageHeaderProps {
   breadcrumbs?: React.ReactNode;
   /** Primary action Button slot, on the right. */
   actions?: React.ReactNode;
+  /** `large` Heading H1 for top-level pages (default). `medium` Heading H4 for record pages, such as one organisation. */
+  size?: 'large' | 'medium';
+  /** Icon in a tile before the title, such as `building` for an organisation. */
+  icon?: IconName;
 }
 
 /** Page title, subtitle and primary action. Use one per page, at the top of the content. */
-export function PageHeader({ title, subtitle, breadcrumbs, actions }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, breadcrumbs, actions, size = 'large', icon }: PageHeaderProps) {
   return (
-    <div className="eu-pagehead">
+    <div className={cn('eu-pagehead', `eu-pagehead--${size}`)}>
       {breadcrumbs}
       <div className="eu-pagehead__row">
-        <div><h1 className="eu-type-desktop-h1 eu-pagehead__title">{title}</h1>{subtitle ? <p className="eu-type-body-large eu-check__desc eu-text">{subtitle}</p> : null}</div>
+        {icon ? <span className="eu-pagehead__icon" aria-hidden="true"><Icon name={icon} size="lg" /></span> : null}
+        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{title}</h1>{subtitle ? <p className="eu-type-body-large eu-check__desc eu-text">{subtitle}</p> : null}</div>
         {actions ? <div className="eu-pagehead__actions">{actions}</div> : null}
       </div>
     </div>
@@ -423,4 +428,47 @@ export interface FooterProps {
 /** Page footer with legal text and links. */
 export function Footer({ legal, links }: FooterProps) {
   return <footer className="eu-footer eu-type-ui-footer-link"><span>{legal}</span><nav aria-label="Legal">{links?.map((l) => <a key={l.label} href={l.href}>{l.label}</a>)}</nav></footer>;
+}
+
+export interface FilterTabItem {
+  /** Value reported by `onChange`. */
+  id: string;
+  /** Visible text. */
+  label: string;
+  /** Number shown after the label, such as entries in that filter. */
+  count?: number;
+  /** Shown but not a choice yet: quieter text, no hover, not focusable. */
+  inert?: boolean;
+}
+
+export interface FilterTabsProps {
+  /** Filters in order. The first is usually "All". */
+  items: FilterTabItem[];
+  /** Selected id. */
+  value: string;
+  /** Called with the chosen id. */
+  onChange: (id: string) => void;
+  /** Accessible name of the group, such as "Filter history". */
+  label: string;
+}
+
+/**
+ * Filter tabs (pill tabs): one choice from many filters for the list below, such as a history feed.
+ * Use SegmentedControl for 2 to 4 equal options, Chip for several filters at once, TopNav for views.
+ */
+export function FilterTabs({ items, value, onChange, label }: FilterTabsProps) {
+  return (
+    <div role="group" aria-label={label} className="eu-ftabs">
+      {items.map((i) => {
+        const text = i.count !== undefined ? `${i.label} (${i.count})` : i.label;
+        if (i.inert) return <span key={i.id} className="eu-ftabs__item is-inert eu-type-body-small">{text}</span>;
+        const on = i.id === value;
+        return (
+          <button key={i.id} type="button" aria-pressed={on} className={cn('eu-ftabs__item eu-type-body-small', on && 'is-selected')} onClick={() => onChange(i.id)}>
+            <span className="eu-ftabs__label" data-label={text}>{text}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
