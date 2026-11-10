@@ -22,17 +22,17 @@ import {
 import './app.css';
 import { contacts, TOTAL_CONTACTS, type Contact, type ContactLabel } from './data/contacts';
 
-// Figma: Side Nav, Content=Icon, Theme=Dark. "Data Transfer" is the selected item.
+// Figma: Side Nav, Content=Icon, Theme=Dark. Icons match the Figma layers; "Data Transfer" is the selected item.
 const NAV: SideNavItem[] = [
-  { label: 'Overview', icon: 'home', href: '#' },
-  { label: 'Product Catalog', icon: 'box', href: '#' },
-  { label: 'Requests', icon: 'page', href: '#' },
-  { label: 'Data Validation', icon: 'check-circle', href: '#' },
-  { label: 'Suppliers', icon: 'mail', href: '#', count: 1 },
-  { label: 'Trading Partners', icon: 'group', href: '#', count: 3 },
-  { label: 'Data Transfer', icon: 'cloud-sync', href: '#', selected: true },
-  { label: 'Reports', icon: 'download', href: '#' },
-  { label: 'Settings', icon: 'settings', href: '#' },
+  { label: 'Overview', icon: 'page-edit', href: '#' },
+  { label: 'Product Catalog', icon: 'precision-tool', href: '#' },
+  { label: 'Requests', icon: 'coin', href: '#' },
+  { label: 'Data Validation', icon: 'chat-bubble-check', href: '#' },
+  { label: 'Suppliers', icon: 'send-mail', href: '#', count: 1 },
+  { label: 'Trading Partners', icon: 'shop', href: '#', count: 3 },
+  { label: 'Data Transfer', icon: 'credit-cards', href: '#', selected: true },
+  { label: 'Reports', icon: 'stats-down-square', href: '#' },
+  { label: 'Settings', icon: 'box-iso', href: '#' },
 ];
 
 // Figma: Badge Size=Tiny, Style=Subtle. State per label.
@@ -45,8 +45,8 @@ const LABELS: Record<ContactLabel, { text: string; status: Status }> = {
 };
 
 const VIEWS = [
-  { value: 'contacts', label: 'Kontakte', icon: 'menu' as const },
-  { value: 'organisations', label: 'Organisationen', icon: 'group' as const },
+  { value: 'contacts', label: 'Kontakte', icon: 'list' as const },
+  { value: 'organisations', label: 'Organisationen', icon: 'view-grid' as const },
   { value: 'timeline', label: 'Timeline', icon: 'calendar' as const },
 ];
 
@@ -96,15 +96,15 @@ export function App() {
 
   return (
     <Stack direction="horizontal" gap="0" align="stretch" className="app-shell">
-      <SideNav label="Hauptnavigation" items={NAV} collapsed />
+      <SideNav label="Hauptnavigation" items={NAV} collapsed theme="dark" />
 
       <Stack gap="0" className="app-main">
         <Header
           size="large"
-          brand={<Breadcrumbs label="Pfad" items={[{ label: 'CRM', href: '#' }, { label: 'Kontakte' }]} />}
+          brand={<Breadcrumbs label="Pfad" items={[{ label: 'Kontakte', href: '#' }, { label: 'Kontakte' }]} />}
           actions={
             <>
-              <IconButton icon="box" label="Marktplatz" size="large" />
+              <IconButton icon="shop" label="Marktplatz" size="large" />
               <IconButton icon="help" label="Hilfe" size="large" />
               <Menu
                 label="Konto"
