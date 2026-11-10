@@ -351,7 +351,7 @@ export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(funct
   return (
     <button {...rest} ref={ref} type="button" aria-label={compact ? name : undefined} className={cn('eu-usermenu', className)}>
       <Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} />
-      {compact ? null : <span className="eu-usermenu__text"><span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>{subtitle ? <span className="eu-type-body-caption eu-check__desc">{subtitle}</span> : null}</span>}
+      {compact ? null : <span className="eu-usermenu__text"><span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>{subtitle ? <span className="eu-type-body-caption eu-usermenu__sub">{subtitle}</span> : null}</span>}
       <Icon name="nav-down" size={size === 'large' ? 'md' : 'sm'} />
     </button>
   );

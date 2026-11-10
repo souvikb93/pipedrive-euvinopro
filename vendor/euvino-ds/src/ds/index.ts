@@ -10,3 +10,4 @@ export { TopNav, SideNav, Breadcrumbs, Pagination, Steps, UserMenu, BrandLogo, H
 export { Avatar, AvatarGroup, List, ListItem, ProductThumbnail, EmptyState, Timeline, TimelineItem, Accordion, AccordionItem, Card, Table, type AvatarProps, type AvatarGroupProps, type ListProps, type ListItemProps, type ProductThumbnailProps, type EmptyStateProps, type TimelineProps, type TimelineItemProps, type AccordionProps, type AccordionItemProps, type CardProps, type TableProps, type TableColumn } from './display';
 export { BarChart, LineChart, DonutChart, Gauge, ProgressList, Stat, DataCard, type ChartDatum, type BarChartProps, type LineChartProps, type DonutChartProps, type GaugeProps, type ProgressListProps, type StatProps, type DataCardProps } from './charts';
 export { GlobalSearch, type GlobalSearchProps, type GlobalSearchCategory, type GlobalSearchHit } from './global-search';
+export { LabelPicker, type LabelPickerProps, type LabelOption } from './label-picker';

@@ -330,7 +330,9 @@ button { font-family: inherit; }
 .is-upcoming .eu-step__title { color: var(--eu-text-muted); }
 .eu-usermenu { display: inline-flex; align-items: center; gap: var(--eu-spacing-2-5); padding: var(--eu-spacing-1) var(--eu-spacing-2) var(--eu-spacing-1) var(--eu-spacing-1); background: none; border: 0; border-radius: var(--eu-radius-lg); color: var(--eu-text-primary); cursor: pointer; text-align: left; }
 .eu-usermenu:hover { background: var(--eu-bg-muted); }
-.eu-usermenu__text { display: inline-flex; flex-direction: column; }
+.eu-usermenu__text { display: inline-flex; flex-direction: column; white-space: nowrap; }
+.eu-usermenu__name { color: var(--eu-foreground-static-base); }
+.eu-usermenu__sub { color: var(--eu-foreground-static-neutral); }
 .eu-logo { font-family: var(--eu-font-heading); font-weight: 700; color: var(--eu-text-primary); }
 .eu-logo--inverse { color: var(--eu-text-inverse); }
 .eu-logo--small { font-size: 16px; } .eu-logo--medium { font-size: 20px; } .eu-logo--large { font-size: 24px; }
@@ -451,3 +453,21 @@ button { font-family: inherit; }
 .eu-gsearch__title { color: var(--eu-foreground-static-base); }
 .eu-gsearch__line { color: var(--eu-foreground-static-neutral); overflow-wrap: anywhere; }
 .eu-gsearch__mark { background: var(--eu-background-highlight); color: inherit; border-radius: var(--eu-radius-xs); }
+
+/* LabelPicker: badge in a table cell that changes in place. */
+.eu-labelpick { display: inline-flex; }
+.eu-labelpick__trigger { display: inline-flex; align-items: center; gap: var(--eu-spacing-2); padding: var(--eu-spacing-0-5); margin: calc(var(--eu-spacing-0-5) * -1); border: var(--eu-border-width-sm) solid transparent; border-radius: var(--eu-radius-default); background: transparent; cursor: pointer; }
+.eu-labelpick__trigger:hover, .eu-labelpick.is-open .eu-labelpick__trigger { border-color: var(--eu-border-strong); background: var(--eu-background-static-base); }
+.eu-labelpick.is-open .eu-labelpick__trigger { border-color: var(--eu-border-focus); }
+.eu-labelpick__edit { display: inline-flex; align-items: center; justify-content: center; width: var(--eu-size-control-xs); height: var(--eu-size-control-xs); border-radius: var(--eu-radius-default); color: var(--eu-foreground-icon-muted); opacity: 0; }
+.eu-labelpick__trigger:hover .eu-labelpick__edit, .eu-labelpick__trigger:focus-visible .eu-labelpick__edit, .eu-labelpick.is-open .eu-labelpick__edit, tr:hover .eu-labelpick__edit { opacity: 1; }
+.eu-labelpick__trigger:hover .eu-labelpick__edit { background: var(--eu-background-static-soft); color: var(--eu-foreground-icon-default); }
+.eu-labelpick__none { color: var(--eu-foreground-static-neutral); }
+.eu-labelpick__panel { position: fixed; z-index: 70; display: flex; flex-direction: column; width: var(--eu-size-field-lg); max-width: calc(100vw - var(--eu-spacing-8)); border-radius: var(--eu-radius-lg); background: var(--eu-background-static-base); box-shadow: var(--eu-shadow-lg); overflow: hidden; }
+.eu-labelpick__search { padding: var(--eu-spacing-3); border-bottom: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
+.eu-labelpick__list { list-style: none; margin: 0; padding: var(--eu-spacing-2); max-height: var(--eu-size-chart-lg); overflow-y: auto; }
+.eu-labelpick__opt { display: flex; align-items: center; justify-content: space-between; gap: var(--eu-spacing-3); padding: var(--eu-spacing-2) var(--eu-spacing-3); border-radius: var(--eu-radius-default); cursor: pointer; }
+.eu-labelpick__opt.is-active { background: var(--eu-background-static-soft); }
+.eu-labelpick__check { color: var(--eu-foreground-interactive-default); }
+.eu-labelpick__empty { padding: var(--eu-spacing-2) var(--eu-spacing-3); color: var(--eu-foreground-static-neutral); }
+.eu-labelpick__foot { padding: var(--eu-spacing-3); border-top: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }

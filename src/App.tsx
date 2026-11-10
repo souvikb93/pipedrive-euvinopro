@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
-  Badge,
   Breadcrumbs,
   Button,
   GlobalSearch,
   Header,
   Icon,
   IconButton,
+  LabelPicker,
   LinkButton,
   Menu,
   SegmentedControl,
@@ -18,6 +18,7 @@ import {
   VisuallyHidden,
   type GlobalSearchCategory,
   type GlobalSearchHit,
+  type LabelOption,
   type SideNavItem,
   type Status,
   type TableColumn,
@@ -144,17 +145,22 @@ export function App() {
   const hits = React.useMemo(() => searchAll(query), [query]);
   const results = React.useMemo(() => inCategory(hits, category), [hits, category]);
   const categories = CATEGORIES.map((c) => ({ ...c, count: query.trim() ? inCategory(hits, c.id).length : undefined }));
-  const [labelFilter, setLabelFilter] = React.useState<ContactLabel | null>(null);
+  const [labelOptions, setLabelOptions] = React.useState<LabelOption[]>(() =>
+    (Object.keys(LABELS) as ContactLabel[]).map((id) => ({ id, label: LABELS[id].text, status: LABELS[id].status })),
+  );
+  const [labelOf, setLabelOf] = React.useState<Record<string, string>>(() => Object.fromEntries(contacts.map((c) => [c.id, c.label])));
+  const labelName = (id: string | null) => labelOptions.find((o) => o.id === id)?.label ?? '';
+  const [labelFilter, setLabelFilter] = React.useState<string | null>(null);
   const [sort, setSort] = React.useState<SortKey | null>(null);
   const rows = React.useMemo(() => {
     let list = filter ? contacts.filter((c) => c.id === filter || `org-${c.organisation}` === filter) : contacts;
-    if (labelFilter) list = list.filter((c) => c.label === labelFilter);
+    if (labelFilter) list = list.filter((c) => labelOf[c.id] === labelFilter);
     if (sort) {
       const by = (c: Contact) => (sort === 'next' ? activityKey(c.nextActivity) : sort === 'organisation' ? c.organisation : c.name);
       list = [...list].sort((a, b) => by(a).localeCompare(by(b), 'de'));
     }
     return list;
-  }, [filter, labelFilter, sort]);
+  }, [filter, labelFilter, labelOf, sort]);
   const narrowed = Boolean(filter || labelFilter);
 
   const onSelect = (hit: GlobalSearchHit) => {
@@ -168,7 +174,20 @@ export function App() {
 
   const columns: Array<TableColumn<Contact>> = [
     { key: 'name', header: 'Name', overflow: 'truncate', render: (c) => <Text as="span" variant="card-title" tone="strong-body">{c.name}</Text> },
-    { key: 'label', header: 'Label', fit: true, render: (c) => <Badge size="tiny" status={LABELS[c.label].status}>{LABELS[c.label].text}</Badge> },
+    { key: 'label', header: 'Label', fit: true, render: (c) => (
+        <LabelPicker
+          label={`Label für ${c.name}`}
+          value={labelOf[c.id] ?? null}
+          options={labelOptions}
+          onChange={(id) => setLabelOf((m) => ({ ...m, [c.id]: id }))}
+          onCreate={(name) => {
+            const id = `custom-${name.toLowerCase().replace(/[^a-z0-9äöüß]+/g, '-')}`;
+            setLabelOptions((o) => [...o, { id, label: name, status: 'default' }]);
+            setLabelOf((m) => ({ ...m, [c.id]: id }));
+          }}
+          labels={{ search: 'Label suchen', add: 'Label hinzufügen', addNamed: (n) => `„${n}“ als Label hinzufügen`, empty: 'Kein Label gefunden', none: 'Kein Label' }}
+        />
+      ) },
     { key: 'organisation', header: 'Organisation', overflow: 'truncate', render: (c) => c.organisation },
     { key: 'email', header: 'E-Mail', overflow: 'truncate', render: (c) => <Linked links={[c.email]} note={c.emailType} scheme="mailto" /> },
     { key: 'phone', header: 'Telefonnummer', overflow: 'truncate', render: (c) => <Linked links={c.phones} note={c.phoneType} scheme="tel" /> },
@@ -220,7 +239,7 @@ export function App() {
               <IconButton icon="help" label="Hilfe" />
               <Menu
                 label="Konto"
-                trigger={<UserMenu name="Johannes" subtitle="EuvinoPRO" />}
+                trigger={<UserMenu name="Johannes Finzer" subtitle="EuvinoPRO GmbH" />}
                 items={[
                   { label: 'Profil', icon: 'user', onSelect: noop },
                   { label: 'Abmelden', icon: 'logout', onSelect: noop },
@@ -259,10 +278,10 @@ export function App() {
                 <Button variant="primary" icon="plus">Kontakte</Button>
                 <Menu
                   label="Nach Label filtern"
-                  trigger={<IconButton icon="filter" label={labelFilter ? `Filter einstellen (aktiv: ${LABELS[labelFilter].text})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(labelFilter)} />}
+                  trigger={<IconButton icon="filter" label={labelFilter ? `Filter einstellen (aktiv: ${labelName(labelFilter)})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(labelFilter)} />}
                   items={[
                     { label: 'Alle Labels', selected: labelFilter === null, onSelect: () => setLabelFilter(null) },
-                    ...(Object.keys(LABELS) as ContactLabel[]).map((k) => ({ label: LABELS[k].text, selected: labelFilter === k, onSelect: () => setLabelFilter(k) })),
+                    ...labelOptions.map((o) => ({ label: o.label, selected: labelFilter === o.id, onSelect: () => setLabelFilter(o.id) })),
                   ]}
                 />
                 <Menu
