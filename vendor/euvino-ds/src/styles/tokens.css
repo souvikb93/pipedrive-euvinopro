@@ -429,7 +429,14 @@
   --eu-size-sidebar-collapsed-lg: 80px; /* Icon rail with XL icons. */
   --eu-size-sidebar-collapsed-xl: 104px; /* Icon rail with XXL icons. */
   --eu-size-field-lg: 400px; /* Width of a header search field. */
+  --eu-blur-backdrop: 4px; /* Background blur behind overlays: modal, drawer, expanded side nav, search panel. */
+
+  /* Icon Weight: default mode Regular. */
+  --eu-icon-stroke-weight: 1.5; /* Icon line thickness. Regular 1.5, Selected 2. */
 }
+
+/* Variable modes. Put the class on an element to switch its subtree, as Figma does with a mode. */
+.eu-mode-icon-weight-selected { --eu-icon-stroke-weight: 2; }
 
 /* Text styles */
 .eu-type-desktop-h1 { font-family: var(--eu-font-heading); font-size: 32px; font-weight: 700; line-height: 1.5; }

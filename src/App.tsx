@@ -25,17 +25,25 @@ import {
 import './app.css';
 import { contacts, TOTAL_CONTACTS, type Contact, type ContactLabel } from './data/contacts';
 
-// Figma: Side Nav, Content=Icon, Theme=Dark, Logo on. Icons and counts as in the frame.
+// Figma: Side Nav, Content=Icon, Theme=Dark, Logo on. Icons in the Figma order, German labels.
+// Order is priority: when the window is short, items move into Mehr from the end. Kontakte (this page) stays visible.
 const NAV: SideNavItem[] = [
-  { label: 'Overview', icon: 'page-edit', href: '#' },
-  { label: 'Product Catalog', icon: 'precision-tool', href: '#' },
-  { label: 'Requests', icon: 'coin', href: '#' },
-  { label: 'Data Validation', icon: 'chat-bubble-check', href: '#' },
-  { label: 'Suppliers', icon: 'send-mail', href: '#', count: 1 },
-  { label: 'Trading Partners', icon: 'shop', href: '#', count: 3, countStatus: 'error' },
-  { label: 'Data Transfer', icon: 'credit-cards', href: '#', selected: true },
-  { label: 'Reports', icon: 'stats-down-square', href: '#' },
-  { label: 'Settings', icon: 'box-iso', href: '#' },
+  { label: 'Lead-Posteingang', icon: 'page-edit', href: '#' },
+  { label: 'Deals', icon: 'precision-tool', href: '#' },
+  { label: 'Umsatzprognose', icon: 'coin', href: '#' },
+  { label: 'Aktivitäten', icon: 'chat-bubble-check', href: '#' },
+  { label: 'E-Mail', icon: 'send-mail', href: '#', count: 1 },
+  { label: 'Kalender', icon: 'shop', href: '#', count: 3, countStatus: 'error' },
+  { label: 'Kontakte', icon: 'credit-cards', href: '#', selected: true },
+  { label: 'Einblicke', icon: 'stats-down-square', href: '#' },
+  { label: 'Produkte', icon: 'box-iso', href: '#' },
+];
+
+// Always in the Mehr menu (placeholders until the real list is known).
+const MORE: SideNavItem[] = [
+  { label: 'Projekte', icon: 'page', href: '#' },
+  { label: 'Kampagnen', icon: 'globe', href: '#' },
+  { label: 'Einstellungen', icon: 'settings', href: '#' },
 ];
 
 // Figma: Badge Size=Tiny, Style=Subtle. State per label.
@@ -175,11 +183,13 @@ export function App() {
         items={NAV}
         collapsed
         expandable
+        overflow
+        moreItems={MORE}
         theme="dark"
         logo
         logoLabel="EuvinoPRO"
         sticky
-        labels={{ expand: 'Navigation ausklappen', collapse: 'Einklappen' }}
+        labels={{ expand: 'Navigation ausklappen', collapse: 'Einklappen', more: 'Mehr' }}
       />
 
       <Stack gap="0" className="app-main">

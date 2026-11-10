@@ -50,7 +50,7 @@ export interface SideNavItem {
 }
 
 export interface SideNavProps {
-  /** Items in order. */
+  /** Items in order of priority: the first ones stay visible longest. */
   items: SideNavItem[];
   /** Accessible name. */
   label: string;
@@ -66,22 +66,66 @@ export interface SideNavProps {
   sticky?: boolean;
   /**
    * With `collapsed`: a toggle at the bottom (and the `[` key) slides the nav out over the page to show names and counts.
-   * Choosing an item, clicking outside or Escape folds it back. The page does not move.
+   * A modal-style layer dims and blurs the page; choosing an item, clicking the layer or Escape folds it back. The page does not move.
    */
   expandable?: boolean;
-  /** Names of the toggle. Pass them in the page's language. */
-  labels?: { expand?: string; collapse?: string };
+  /**
+   * Adds a More (⋯) button as the last item. Items that do not fit the height move into its menu from the end of the
+   * list, and come back when there is room. The selected item always stays visible. Use with `sticky`.
+   */
+  overflow?: boolean;
+  /** Items that always sit in the More menu, after any that moved there. */
+  moreItems?: SideNavItem[];
+  /** Names of the built-in parts. Pass them in the page's language. */
+  labels?: { expand?: string; collapse?: string; more?: string };
   /** Footer slot, such as a help card. */
   footer?: React.ReactNode;
 }
 
-/** Left navigation between app sections, 240 wide or a 72 rail when collapsed. A collapsed rail can be `expandable`. */
-export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLabel, sticky, expandable, labels, footer }: SideNavProps) {
+function useFit(list: React.RefObject<HTMLUListElement | null>, enabled: boolean, total: number) {
+  const [fit, setFit] = React.useState(total);
+  React.useLayoutEffect(() => {
+    const ul = list.current;
+    if (!enabled || !ul || typeof ResizeObserver === 'undefined') { setFit(total); return; }
+    const measure = () => {
+      const first = ul.querySelector(':scope > li');
+      if (!first) return;
+      const gap = parseFloat(getComputedStyle(ul).rowGap) || 0;
+      const slot = first.getBoundingClientRect().height + gap;
+      if (!slot) return;
+      const slots = Math.floor((ul.clientHeight + gap) / slot);
+      setFit(Math.max(1, Math.min(total, slots - 1)));
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(ul);
+    measure();
+    return () => ro.disconnect();
+  }, [list, enabled, total]);
+  return fit;
+}
+
+/** Left navigation between app sections, 240 wide or a 72 rail when collapsed. A collapsed rail can be `expandable`; with `overflow` it never runs out of room. */
+export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLabel, sticky, expandable, overflow, moreItems, labels, footer }: SideNavProps) {
   const [open, setOpen] = React.useState(false);
+  const [menu, setMenu] = React.useState(false);
+  const [active, setActive] = React.useState(0);
   const nav = React.useRef<HTMLElement>(null);
   const toggle = React.useRef<HTMLButtonElement>(null);
+  const more = React.useRef<HTMLButtonElement>(null);
+  const menuList = React.useRef<HTMLUListElement>(null);
+  const refocus = React.useRef(false);
+  const list = React.useRef<HTMLUListElement>(null);
   const canExpand = Boolean(collapsed && expandable);
   const rail = Boolean(collapsed && !open);
+  const hasMore = Boolean(overflow || moreItems?.length);
+
+  const fit = useFit(list, Boolean(overflow), items.length);
+  let shown = items.slice(0, fit);
+  const sel = items.findIndex((i) => i.selected);
+  if (sel >= fit && fit > 0) shown = [...items.slice(0, fit - 1), items[sel]];
+  const hidden = items.filter((i) => !shown.includes(i));
+  const menuItems = [...hidden, ...(moreItems ?? [])];
+  const moreSelected = menuItems.some((i) => i.selected);
 
   React.useEffect(() => {
     if (!canExpand) return;
@@ -97,12 +141,39 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
     return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown); };
   }, [canExpand, open]);
 
+  React.useEffect(() => {
+    if (!menu) {
+      if (refocus.current) { refocus.current = false; more.current?.focus(); }
+      return;
+    }
+    (menuList.current?.querySelectorAll('a')[0] as HTMLElement | undefined)?.focus();
+    setActive(0);
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (!menuList.current?.contains(t) && !more.current?.contains(t)) setMenu(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [menu]);
+
+  const done = () => { setMenu(false); setOpen(false); };
+  const onMenuKey = (e: React.KeyboardEvent) => {
+    const links = Array.from(menuList.current?.querySelectorAll('a') ?? []) as HTMLElement[];
+    const move = (n: number) => { e.preventDefault(); const i = (n + links.length) % links.length; setActive(i); links[i]?.focus(); };
+    if (e.key === 'ArrowDown') move(active + 1);
+    else if (e.key === 'ArrowUp') move(active - 1);
+    else if (e.key === 'Home') move(0);
+    else if (e.key === 'End') move(links.length - 1);
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); refocus.current = true; setMenu(false); }
+    else if (e.key === 'Tab') setMenu(false);
+  };
+
   const link = (i: SideNavItem) => (
     <a
       href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined}
       aria-label={rail ? (i.count !== undefined ? `${i.label}, ${i.count}` : i.label) : undefined}
-      onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } setOpen(false); }}
-      className={cn('eu-sidenav__item eu-type-ui-card-title', i.selected && 'is-selected')}
+      onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } done(); }}
+      className={cn('eu-sidenav__item', i.selected && 'is-selected eu-mode-icon-weight-selected')}
     >
       {i.icon ? <Icon name={i.icon} size={collapsed ? 'lg' : 'md'} /> : null}
       {rail ? null : <span className="eu-sidenav__text">{i.label}</span>}
@@ -110,8 +181,23 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
     </a>
   );
 
+  const moreLabel = labels?.more ?? 'More';
+  const hiddenCount = menuItems.reduce((n, i) => n + (i.count ?? 0), 0);
+  const moreButton = (
+    <button
+      ref={more} type="button" aria-haspopup="menu" aria-expanded={menu} aria-label={rail ? moreLabel : undefined}
+      className={cn('eu-sidenav__item', (menu || moreSelected) && 'is-selected', moreSelected && 'eu-mode-icon-weight-selected')}
+      onClick={() => setMenu((m) => !m)}
+    >
+      <Icon name="more-horiz" size={collapsed ? 'lg' : 'md'} />
+      {rail ? null : <span className="eu-sidenav__text">{moreLabel}</span>}
+      {hiddenCount > 0 ? <span aria-hidden="true" className={cn('eu-sidenav__count', menuItems.some((i) => i.countStatus === 'error' && i.count) && 'is-error')}>{hiddenCount}</span> : null}
+    </button>
+  );
+
   return (
     <nav ref={nav} aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', rail && 'is-rail', open && 'is-open', theme === 'dark' && 'eu-sidenav--dark', sticky && 'is-sticky')}>
+      {open ? <div className="eu-sidenav__scrim" aria-hidden="true" onMouseDown={() => setOpen(false)} /> : null}
       <div className="eu-sidenav__panel">
         {logo ? (
           <div className="eu-sidenav__brand">
@@ -119,15 +205,37 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
             {!rail && logoLabel ? <span className="eu-type-desktop-h6 eu-sidenav__name">{logoLabel}</span> : null}
           </div>
         ) : null}
-        <ul>
-          {items.map((i) => <li key={i.label}>{rail ? <Tooltip content={i.label} position="right">{link(i)}</Tooltip> : link(i)}</li>)}
+        <ul ref={list} className={cn('eu-sidenav__list', overflow && 'is-fitted')}>
+          {shown.map((i) => <li key={i.label}>{rail ? <Tooltip content={i.label} position="right">{link(i)}</Tooltip> : link(i)}</li>)}
+          {hasMore && menuItems.length > 0 ? (
+            <li className="eu-sidenav__more">
+              {rail && !menu ? <Tooltip content={moreLabel} position="right">{moreButton}</Tooltip> : moreButton}
+              {menu ? (
+                <ul ref={menuList} role="menu" aria-label={moreLabel} className="eu-menu eu-sidenav__menu" onKeyDown={onMenuKey}>
+                  {menuItems.map((i, n) => (
+                    <li key={i.label} role="none">
+                      <a
+                        role="menuitem" href={i.href ?? '#'} tabIndex={n === active ? 0 : -1} aria-current={i.selected ? 'page' : undefined}
+                        className={cn('eu-menu__item eu-type-body-small', i.selected && 'is-selected')}
+                        onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } done(); }}
+                      >
+                        {i.icon ? <Icon name={i.icon} size="md" /> : null}
+                        <span className="eu-sidenav__text">{i.label}</span>
+                        {i.count !== undefined ? <span className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </li>
+          ) : null}
         </ul>
         {footer ? <div className="eu-sidenav__foot">{footer}</div> : null}
         {canExpand ? (
           <button
             ref={toggle} type="button" aria-expanded={open} aria-keyshortcuts="["
             aria-label={rail ? labels?.expand ?? 'Expand navigation' : undefined}
-            className="eu-sidenav__item eu-sidenav__toggle eu-type-ui-card-title" onClick={() => setOpen((o) => !o)}
+            className="eu-sidenav__item eu-sidenav__toggle" onClick={() => setOpen((o) => !o)}
           >
             <Icon name={open ? 'sidebar-collapse' : 'sidebar-expand'} size="lg" />
             {rail ? null : <span className="eu-sidenav__text">{labels?.collapse ?? 'Collapse'}</span>}
