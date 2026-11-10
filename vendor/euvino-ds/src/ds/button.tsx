@@ -107,9 +107,9 @@ export function SegmentedControl({ options, value, onChange, label, className }:
   return (
     <div role="radiogroup" aria-label={label} className={cn('eu-seg', className)}>
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item eu-type-body-small', o.value === value && 'is-selected')} onClick={() => onChange(o.value)}>
+        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item eu-type-body-small', o.value === value && 'is-selected eu-mode-icon-weight-selected')} onClick={() => onChange(o.value)}>
           {o.icon ? <Icon name={o.icon} size="sm" /> : null}
-          {o.label}
+          <span className="eu-seg__label" data-label={o.label}>{o.label}</span>
         </button>
       ))}
     </div>
