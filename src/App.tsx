@@ -4,6 +4,7 @@ import {
   Breadcrumbs,
   Button,
   Header,
+  Icon,
   IconButton,
   LinkButton,
   Menu,
@@ -121,7 +122,7 @@ export function App() {
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (c) => c.owner },
     {
       key: 'actions', fit: true,
-      header: <IconButton icon="settings" label="Spalten anpassen" size="tiny" />,
+      header: <Icon name="settings" size="sm" />,
       render: (c) => (
         <Menu
           label={`Aktionen für ${c.name}`}

@@ -99,7 +99,7 @@ export interface SegmentedControlProps {
   className?: string;
 }
 
-/** Switches the display of the same content in place, such as List and Grid. Not for page navigation (TopNav). */
+/** Switches the display of the same content in place, such as List and Grid. Not for page navigation (TopNav). Segments share the width equally, sized to the longest label. */
 export function SegmentedControl({ options, value, onChange, label, className }: SegmentedControlProps) {
   return (
     <div role="radiogroup" aria-label={label} className={cn('eu-seg', className)}>

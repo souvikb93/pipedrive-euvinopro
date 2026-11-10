@@ -234,7 +234,7 @@ export interface TableProps<T> {
   labels?: { selectAll?: string; selectRow?: (row: T) => string };
 }
 
-/** Table only: toolbars, filters and Pagination sit around it. Header checkbox selects all. Selected rows get the accent tint. */
+/** Table only: toolbars, filters and Pagination sit around it. Rows tint on hover. Header checkbox selects all. Selected rows get the accent tint. */
 export function Table<T>({ columns, rows, rowKey, caption, selected, onSelectedChange, loading, empty, labels }: TableProps<T>) {
   const selectable = !!onSelectedChange;
   const keys = rows.map(rowKey);
