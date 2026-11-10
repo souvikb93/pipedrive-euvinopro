@@ -14,6 +14,8 @@ export interface TopNavItem {
   onClick?: () => void;
   /** The current view; sets `aria-current`. */
   selected?: boolean;
+  /** Icon before the text. */
+  icon?: IconName;
 }
 
 export interface TopNavProps {
@@ -27,7 +29,7 @@ export interface TopNavProps {
 export function TopNav({ items, label }: TopNavProps) {
   return (
     <nav aria-label={label} className="eu-topnav">
-      {items.map((i) => <a key={i.label} href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined} onClick={i.onClick ? (e) => { e.preventDefault(); i.onClick?.(); } : undefined} className={cn('eu-topnav__item eu-type-ui-nav-link-mobile', i.selected && 'is-selected')}>{i.label}</a>)}
+      {items.map((i) => <a key={i.label} href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined} onClick={i.onClick ? (e) => { e.preventDefault(); i.onClick?.(); } : undefined} className={cn('eu-topnav__item eu-type-ui-nav-link-mobile', i.selected && 'is-selected', i.selected && 'eu-mode-icon-weight-selected')}>{i.icon ? <Icon name={i.icon} size="md" /> : null}{i.label}</a>)}
     </nav>
   );
 }
@@ -182,7 +184,6 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
   );
 
   const moreLabel = labels?.more ?? 'More';
-  const hiddenCount = menuItems.reduce((n, i) => n + (i.count ?? 0), 0);
   const moreButton = (
     <button
       ref={more} type="button" aria-haspopup="menu" aria-expanded={menu} aria-label={rail ? moreLabel : undefined}
@@ -191,7 +192,6 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
     >
       <Icon name="more-horiz" size={collapsed ? 'lg' : 'md'} />
       {rail ? null : <span className="eu-sidenav__text">{moreLabel}</span>}
-      {hiddenCount > 0 ? <span aria-hidden="true" className={cn('eu-sidenav__count', menuItems.some((i) => i.countStatus === 'error' && i.count) && 'is-error')}>{hiddenCount}</span> : null}
     </button>
   );
 
@@ -406,7 +406,7 @@ export function PageHeader({ title, subtitle, breadcrumbs, actions }: PageHeader
     <div className="eu-pagehead">
       {breadcrumbs}
       <div className="eu-pagehead__row">
-        <div><h1 className="eu-type-mobile-h4 eu-pagehead__title">{title}</h1>{subtitle ? <p className="eu-type-body-small eu-check__desc eu-text">{subtitle}</p> : null}</div>
+        <div><h1 className="eu-type-desktop-h1 eu-pagehead__title">{title}</h1>{subtitle ? <p className="eu-type-body-large eu-check__desc eu-text">{subtitle}</p> : null}</div>
         {actions ? <div className="eu-pagehead__actions">{actions}</div> : null}
       </div>
     </div>

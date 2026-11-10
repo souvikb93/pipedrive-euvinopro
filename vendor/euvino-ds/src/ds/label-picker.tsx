@@ -55,7 +55,9 @@ export function LabelPicker({ value, options, onChange, onCreate, label, labels 
     const h = panel.current?.offsetHeight ?? 0;
     const below = window.innerHeight - r.bottom;
     const up = h > 0 && below < h + gap && r.top > below;
-    setPos(up ? { bottom: window.innerHeight - r.top + gap, left: r.left, minWidth: r.width } : { top: r.bottom + gap, left: r.left, minWidth: r.width });
+    const w = panel.current?.offsetWidth ?? 0;
+    const left = Math.max(gap, Math.min(r.left, window.innerWidth - w - gap));
+    setPos(up ? { bottom: window.innerHeight - r.top + gap, left, minWidth: r.width } : { top: r.bottom + gap, left, minWidth: r.width });
   }, []);
 
   React.useLayoutEffect(() => { if (open) place(); }, [open, place, shown.length]);

@@ -130,6 +130,39 @@ export function Timeline({ children, label }: TimelineProps) {
   return <ol aria-label={label} className="eu-tl">{children}</ol>;
 }
 
+export interface ActivityItemProps {
+  /** Marker icon, such as `mail` for an email or `phone` for a call. */
+  icon: IconName;
+  /** Subject line. */
+  title: React.ReactNode;
+  /** Line under the subject: date, sender and recipients. */
+  meta?: React.ReactNode;
+  /** Preview text. One line, ends with an ellipsis. */
+  children?: React.ReactNode;
+  /** Bottom row: people, organisation, links. */
+  footer?: React.ReactNode;
+  /** Right of the subject: IconButtons and a Button such as Reply. */
+  actions?: React.ReactNode;
+}
+
+/** A rich event in a Timeline, such as an email or a call, shown as a card next to an icon marker. Figma: Email Activity Item. */
+export function ActivityItem({ icon, title, meta, children, footer, actions }: ActivityItemProps) {
+  return (
+    <li className="eu-tl__item eu-activity">
+      <span className="eu-activity__marker" aria-hidden="true"><Icon name={icon} size="sm" /></span>
+      <article className="eu-activity__card">
+        <div className="eu-activity__head">
+          <h3 className="eu-type-ui-card-title eu-activity__title">{title}</h3>
+          {actions ? <div className="eu-activity__actions">{actions}</div> : null}
+        </div>
+        {meta ? <p className="eu-type-body-caption eu-activity__meta">{meta}</p> : null}
+        {children ? <p className="eu-type-body-small eu-activity__body">{children}</p> : null}
+        {footer ? <div className="eu-type-body-caption eu-activity__foot">{footer}</div> : null}
+      </article>
+    </li>
+  );
+}
+
 export interface AccordionItemProps {
   /** Row title. */
   title: string;
@@ -180,17 +213,45 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'titl
   padding?: 'medium' | 'large';
   /** Element to render. */
   as?: React.ElementType;
+  /** Adds a chevron that shows and hides the content. Needs a `title`. */
+  collapsible?: boolean;
+  /** With `collapsible`: starts open. Defaults to true. */
+  defaultOpen?: boolean;
+  /** With `collapsible`: accessible name of the chevron, such as "Show or hide Details". Defaults to the title. */
+  toggleLabel?: string;
 }
 
 /** The one surface for grouped content: white, radius/xl, soft shadow. The Figma Card/* layouts are all this with different content. Do not stack cards inside cards. */
-export function Card({ title, description, headerAction, footer, image, imageAlt = '', padding = 'large', as: As = 'section', className, children, ...rest }: CardProps) {
+export function Card({ title, description, headerAction, footer, image, imageAlt = '', padding = 'large', as: As = 'section', collapsible, defaultOpen = true, toggleLabel, className, children, ...rest }: CardProps) {
+  const [open, setOpen] = React.useState(defaultOpen);
+  const bodyId = React.useId();
+  const shown = !collapsible || open;
+  const toggle = collapsible ? (
+    <button type="button" className="eu-card__toggle" aria-expanded={open} aria-controls={bodyId} aria-label={toggleLabel ?? (typeof title === 'string' ? title : 'Show or hide')} onClick={() => setOpen((o) => !o)}>
+      <Icon name={open ? 'nav-up' : 'nav-down'} size="md" />
+    </button>
+  ) : null;
   return (
-    <As {...rest} className={cn('eu-card', `eu-card--${padding}`, className)}>
+    <As {...rest} className={cn('eu-card', `eu-card--${padding}`, collapsible && !open && 'is-collapsed', className)}>
       {image ? <img src={image} alt={imageAlt} className="eu-card__img" /> : null}
-      {title || headerAction ? <div className="eu-card__head"><div>{title ? <h2 className="eu-type-ui-label eu-alert__title">{title}</h2> : null}{description ? <p className="eu-type-body-small eu-check__desc eu-text">{description}</p> : null}</div>{headerAction}</div> : null}
-      {children}
-      {footer ? <div className="eu-card__foot">{footer}</div> : null}
+      {title || headerAction || toggle ? <div className="eu-card__head"><div>{title ? <h2 className="eu-type-ui-label eu-alert__title">{title}</h2> : null}{description ? <p className="eu-type-body-small eu-check__desc eu-text">{description}</p> : null}</div>{headerAction || toggle ? <div className="eu-card__actions">{headerAction}{toggle}</div> : null}</div> : null}
+      {shown ? (collapsible ? <div id={bodyId} className="eu-card__body">{children}</div> : children) : null}
+      {shown && footer ? <div className="eu-card__foot">{footer}</div> : null}
     </As>
+  );
+}
+
+export interface KeyValueListProps {
+  /** Rows in order. Values can be text or a link. */
+  items: Array<{ label: string; value: React.ReactNode }>;
+}
+
+/** Label and value pairs, such as the details of a record. Figma: Key Value Pair. */
+export function KeyValueList({ items }: KeyValueListProps) {
+  return (
+    <dl className="eu-kv eu-type-body-small">
+      {items.map((i) => <div key={i.label} className="eu-kv__row"><dt className="eu-kv__label">{i.label}</dt><dd className="eu-kv__value">{i.value}</dd></div>)}
+    </dl>
   );
 }
 

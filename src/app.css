@@ -14,3 +14,18 @@
 .app-content td:last-child {
   overflow: visible;
 }
+
+/* Organisation detail: fixed side column (size/rail) next to a flexible main column; wraps when narrow. */
+.detail-side {
+  flex: 0 0 var(--eu-size-rail);
+  max-width: 100%;
+}
+.detail-main {
+  flex: 1 1 var(--eu-size-dialog-md);
+  min-width: 0;
+}
+.detail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
