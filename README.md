@@ -8,10 +8,16 @@ The "Kontakte — EuvinoPRO" frame from the Figma file **Pipedrive New** (`I3W13
 
 ## Run
 
-Needs the design system checked out next to this repo (`../euvinopro-ds`, repo `souvikb93/winpro-ds`).
-
 ```bash
 npm install
 npm run dev        # http://localhost:4340
-npm run ds:check   # DS lint on src/App.tsx
+```
+
+## Design system copy
+
+`vendor/euvino-ds` is a copy of `@euvino/ds` so the app builds on its own (Vercel, fresh clones). Do not edit it. Change the design system in `../euvinopro-ds` (repo `souvikb93/winpro-ds`), then:
+
+```bash
+npm run sync-ds    # copy ../euvinopro-ds into vendor/ and reinstall
+npm run ds:check   # DS lint on src/App.tsx (needs ../euvinopro-ds)
 ```

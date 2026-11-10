@@ -1,0 +1,20 @@
+{
+  "name": "@euvino/ds",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "EuvinoPRO design system: React components and tokens generated from the Figma library. Vendored copy, do not edit: change ../euvinopro-ds and run npm run sync-ds.",
+  "exports": {
+    ".": "./src/ds/index.ts",
+    "./tokens.css": "./src/styles/tokens.css"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@fontsource/roboto": "^5.1.0",
+    "@fontsource/roboto-condensed": "^5.1.0",
+    "iconoir-react": "^7.10.0"
+  }
+}
