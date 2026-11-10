@@ -1,0 +1,22 @@
+/* Screen-level layout only. Every value is an EuvinoPRO token (var(--eu-*)) or a CSS keyword. */
+.contacts-table td {
+  white-space: nowrap;
+  max-width: var(--eu-size-column-lg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-block: var(--eu-spacing-2);
+}
+.app-main {
+  flex: 1;
+  min-width: 0;
+}
+.app-shell {
+  min-height: 100vh;
+}
+.contacts-table th {
+  white-space: normal;
+}
+/* The row actions Menu pops out of its cell, so that column must not clip. */
+.contacts-table td:last-child {
+  overflow: visible;
+}
