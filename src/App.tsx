@@ -125,6 +125,15 @@ function inCategory(hits: Hit[], id: string) {
   return hits.filter((h) => h.kind === id);
 }
 
+type SortKey = 'name' | 'organisation' | 'next';
+const SORTS: Array<{ key: SortKey; label: string }> = [
+  { key: 'name', label: 'Name (A–Z)' },
+  { key: 'organisation', label: 'Organisation (A–Z)' },
+  { key: 'next', label: 'Nächste Aktivität' },
+];
+/** "11.11.2026 · 09:00" as a sortable string. */
+const activityKey = (v: string) => v.replace(/^(\d{2})\.(\d{2})\.(\d{4}) · (.*)$/, '$3$2$1 $4');
+
 export function App() {
   const [view, setView] = React.useState('contacts');
   const [query, setQuery] = React.useState('');
@@ -135,10 +144,18 @@ export function App() {
   const hits = React.useMemo(() => searchAll(query), [query]);
   const results = React.useMemo(() => inCategory(hits, category), [hits, category]);
   const categories = CATEGORIES.map((c) => ({ ...c, count: query.trim() ? inCategory(hits, c.id).length : undefined }));
+  const [labelFilter, setLabelFilter] = React.useState<ContactLabel | null>(null);
+  const [sort, setSort] = React.useState<SortKey | null>(null);
   const rows = React.useMemo(() => {
-    if (!filter) return contacts;
-    return contacts.filter((c) => c.id === filter || `org-${c.organisation}` === filter);
-  }, [filter]);
+    let list = filter ? contacts.filter((c) => c.id === filter || `org-${c.organisation}` === filter) : contacts;
+    if (labelFilter) list = list.filter((c) => c.label === labelFilter);
+    if (sort) {
+      const by = (c: Contact) => (sort === 'next' ? activityKey(c.nextActivity) : sort === 'organisation' ? c.organisation : c.name);
+      list = [...list].sort((a, b) => by(a).localeCompare(by(b), 'de'));
+    }
+    return list;
+  }, [filter, labelFilter, sort]);
+  const narrowed = Boolean(filter || labelFilter);
 
   const onSelect = (hit: GlobalSearchHit) => {
     setFilter(hit.id);
@@ -203,7 +220,7 @@ export function App() {
               <IconButton icon="help" label="Hilfe" />
               <Menu
                 label="Konto"
-                trigger={<UserMenu name="Anna" compact />}
+                trigger={<UserMenu name="Johannes" subtitle="EuvinoPRO" />}
                 items={[
                   { label: 'Profil', icon: 'user', onSelect: noop },
                   { label: 'Abmelden', icon: 'logout', onSelect: noop },
@@ -235,11 +252,28 @@ export function App() {
           </VisuallyHidden>
 
           <Stack direction="horizontal" gap="4" justify="between" align="center" wrap>
-            <SegmentedControl label="Ansicht" value={view} onChange={setView} options={VIEWS} />
             <Stack direction="horizontal" gap="4" align="center" wrap>
-              <Text variant="body-small" tone="body">{filter ? `${rows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen</Text>
-              <Button variant="secondary" icon="sort">Filter einstellen</Button>
               <Button variant="primary" icon="plus">Kontakte</Button>
+              <SegmentedControl label="Ansicht" value={view} onChange={setView} options={VIEWS} />
+            </Stack>
+            <Stack direction="horizontal" gap="2" align="center" wrap>
+              <Text variant="body-small" tone="body">{narrowed ? `${rows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen</Text>
+              <Menu
+                label="Nach Label filtern"
+                trigger={<IconButton icon="filter" label={labelFilter ? `Filter einstellen (aktiv: ${LABELS[labelFilter].text})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(labelFilter)} />}
+                items={[
+                  { label: 'Alle Labels', selected: labelFilter === null, onSelect: () => setLabelFilter(null) },
+                  ...(Object.keys(LABELS) as ContactLabel[]).map((k) => ({ label: LABELS[k].text, selected: labelFilter === k, onSelect: () => setLabelFilter(k) })),
+                ]}
+              />
+              <Menu
+                label="Sortieren"
+                trigger={<IconButton icon="sort" label={sort ? `Sortieren (${SORTS.find((o) => o.key === sort)?.label})` : 'Sortieren'} variant="secondary" indicator={Boolean(sort)} />}
+                items={[
+                  { label: 'Standard', selected: sort === null, onSelect: () => setSort(null) },
+                  ...SORTS.map((o) => ({ label: o.label, selected: sort === o.key, onSelect: () => setSort(o.key) })),
+                ]}
+              />
             </Stack>
           </Stack>
 

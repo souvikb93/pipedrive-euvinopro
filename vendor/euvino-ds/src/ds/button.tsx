@@ -54,15 +54,18 @@ export interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
   variant?: ButtonProps['variant'];
   /** Square size, same scale as Button. */
   size?: ButtonProps['size'];
+  /** Small dot in the corner: something behind this button is on, such as an active filter or sort. Say so in `label` too. */
+  indicator?: boolean;
 }
 
 /** A Button that shows only an icon (Content = Only Icons in Figma). The label is required because nothing else names it. */
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, label, variant = 'tertiary', size = 'medium', className, type = 'button', ...rest }, ref,
+  { icon, label, variant = 'tertiary', size = 'medium', indicator, className, type = 'button', ...rest }, ref,
 ) {
   return (
     <button {...rest} ref={ref} type={type} aria-label={label} title={label} className={cn('eu-btn', 'eu-btn--icon', `eu-btn--${variant}`, `eu-btn--${size}`, className)}>
       <Icon name={icon} size={size === 'tiny' || size === 'small' ? 'sm' : size === 'giant' ? 'lg' : 'md'} />
+      {indicator ? <span className="eu-btn__dot" aria-hidden="true" /> : null}
     </button>
   );
 });
