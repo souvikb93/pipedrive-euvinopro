@@ -71,13 +71,13 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(f
 });
 
 export interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  /** `primary` uses text/link, `secondary` uses text/body. `link` is an inline text link in foreground/link (emails, phone numbers): it keeps the surrounding text style. */
-  variant?: 'primary' | 'secondary' | 'link';
+  /** `primary` uses text/link, `secondary` uses text/body. `link` is an inline text link in foreground/link (emails, phone numbers): it keeps the surrounding text style. `plain` keeps the surrounding colour and style and underlines on hover, for names that open a record. */
+  variant?: 'primary' | 'secondary' | 'link' | 'plain';
 }
 
 /** A text link that navigates. Use Button when it runs an action. */
 export function LinkButton({ variant = 'primary', className, ...rest }: LinkButtonProps) {
-  return <a {...rest} className={cn('eu-link', `eu-link--${variant}`, variant !== 'link' && 'eu-type-ui-button', className)} />;
+  return <a {...rest} className={cn('eu-link', `eu-link--${variant}`, variant !== 'link' && variant !== 'plain' && 'eu-type-ui-button', className)} />;
 }
 
 export interface SegmentOption {

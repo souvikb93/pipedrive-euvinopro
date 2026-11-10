@@ -297,7 +297,7 @@ export function App() {
   };
 
   const contactColumns: Array<TableColumn<Contact>> = [
-    { key: 'name', header: 'Name', overflow: 'truncate', render: (c) => <Text as="span" variant="card-title" tone="strong-body">{c.name}</Text> },
+    { key: 'name', header: 'Name', overflow: 'truncate', render: (c) => <Text as="span" variant="body-small" tone="primary">{c.name}</Text> },
     { key: 'label', header: 'Label', fit: true, render: (c) => (
         <LabelPicker label={`Label für ${c.name}`} value={contactLabels.labelOf[c.id] ?? null} options={contactLabels.options}
           onChange={(id) => contactLabels.setLabelOf((m) => ({ ...m, [c.id]: id }))} onCreate={(n) => contactLabels.create(c.id, n)} labels={LABEL_TEXTS} />
@@ -313,17 +313,17 @@ export function App() {
   ];
 
   const orgColumns: Array<TableColumn<Organisation>> = [
-    { key: 'name', header: 'Organisationsname', overflow: 'truncate', render: (o) => <Text as="span" variant="card-title"><LinkButton variant="link" href={hrefFor.organisation(o.id)}>{o.name}</LinkButton></Text> },
+    { key: 'name', header: 'Organisationsname', overflow: 'truncate', render: (o) => <Text as="span" variant="body-small" tone="primary"><LinkButton variant="plain" href={hrefFor.organisation(o.id)}>{o.name}</LinkButton></Text> },
+    { key: 'label', header: 'Label', fit: true, render: (o) => (
+        <LabelPicker label={`Label für ${o.name}`} value={orgLabels.labelOf[o.id] ?? null} options={orgLabels.options}
+          onChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [o.id]: id }))} onCreate={(n) => orgLabels.create(o.id, n)} labels={LABEL_TEXTS} />
+      ) },
     { key: 'person', header: 'Kontaktperson', overflow: 'truncate', render: (o) => {
         const p = peopleOf(o);
         return p.length ? <>{p[0].name}{p.length > 1 ? <Text as="span" variant="body-small" tone="muted">{` +${p.length - 1}`}</Text> : null}</> : <Text as="span" variant="body-small" tone="muted">–</Text>;
       } },
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (o) => o.owner },
     { key: 'address', header: 'Adresse', overflow: 'truncate', render: (o) => o.address },
-    { key: 'label', header: 'Label', fit: true, render: (o) => (
-        <LabelPicker label={`Label für ${o.name}`} value={orgLabels.labelOf[o.id] ?? null} options={orgLabels.options}
-          onChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [o.id]: id }))} onCreate={(n) => orgLabels.create(o.id, n)} labels={LABEL_TEXTS} />
-      ) },
     { key: 'next', header: 'Nächste Aktivität', fit: true, overflow: 'nowrap', render: (o) => o.nextActivity || '–' },
     { key: 'last', header: 'Letzte Aktivität', fit: true, overflow: 'nowrap', render: (o) => o.lastActivity || '–' },
     { key: 'actions', fit: true, header: <Icon name="settings" size="sm" />, render: (o) => <RowActions name={o.name} /> },

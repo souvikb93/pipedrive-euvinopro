@@ -7,7 +7,7 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 - Live: https://pipedrive-euvinopro.vercel.app (Vercel project `pipedrive-euvinopro`, Vercel Authentication protection is on). Repo: `souvikb93/pipedrive-euvinopro` (private). Older repo `souvikb93/pipedrive-euvino` is the remote `old-origin`.
 - Local: `npm run dev` on http://localhost:4340.
 - Header is 56 (size/header-sm, common SaaS height); side nav is an expandable rail (toggle or `[`, page dimmed and blurred while open) with German labels and a Mehr menu that takes items that do not fit the window height (Projekte, Kampagnen, Einstellungen in Mehr are placeholders); global search panel opens from the header.
-- Views via hash route: #/kontakte (default), #/organisationen (org table, Organisation hinzufügen modal), Timeline (looks normal, click does nothing; #/timeline shows Kontakte), #/organisationen/<id> (detail from Figma 1:3486, English copy as in Figma). Tables and the detail page are read-only except labels (LabelPicker).
+- Views via hash route: #/kontakte (default), #/organisationen (org table, Organisation hinzufügen modal), Timeline (looks normal, click does nothing; #/timeline shows Kontakte), #/organisationen/<id> (layout from Figma 1:3486, German copy and Verlauf from the reference screen; dummy history for every organisation in src/data/history.ts). Tables and the detail page are read-only except labels (LabelPicker).
 - Matches the frame: search 400 × 38 at the same position, side nav 72 with 48 tiles, 24 icons, 16 gaps, sticky and not scrollable; rows 38; links in `foreground/link`, "(Büro)" in body colour; Filter button white.
 
 ## Files
