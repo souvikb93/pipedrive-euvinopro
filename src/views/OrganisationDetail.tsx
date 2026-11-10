@@ -148,7 +148,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           <Input label="Felder filtern" hideLabel placeholder="Felder filtern" iconLeft="search" value={fieldFilter} onChange={(e) => setFieldFilter(e.target.value)} onClear={() => setFieldFilter('')} labels={{ clear: 'Filter leeren' }} />
 
           {match('zusammenfassung', 'label', o.address) ? (
-            <Card title="Zusammenfassung" padding="medium" collapsible toggleLabel="Zusammenfassung ein- oder ausblenden" headerAction={<IconButton icon="settings" label="Zusammenfassung anpassen" size="tiny" />}>
+            <Card title="Zusammenfassung" padding="medium" collapsible toggleLabel="Zusammenfassung ein- oder ausblenden">
               <Stack direction="horizontal" gap="2" align="center">
               <Icon name="label" size="md" />
               <LabelPicker
@@ -173,24 +173,21 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
               padding="medium"
               collapsible
               toggleLabel="Details ein- oder ausblenden"
-              headerAction={<>
-                <IconButton icon="edit" label="Details bearbeiten" size="tiny" />
-                <Menu label="Weitere Aktionen für Details" trigger={<IconButton icon="more-horiz" label="Weitere Aktionen für Details" size="tiny" />} items={[{ label: 'Leere Felder ausblenden', onSelect: noop }, { label: 'Felder anpassen', onSelect: noop }]} />
-              </>}
             >
               <KeyValueList layout="columns" items={details.map(({ label, value }) => ({ label, value }))} />
+              <Stack direction="horizontal"><Button variant="tertiary" size="small" icon="edit">Details bearbeiten</Button></Stack>
             </Card>
           ) : null}
 
           {match('zugehörige organisationen') ? (
-            <Card title="Zugehörige Organisationen" padding="medium" collapsible toggleLabel="Zugehörige Organisationen ein- oder ausblenden" headerAction={<IconButton icon="plus" label="Organisation verknüpfen" size="tiny" />}>
+            <Card title="Zugehörige Organisationen" padding="medium" collapsible toggleLabel="Zugehörige Organisationen ein- oder ausblenden">
               <Text variant="body-small" tone="muted">Noch keine zugehörigen Organisationen hinzugefügt.</Text>
-              <Stack direction="horizontal"><Button variant="tertiary" size="small" icon="plus">Organisation</Button></Stack>
+              <Stack direction="horizontal"><Button variant="tertiary" size="small" icon="plus">Organisation verknüpfen</Button></Stack>
             </Card>
           ) : null}
 
           {match('kontakte') || shownPeople.length ? (
-            <Card title="Kontakte" padding="medium" collapsible toggleLabel="Kontakte ein- oder ausblenden" headerAction={<IconButton icon="plus" label="Kontakt hinzufügen" size="tiny" />}>
+            <Card title="Kontakte" padding="medium" collapsible toggleLabel="Kontakte ein- oder ausblenden">
               <Text as="div" variant="body-small"><Stack gap="2" as="ul" className="detail-list">
                 {(q && !match('kontakte') ? shownPeople : people).map((p) => (
                   <Stack as="li" key={p.id} direction="horizontal" gap="2" align="center">
@@ -199,7 +196,10 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                   </Stack>
                 ))}
               </Stack></Text>
-              <Stack direction="horizontal"><Button variant="secondary" size="small">Details anzeigen</Button></Stack>
+              <Stack direction="horizontal" gap="2" wrap>
+                <Button variant="tertiary" size="small" icon="plus">Kontakt hinzufügen</Button>
+                <Button variant="tertiary" size="small">Details anzeigen</Button>
+              </Stack>
             </Card>
           ) : null}
 
@@ -210,7 +210,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           ) : null}
 
           {match('leads') ? (
-            <Card title="Leads" padding="medium" collapsible toggleLabel="Leads ein- oder ausblenden" headerAction={<IconButton icon="plus" label="Lead hinzufügen" size="tiny" />}>
+            <Card title="Leads" padding="medium" collapsible toggleLabel="Leads ein- oder ausblenden">
               <Stack direction="horizontal"><Button variant="tertiary" size="small" icon="plus">Neuen Lead hinzufügen</Button></Stack>
             </Card>
           ) : null}
@@ -262,7 +262,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                   items={FILTERS.map((f) => ({ id: f.id, label: f.label, count: f.counted ? countOf(f.kinds) : undefined, inert: !f.live }))}
                 />
                 {shown.length ? (
-                  <Timeline label="Verlauf">
+                  <Timeline label="Verlauf" progress>
                     {shown.map((e) => (
                       <ActivityItem
                         key={e.id}

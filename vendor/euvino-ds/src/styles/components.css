@@ -534,3 +534,16 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-ftabs__item.is-inert { color: var(--eu-foreground-static-neutral); }
 .eu-ftabs__label { display: inline-flex; flex-direction: column; }
 .eu-ftabs__label::after { content: attr(data-label); height: 0; overflow: hidden; visibility: hidden; font-weight: var(--eu-font-ui-card-title-weight); }
+
+/* Timeline progress: scroll-linked line and markers (pattern from the WIN solution page) */
+.eu-tl--progress { position: relative; }
+.eu-tl--progress::before, .eu-tl--progress::after { content: ""; position: absolute; left: calc(var(--eu-size-control-sm) / 2 - var(--eu-border-width-md) / 2); top: var(--eu-tl-start, 0); width: var(--eu-border-width-md); border-radius: var(--eu-radius-full); pointer-events: none; }
+.eu-tl--progress::before { height: var(--eu-tl-length, 0); background: var(--eu-border-static-subtle); }
+.eu-tl--progress::after { height: var(--eu-tl-fill, 0); background: var(--eu-background-primary-default); }
+.eu-tl--progress > .eu-tl__item:not(:last-child)::before { display: none; }
+.eu-tl--progress .eu-activity__marker { position: relative; z-index: var(--eu-layer-raised); transition: background-color var(--eu-motion-duration-medium), border-color var(--eu-motion-duration-medium), color var(--eu-motion-duration-medium); }
+.eu-tl--progress .eu-activity__card { transition: border-color var(--eu-motion-duration-medium), box-shadow var(--eu-motion-duration-medium); }
+.eu-tl--progress .is-reached .eu-activity__marker { background: var(--eu-background-accent-subtle); border-color: var(--eu-border-accent); color: var(--eu-foreground-interactive-default); }
+.eu-tl--progress .is-current .eu-activity__marker { background: var(--eu-background-primary-default); border-color: var(--eu-background-primary-default); color: var(--eu-foreground-icon-inverse); }
+.eu-tl--progress .is-current .eu-activity__card { border-color: var(--eu-border-accent); box-shadow: var(--eu-shadow-sm); }
+@media (prefers-reduced-motion: reduce) { .eu-tl--progress::after { display: none; } .eu-tl--progress > .eu-tl__item:not(:last-child)::before { display: block; } }

@@ -119,15 +119,64 @@ export function TimelineItem({ title, description, time, status = 'default' }: T
 }
 
 export interface TimelineProps {
-  /** TimelineItem children, newest first. */
+  /** TimelineItem or ActivityItem children, newest first. */
   children: React.ReactNode;
   /** Accessible name. */
   label?: string;
+  /**
+   * Scroll-linked: the line fills as the page scrolls, markers that passed the reading line light up and the entry at
+   * the reading line is highlighted. Best with ActivityItem. Off when people prefer reduced motion.
+   */
+  progress?: boolean;
 }
 
+/** Where the reading line sits, as a share of the window height (as on the WIN solution page). */
+const READING_LINE = 0.45;
+
 /** Chronological list of events, such as request history or an activity log. */
-export function Timeline({ children, label }: TimelineProps) {
-  return <ol aria-label={label} className="eu-tl">{children}</ol>;
+export function Timeline({ children, label, progress }: TimelineProps) {
+  const list = React.useRef<HTMLOListElement>(null);
+  React.useEffect(() => {
+    const ol = list.current;
+    if (!progress || !ol) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const items = Array.from(ol.children) as HTMLElement[];
+      if (!items.length) return;
+      const mark = window.innerHeight * READING_LINE;
+      const box = ol.getBoundingClientRect();
+      const markerOf = (li: HTMLElement) => (li.querySelector('.eu-activity__marker, .eu-tl__dot') as HTMLElement | null) ?? li;
+      const first = markerOf(items[0]).getBoundingClientRect();
+      const last = markerOf(items[items.length - 1]).getBoundingClientRect();
+      const start = first.top + first.height / 2 - box.top;
+      const end = last.top + last.height / 2 - box.top;
+      ol.style.setProperty('--eu-tl-start', `${start}px`);
+      ol.style.setProperty('--eu-tl-length', `${Math.max(0, end - start)}px`);
+      ol.style.setProperty('--eu-tl-fill', `${Math.max(0, Math.min(end - start, mark - box.top - start))}px`);
+      let current = -1;
+      items.forEach((li, i) => {
+        const m = markerOf(li).getBoundingClientRect();
+        const reached = m.top + m.height / 2 <= mark;
+        li.classList.toggle('is-reached', reached);
+        if (reached) current = i;
+      });
+      items.forEach((li, i) => li.classList.toggle('is-current', i === current));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(onScroll) : null;
+    ro?.observe(ol);
+    update();
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); ro?.disconnect(); if (frame) cancelAnimationFrame(frame); };
+  }, [progress, children]);
+  return (
+    <ol ref={list} aria-label={label} className={cn('eu-tl', progress && 'eu-tl--progress')}>
+      {children}
+    </ol>
+  );
 }
 
 export interface ActivityItemProps {
