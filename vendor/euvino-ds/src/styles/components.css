@@ -51,7 +51,7 @@ button { font-family: inherit; }
 
 /* Segmented control */
 .eu-seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: var(--eu-spacing-1); gap: var(--eu-spacing-1); border: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); border-radius: var(--eu-radius-lg); background: var(--eu-background-static-soft); }
-.eu-seg__item { display: inline-flex; align-items: center; justify-content: center; gap: var(--eu-spacing-1); min-height: calc(var(--eu-size-control-md) - var(--eu-spacing-1)); padding: 0 var(--eu-spacing-3); border: var(--eu-border-width-sm) solid transparent; border-radius: var(--eu-radius-default); background: transparent; color: var(--eu-foreground-static-body); cursor: pointer; transition: background-color .12s, color .12s, border-color .12s; }
+.eu-seg__item { display: inline-flex; align-items: center; justify-content: center; gap: var(--eu-spacing-2xs); min-height: calc(var(--eu-size-control-md) - var(--eu-spacing-1)); padding: 0 var(--eu-spacing-3); border: var(--eu-border-width-sm) solid transparent; border-radius: var(--eu-radius-default); background: transparent; color: var(--eu-foreground-static-body); cursor: pointer; white-space: nowrap; transition: background-color .12s, color .12s, border-color .12s; }
 .eu-seg__item:hover:not(.is-selected) { color: var(--eu-foreground-static-base); background: var(--eu-background-static-muted); }
 .eu-seg__item.is-selected { background: var(--eu-background-static-base); border-color: var(--eu-border-accent); color: var(--eu-foreground-interactive-default); box-shadow: var(--eu-shadow-sm); }
 .eu-seg__item.is-selected .eu-seg__label { font-weight: var(--eu-font-ui-card-title-weight); }

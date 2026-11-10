@@ -57,8 +57,8 @@ const LABELS: Record<ContactLabel, { text: string; status: Status }> = {
 };
 
 const VIEWS = [
-  { value: 'contacts', label: 'Kontakte', icon: 'list' as const },
-  { value: 'organisations', label: 'Organisationen', icon: 'view-grid' as const },
+  { value: 'contacts', label: 'Kontakte', icon: 'user' as const },
+  { value: 'organisations', label: 'Organisationen', icon: 'building' as const },
   { value: 'timeline', label: 'Timeline', icon: 'calendar' as const },
 ];
 
@@ -239,7 +239,7 @@ export function App() {
               <IconButton icon="help" label="Hilfe" />
               <Menu
                 label="Konto"
-                trigger={<UserMenu name="Johannes Finzer" subtitle="EuvinoPRO GmbH" />}
+                trigger={<UserMenu name="Johannes Finzer" compact />}
                 items={[
                   { label: 'Profil', icon: 'user', onSelect: noop },
                   { label: 'Abmelden', icon: 'logout', onSelect: noop },
