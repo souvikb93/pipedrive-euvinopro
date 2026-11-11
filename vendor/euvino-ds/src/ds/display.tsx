@@ -194,16 +194,18 @@ export interface ActivityItemProps {
   actions?: React.ReactNode;
   /** Shows the whole preview text instead of one line. */
   expanded?: boolean;
+  /** Makes the card clickable (hover, press and focus states). The subject becomes the button; buttons inside keep their own action. */
+  onOpen?: () => void;
 }
 
 /** A rich event in a Timeline, such as an email or a call, shown as a card next to an icon marker. Figma: Email Activity Item. */
-export function ActivityItem({ icon, title, meta, children, footer, actions, expanded }: ActivityItemProps) {
+export function ActivityItem({ icon, title, meta, children, footer, actions, expanded, onOpen }: ActivityItemProps) {
   return (
-    <li className="eu-tl__item eu-activity">
+    <li className={cn('eu-tl__item eu-activity', onOpen && 'is-clickable')}>
       <span className="eu-activity__marker" aria-hidden="true"><Icon name={icon} size="sm" /></span>
       <article className="eu-activity__card">
         <div className="eu-activity__head">
-          <h3 className="eu-type-ui-card-title eu-activity__title">{title}</h3>
+          <h3 className="eu-type-ui-card-title eu-activity__title">{onOpen ? <button type="button" className="eu-activity__open" onClick={onOpen}>{title}</button> : title}</h3>
           {actions ? <div className="eu-activity__actions">{actions}</div> : null}
         </div>
         {meta ? <p className="eu-type-body-caption eu-activity__meta">{meta}</p> : null}

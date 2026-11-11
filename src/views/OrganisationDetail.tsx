@@ -113,7 +113,6 @@ export interface OrganisationDetailProps {
 export function OrganisationDetail({ organisation: o, people, labelOptions, labelId, onLabelChange, onLabelCreate }: OrganisationDetailProps) {
   const [fieldFilter, setFieldFilter] = React.useState('');
   const [composer, setComposer] = React.useState('notes');
-  const [historyOpen, setHistoryOpen] = React.useState(true);
   const [historyFilter, setHistoryFilter] = React.useState('all');
   const [focusOpen, setFocusOpen] = React.useState(true);
   const [expandAll, setExpandAll] = React.useState(false);
@@ -249,13 +248,11 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           </Stack>
 
           <Stack gap="4">
-            <Stack direction="horizontal" gap="1" align="center">
-              <Text as="h2" variant="h5">Verlauf</Text>
-              <IconButton icon={historyOpen ? 'nav-up' : 'nav-down'} label="Verlauf ein- oder ausblenden" size="tiny" aria-expanded={historyOpen} onClick={() => setHistoryOpen((v) => !v)} />
-            </Stack>
-            {historyOpen ? (
+            <Text as="h2" variant="h5">Verlauf</Text>
+            {(
               <>
                 <FilterTabs
+                  variant="chip"
                   label="Verlauf filtern"
                   value={historyFilter}
                   onChange={setHistoryFilter}
@@ -272,6 +269,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                         actions={<EntryActions e={e} />}
                         footer={<EntryFooter e={e} />}
                         expanded={expandAll}
+                        onOpen={noop}
                       >
                         {e.preview}
                       </ActivityItem>
@@ -287,7 +285,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                   />
                 )}
               </>
-            ) : null}
+            )}
           </Stack>
         </Stack>
       </Stack>

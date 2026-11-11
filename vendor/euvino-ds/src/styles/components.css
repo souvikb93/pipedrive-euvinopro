@@ -525,7 +525,13 @@ button { font-family: inherit; }
 .eu-kv--columns .eu-kv__label { text-align: left; }
 
 /* FilterTabs: pill tabs over a list */
-.eu-ftabs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--eu-spacing-1); }
+.eu-ftabs { display: flex; flex-wrap: nowrap; align-items: center; gap: var(--eu-spacing-1); overflow-x: auto; scrollbar-width: none; }
+.eu-ftabs::-webkit-scrollbar { display: none; }
+.eu-ftabs > * { flex: none; }
+.eu-ftabs--chip { gap: var(--eu-spacing-2); }
+.eu-chip.is-inert { color: var(--eu-foreground-static-neutral); border-color: var(--eu-border-static-subtle); }
+.eu-chip.is-inert:hover { background: var(--eu-bg-surface); }
+.eu-chip.is-inert .eu-chip__main { cursor: default; }
 .eu-ftabs__item { display: inline-flex; align-items: center; padding: var(--eu-spacing-1) var(--eu-spacing-3); border: 0; border-radius: var(--eu-radius-full); background: transparent; color: var(--eu-foreground-static-base); white-space: nowrap; }
 button.eu-ftabs__item { cursor: pointer; }
 button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-static-soft); }
@@ -547,3 +553,14 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-tl--progress .is-current .eu-activity__marker { background: var(--eu-background-primary-default); border-color: var(--eu-background-primary-default); color: var(--eu-foreground-icon-inverse); }
 .eu-tl--progress .is-current .eu-activity__card { border-color: var(--eu-border-accent); box-shadow: var(--eu-shadow-sm); }
 @media (prefers-reduced-motion: reduce) { .eu-tl--progress::after { display: none; } .eu-tl--progress > .eu-tl__item:not(:last-child)::before { display: block; } }
+
+/* ActivityItem clickable: the subject button covers the card; inner controls stay above it. */
+.eu-activity.is-clickable .eu-activity__card { position: relative; cursor: pointer; transition: border-color var(--eu-motion-duration-fast), box-shadow var(--eu-motion-duration-fast), background-color var(--eu-motion-duration-fast); }
+.eu-activity__open { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.eu-activity__open::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.eu-activity__open:focus-visible { outline: none; }
+.eu-activity.is-clickable .eu-activity__actions, .eu-activity.is-clickable .eu-activity__foot { position: relative; z-index: var(--eu-layer-raised); }
+.eu-activity.is-clickable .eu-activity__card:hover { border-color: var(--eu-border-static-soft); box-shadow: var(--eu-shadow-md); }
+.eu-activity.is-clickable .eu-activity__card:has(.eu-activity__open:active) { background: var(--eu-background-static-soft); box-shadow: none; }
+.eu-activity.is-clickable .eu-activity__card:has(.eu-activity__open:focus-visible) { outline: var(--eu-border-width-md) solid var(--eu-border-focus); outline-offset: var(--eu-spacing-0-5); }
+.eu-tl--progress .eu-activity.is-current .eu-activity__card:hover { border-color: var(--eu-border-accent); }

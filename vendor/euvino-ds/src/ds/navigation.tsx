@@ -450,17 +450,28 @@ export interface FilterTabsProps {
   onChange: (id: string) => void;
   /** Accessible name of the group, such as "Filter history". */
   label: string;
+  /** `pill` soft pill on the selected tab (default). `chip` each tab looks like a Chip. Both stay on one line and scroll sideways when narrow. */
+  variant?: 'pill' | 'chip';
 }
 
 /**
  * Filter tabs (pill tabs): one choice from many filters for the list below, such as a history feed.
  * Use SegmentedControl for 2 to 4 equal options, Chip for several filters at once, TopNav for views.
  */
-export function FilterTabs({ items, value, onChange, label }: FilterTabsProps) {
+export function FilterTabs({ items, value, onChange, label, variant = 'pill' }: FilterTabsProps) {
   return (
-    <div role="group" aria-label={label} className="eu-ftabs">
+    <div role="group" aria-label={label} className={cn('eu-ftabs', `eu-ftabs--${variant}`)}>
       {items.map((i) => {
         const text = i.count !== undefined ? `${i.label} (${i.count})` : i.label;
+        if (variant === 'chip') {
+          if (i.inert) return <span key={i.id} className="eu-chip is-inert"><span className="eu-chip__main eu-type-body-small">{text}</span></span>;
+          const on = i.id === value;
+          return (
+            <span key={i.id} className={cn('eu-chip', on && 'is-selected')}>
+              <button type="button" aria-pressed={on} className="eu-chip__main eu-type-body-small" onClick={() => onChange(i.id)}>{text}</button>
+            </span>
+          );
+        }
         if (i.inert) return <span key={i.id} className="eu-ftabs__item is-inert eu-type-body-small">{text}</span>;
         const on = i.id === value;
         return (
