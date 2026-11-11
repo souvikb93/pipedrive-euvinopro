@@ -390,7 +390,7 @@
   --eu-border-static-neutral: #6c7389; /* blue-gray/60 */ /* Inputs, checkboxes and radios. 4.72:1 on white. */
   --eu-background-danger-default: #c82b2b; /* red/dark */ /* Final irreversible action. White label. */
   --eu-background-danger-hover: #a32020; /* red/darker */ /* Hover of danger. */
-  --eu-background-primary-pressed: #3018c5; /* purple/dark */ /* Pressed main action. */
+  --eu-background-primary-pressed: #7a7fff; /* purple/80 */ /* Pressed main action. */
   --eu-background-static-neutral: #b1b9cc; /* blue-gray/40 */ /* Toggle track when off. */
   --eu-background-danger-pressed: #a32020; /* red/darker */ /* Pressed danger action. */
   --eu-background-static-inverse-hover: #32384a; /* blue-gray/80 */ /* Hover on dark surfaces. */
@@ -399,6 +399,24 @@
   --eu-foreground-link-hover: #000929; /* blue-gray/100 */ /* Text link on hover. */
   --eu-background-highlight: #ffe47a; /* yellow/medium */ /* Marks the matched text in search results. */
   --eu-border-static-strong: #1a223e; /* blue-gray/90 */ /* Stroke of a focused or open field (input, search, label picker). No ring, only the stroke darkens. */
+  --eu-background-primary-focus: #3018c5; /* purple/dark */ /* Button state, matches Hydra. */
+  --eu-background-primary-disabled: #b1b9cc; /* blue-gray/40 */ /* Button state, matches Hydra. */
+  --eu-background-secondary-default: #ffffff; /* white */ /* Button state, matches Hydra. */
+  --eu-background-secondary-hover: #e4eaf3; /* blue-gray/20 */ /* Button state, matches Hydra. */
+  --eu-background-secondary-focus: #e4eaf3; /* blue-gray/20 */ /* Button state, matches Hydra. */
+  --eu-background-secondary-pressed: #b1b9cc; /* blue-gray/40 */ /* Button state, matches Hydra. */
+  --eu-background-secondary-disabled: #e4eaf3; /* blue-gray/20 */ /* Button state, matches Hydra. */
+  --eu-border-primary-default: #5844ff; /* purple/100 */ /* Button state, matches Hydra. */
+  --eu-border-primary-hover: #3018c5; /* purple/dark */ /* Button state, matches Hydra. */
+  --eu-border-primary-pressed: #7a7fff; /* purple/80 */ /* Button state, matches Hydra. */
+  --eu-border-primary-disabled: #b1b9cc; /* blue-gray/40 */ /* Button state, matches Hydra. */
+  --eu-border-secondary-default: #5844ff; /* purple/100 */ /* Button state, matches Hydra. */
+  --eu-border-secondary-hover: #3018c5; /* purple/dark */ /* Button state, matches Hydra. */
+  --eu-border-secondary-pressed: #5844ff; /* purple/100 */ /* Button state, matches Hydra. */
+  --eu-border-secondary-disabled: #6c7389; /* blue-gray/60 */ /* Button state, matches Hydra. */
+  --eu-foreground-interactive-focus: #3018c5; /* purple/dark */ /* Button state, matches Hydra. */
+  --eu-foreground-interactive-pressed: #3018c5; /* purple/dark */ /* Button state, matches Hydra. */
+  --eu-foreground-interactive-disabled: #6c7389; /* blue-gray/60 */ /* Button state, matches Hydra. */
 
   /* Hydra dimension (new names). */
   --eu-spacing-3xs: 4px; /* Space between and inside elements, on a 4px base. */

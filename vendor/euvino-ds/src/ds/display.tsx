@@ -356,14 +356,13 @@ export function Table<T>({ columns, rows, rowKey, caption, selected, onSelectedC
   const keys = rows.map(rowKey);
   const sel = selected ?? [];
   const all = keys.length > 0 && keys.every((k) => sel.includes(k));
-  const some = keys.some((k) => sel.includes(k));
   return (
     <div className="eu-table-wrap">
       <table className="eu-table" aria-busy={loading || undefined}>
         <caption className="eu-sr">{caption}</caption>
         <thead>
           <tr>
-            {selectable ? <th scope="col" className="eu-table__check"><label className="eu-check eu-check--small"><input type="checkbox" className="eu-check__el" aria-label={labels?.selectAll ?? 'Select all rows'} checked={all} ref={(el) => { if (el) el.indeterminate = some && !all; }} onChange={() => onSelectedChange?.(all ? [] : keys)} /><span className="eu-check__box" aria-hidden="true"><Icon name={some && !all ? 'minus' : 'check'} size="xs" /></span></label></th> : null}
+            {selectable ? <th scope="col" className="eu-table__check"><label className="eu-check eu-check--small"><input type="checkbox" className="eu-check__el" aria-label={labels?.selectAll ?? 'Select all rows'} checked={all} onChange={() => onSelectedChange?.(all ? [] : keys)} /><span className="eu-check__box" aria-hidden="true"><Icon name="check" size="xs" /></span></label></th> : null}
             {columns.map((c) => (
               <th key={c.key} scope="col" aria-sort={c.sort && c.sort !== 'none' ? c.sort : undefined} className={cn('eu-type-body-caption-strong', c.align === 'right' && 'is-right', c.fit && 'is-fit')}>
                 {c.onSort ? <button type="button" className="eu-table__sort" onClick={c.onSort}>{c.header}<Icon name={c.sort === 'ascending' ? 'nav-up' : c.sort === 'descending' ? 'nav-down' : 'sort'} size="sm" /></button> : c.header}
