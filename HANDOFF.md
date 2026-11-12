@@ -14,15 +14,22 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 - `src/App.tsx` screen, `src/app.css` layout (tokens only), `src/data/contacts.ts` rows read from Figma.
 - `vendor/euvino-ds` copy of `@euvino/ds`. Never edit; change `../euvinopro-ds` and run `npm run sync-ds`.
 
-## Changed in the design system (`~/euvinopro-ds`, NOT committed: mixed with an earlier session's uncommitted work)
+## Design system (`~/euvinopro-ds`, repo souvikb93/winpro-ds, committed 9a13f4e)
 - `figma/hydra.json` + `scripts/build-tokens.mjs`: Hydra tokens with new names, text-style variables. Text styles refreshed from Figma.
 - New: `LabelPicker` (labels change in the table, new labels can be added), `GlobalSearch` (panel with categories and highlighted hits, token background/highlight), `SideNav expandable`, `SearchField`, `Input variant="filled"`, `LinkButton variant="link"`, `SideNav logo/sticky/countStatus/theme`, `Header layout="between"`, `UserMenu size` + chevron, `Table` column `overflow` and `fit`, 11 icons, bottle mark.
 - Figma (own file `eoPfuJuIddL9imDtGiK2oX` only): added variables `foreground/link/default`, `foreground/link/hover`, `size/field-lg`, `background/highlight`, `blur/backdrop`; Segmented Control segments now Fill equally. Hydra file untouched.
+
+## Figma library (eoPfuJuIddL9imDtGiK2oX), version "EuvinoPRO DS v2.0"
+- Hydra components are the source of truth; 557 uses swapped, old ones in Archive / Replaced by Hydra. Restore points: "Before Hydra component swap", "Before DS reorganisation".
+- Pages: Cover, Getting started, Foundations, Icons & Brand, Guidelines | Actions, Forms, Navigation, Data Display, Feedback & Overlays, Charts, Cards, Patterns | Examples | Internal, Archive. Every component section starts with a spec card (Guidelines, Examples for Button/Input/Badge, Properties).
+- Code-born patterns added to Figma: Global Search, Label Picker, Activity Item, Key Value List.
+- Code tokens = Figma variables (367, diffed equal). Library still has to be published by hand in Figma.
 
 ## Failed / gotchas
 - The Pipedrive file still uses an older library version, so the frame mixes old names (`bg/page`, `text/body`, `radius/lg` = 8) and Hydra names. Code keeps old names at their old values; colliding Hydra names (radius-lg 40, icon sizes) were not imported.
 - Dev server logs a stale 500 while `sync-ds` swaps files; a reload fixes it.
 
 ## Next
-- Commit the design system changes (decide how to split them from the earlier uncommitted work).
-- Full Hydra migration of the code tokens (rename components to the new names, then drop the old ones).
+- Publish the Figma library (manual).
+- Turn off Vercel Authentication or make a share link before sending the product link to the client; make the GitHub repos visible to them.
+- Drop the deprecated token aliases once no product uses them.
