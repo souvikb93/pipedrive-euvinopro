@@ -12,3 +12,4 @@ export { BarChart, LineChart, DonutChart, Gauge, ProgressList, Stat, DataCard, t
 export { GlobalSearch, type GlobalSearchProps, type GlobalSearchCategory, type GlobalSearchHit } from './global-search';
 export { LabelPicker, type LabelPickerProps, type LabelOption } from './label-picker';
 export { InlineEdit, type InlineEditProps } from './inline-edit';
+export { SplitButton, type SplitButtonProps } from './split-button';

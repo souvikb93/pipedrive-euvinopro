@@ -11,6 +11,7 @@ import {
   Menu,
   SegmentedControl,
   SideNav,
+  SplitButton,
   Stack,
   Table,
   Text,
@@ -31,6 +32,7 @@ import { organisations as initialOrganisations, type Organisation } from './data
 import { hrefFor, useRoute, type View } from './route';
 import { OrganisationDetail } from './views/OrganisationDetail';
 import { AddOrganisationModal, type NewOrganisation } from './views/AddOrganisationModal';
+import { AddContactModal, type NewContact } from './views/AddContactModal';
 
 // Figma: Side Nav, Content=Icon, Theme=Dark, Logo on. Icons in the Figma order, German labels.
 // Order is priority: when the window is short, items move into Mehr from the end. Kontakte (this page) stays visible.
@@ -167,10 +169,10 @@ function useLabels<T extends { id: string; label: string }>(rows: T[]) {
 
 function Toolbar({ view, onView, count, primary, filter, sort }: { view: View; onView: (v: string) => void; count: string; primary: React.ReactNode; filter: React.ReactNode; sort: React.ReactNode }) {
   return (
-    <Stack direction="horizontal" gap="4" justify="between" align="center" wrap>
+    <Stack direction="horizontal" gap="4" justify="between" align="center" wrap className="app-toolbar">
       <SegmentedControl label="Ansicht" value={view} onChange={onView} options={VIEWS} />
-      <Stack direction="horizontal" gap="4" align="center" wrap>
-        <Text variant="body-small" tone="body">{count}</Text>
+      <Stack direction="horizontal" gap="4" align="end" wrap>
+        <Text variant="caption" tone="body">{count}</Text>
         <Stack direction="horizontal" gap="2" align="center">
           {primary}
           {filter}
@@ -224,12 +226,15 @@ function RowActions({ name }: { name: string }) {
 export function App() {
   const [route, go] = useRoute();
   const toast = useToast();
+  // Placeholder for actions this prototype does not build yet.
+  const soon = (what: string) => toast({ title: `${what} folgt in einer späteren Version`, status: 'info' });
   const listView: View = route.name === 'list' ? route.view : 'organisations';
   // Timeline has no page yet: it looks like the other options, but choosing it keeps the current view.
   const onView = (v: string) => { if (v !== 'timeline') go(hrefFor.view(v as View)); };
 
   // ---- Contacts (Kontakte and Timeline show this list, as before)
-  const [people] = React.useState<Contact[]>(initialContacts);
+  const [people, setPeople] = React.useState<Contact[]>(initialContacts);
+  const [addingContact, setAddingContact] = React.useState(false);
   const contactLabels = useLabels(people);
   const [contactFilter, setContactFilter] = React.useState<string | null>(null);
   const [contactLabelFilter, setContactLabelFilter] = React.useState<string | null>(null);
@@ -267,13 +272,29 @@ export function App() {
     let id = slug(n.name) || 'organisation';
     while (orgs.some((o) => o.id === id)) id = `${id}-2`;
     const org: Organisation = {
-      id, name: n.name, kind: '', contactOrg: n.name, owner: n.owner, address: n.address, label: 'lead',
-      nextActivity: '', lastActivity: '', website: '', phone: '', managingDirector: '', industry: '', postalCode: '',
+      id, name: n.name, kind: n.producerType, contactOrg: n.name, owner: n.owner, address: n.address, label: 'lead',
+      nextActivity: '', lastActivity: '', website: n.website, phone: n.phone, managingDirector: n.managingDirector, industry: n.industry, postalCode: n.postalCode,
     };
     setOrgs((list) => [org, ...list]);
     if (n.label) orgLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
     else orgLabels.setLabelOf((m) => { const next = { ...m }; delete next[id]; return next; });
     setAdding(false);
+    toast({ title: `${n.name} hinzugefügt`, status: 'success' });
+  };
+
+  const OWNERS = ['Johannes', 'Maximilian Eul', 'Beate Schmitt'];
+  const addContact = (n: NewContact) => {
+    const org = orgs.find((o) => o.id === n.organisationId);
+    const phones = n.phones.map((p) => p.value.trim()).filter(Boolean);
+    const mail = n.emails.find((e) => e.value.trim());
+    const id = `c-${Date.now()}`;
+    const c: Contact = {
+      id, name: n.name, label: 'lead', organisation: org?.contactOrg ?? '', email: mail?.value.trim() ?? '', emailType: mail ? mail.type : null,
+      phones, phoneType: phones.length ? n.phones[0].type : null, wonDeals: 0, openDeals: 0, nextActivity: '', owner: n.owner,
+    };
+    setPeople((list) => [c, ...list]);
+    if (n.label) contactLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
+    setAddingContact(false);
     toast({ title: `${n.name} hinzugefügt`, status: 'success' });
   };
 
@@ -391,6 +412,7 @@ export function App() {
         </Header>
 
         <Stack as="main" gap="6" className="app-content">
+          <AddContactModal open={addingContact} onClose={() => setAddingContact(false)} onAdd={addContact} onImport={() => soon('Import')} organisations={orgs.map((o) => ({ id: o.id, name: o.name, website: o.website, phone: o.phone }))} labelOptions={contactLabels.options} owners={OWNERS} />
           {heading ? <VisuallyHidden><Text as="h1" variant="h1">{heading}</Text></VisuallyHidden> : null}
 
           {route.name === 'organisation' ? (
@@ -415,7 +437,11 @@ export function App() {
                 view="organisations"
                 onView={onView}
                 count={`${orgLabelFilter ? `${orgRows.length} von ${orgs.length}` : orgs.length} Organisationen`}
-                primary={<Button variant="primary" icon="plus" onClick={() => setAdding(true)}>Organisation hinzufügen</Button>}
+                primary={<SplitButton icon="plus" onClick={() => setAdding(true)} menuLabel="Weitere Optionen zum Hinzufügen" items={[
+                  { label: 'Organisation hinzufügen', icon: 'building', onSelect: () => setAdding(true) },
+                  { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
+                  { label: 'Organisationen importieren', icon: 'upload', onSelect: () => soon('Import') },
+                ]}>Organisation</SplitButton>}
                 filter={<FilterMenu active={orgLabelFilter} activeName={orgLabels.name(orgLabelFilter)} options={orgLabels.options} onPick={setOrgLabelFilter} />}
                 sort={<SortMenu active={orgSort} sorts={ORG_SORTS} onPick={setOrgSort} />}
               />
@@ -428,7 +454,7 @@ export function App() {
                 onSelectedChange={setOrgSelected}
                 labels={{ selectAll: 'Alle auswählen', selectRow: (o) => `${o.name} auswählen` }}
               />
-              <AddOrganisationModal open={adding} onClose={() => setAdding(false)} onAdd={addOrganisation} labelOptions={orgLabels.options} owners={['Johannes', 'Maximilian Eul', 'Beate Schmitt']} />
+              <AddOrganisationModal open={adding} onClose={() => setAdding(false)} onAdd={addOrganisation} onImport={() => soon('Import')} labelOptions={orgLabels.options} owners={OWNERS} />
             </>
           ) : (
             <>
@@ -436,7 +462,11 @@ export function App() {
                 view={listView}
                 onView={onView}
                 count={`${contactsNarrowed ? `${contactRows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen`}
-                primary={<Button variant="primary" icon="plus">Kontakte</Button>}
+                primary={<SplitButton icon="plus" onClick={() => setAddingContact(true)} menuLabel="Weitere Optionen zum Hinzufügen" items={[
+                  { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
+                  { label: 'Organisation hinzufügen', icon: 'building', onSelect: () => { onView('organisations'); setAdding(true); } },
+                  { label: 'Kontakte importieren', icon: 'upload', onSelect: () => soon('Import') },
+                ]}>Kontakt</SplitButton>}
                 filter={<FilterMenu active={contactLabelFilter} activeName={contactLabels.name(contactLabelFilter)} options={contactLabels.options} onPick={setContactLabelFilter} />}
                 sort={<SortMenu active={contactSort} sorts={CONTACT_SORTS} onPick={setContactSort} />}
               />

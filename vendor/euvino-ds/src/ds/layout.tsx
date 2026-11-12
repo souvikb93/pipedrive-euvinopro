@@ -4,16 +4,18 @@ import { cn } from './cn';
 type SpaceToken = '0' | '0-5' | '1' | '1-5' | '2' | '2-5' | '3' | '4' | '5' | '6' | '8' | '10' | '12' | '16' | '20' | '24';
 /** Steps of the old numeric scale, mapped to the current `spacing/*` variables in Figma. */
 const SPACE: Record<SpaceToken, string> = {
-  '0': 'none', '0-5': '4xs', '1': '3xs', '1-5': 'deprecated-spacing-6', '2': '2xs', '2-5': 'deprecated-spacing-10', '3': 'xs', '4': 's',
-  '5': 'deprecated-spacing-20', '6': 'm', '8': 'l', '10': 'xl', '12': '2xl', '16': '4xl', '20': '5xl', '24': '6xl',
+  '0': 'none', '0-5': '4xs', '1': '3xs', '1-5': '2xs', '2': '2xs', '2-5': 'xs', '3': 'xs', '4': 's',
+  '5': 'm', '6': 'm', '8': 'l', '10': 'xl', '12': '2xl', '16': '4xl', '20': '5xl', '24': '6xl',
 };
-const space = (t: SpaceToken) => (SPACE[t].startsWith('deprecated') ? `var(--eu-${SPACE[t]})` : `var(--eu-spacing-${SPACE[t]})`);
+const space = (t: SpaceToken) => `var(--eu-spacing-${SPACE[t]})`;
 
 export interface StackProps extends React.HTMLAttributes<HTMLElement> {
   /** `vertical` for a column (default), `horizontal` for a row. */
   direction?: 'vertical' | 'horizontal';
   /** Space token between children, from `spacing/*`: form fields `4`, button rows `2`, page sections `8`. */
   gap?: SpaceToken;
+  /** With `as="form"`: turn off browser validation bubbles so field `error` messages show instead. */
+  noValidate?: boolean;
   /** Padding from the same space tokens. */
   padding?: SpaceToken;
   /** Cross-axis alignment. */

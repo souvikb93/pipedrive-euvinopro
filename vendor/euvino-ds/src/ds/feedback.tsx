@@ -178,8 +178,10 @@ export interface ModalProps {
   description?: React.ReactNode;
   /** Footer actions, rightmost is the main one. */
   footer?: React.ReactNode;
-  /** Width: `small` 400, `medium` 560, `large` 720. */
-  size?: 'small' | 'medium' | 'large';
+  /** Secondary footer action on the left, away from the main actions, such as Import. */
+  footerStart?: React.ReactNode;
+  /** Width: `small` 400, `medium` 560, `large` 720, `xlarge` 960 for landscape forms in two or three columns. */
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
   /** Accessible name of the close button. */
   closeLabel?: string;
   /** Free content area. */
@@ -187,7 +189,7 @@ export interface ModalProps {
 }
 
 /** A focused task above the page, with a free content area such as a short form. For a yes-or-no confirmation use ConfirmDialog. */
-export function Modal({ open, onClose, title, description, footer, size = 'medium', closeLabel = 'Close', children }: ModalProps) {
+export function Modal({ open, onClose, title, description, footer, footerStart, size = 'medium', closeLabel = 'Close', children }: ModalProps) {
   const d = useDialog(open, onClose);
   const tid = React.useId();
   return (
@@ -199,7 +201,7 @@ export function Modal({ open, onClose, title, description, footer, size = 'mediu
             <button type="button" className="eu-input__btn" aria-label={closeLabel} onClick={onClose}><Icon name="close" size="md" /></button>
           </header>
           {children ? <div className="eu-modal__body">{children}</div> : null}
-          {footer ? <footer className="eu-modal__foot">{footer}</footer> : null}
+          {footer || footerStart ? <footer className="eu-modal__foot">{footerStart ? <div className="eu-modal__foot-start">{footerStart}</div> : null}{footer}</footer> : null}
         </div>
       ) : null}
     </dialog>

@@ -25,6 +25,8 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 - Code-born patterns added to Figma: Global Search, Label Picker, Activity Item, Key Value List.
 - Code tokens = Figma variables (367, diffed equal). Library still has to be published by hand in Figma.
 
+- Toolbar CTAs are SplitButtons (+ Kontakt / + Organisation) opening landscape modals (Modal size xlarge): Kontakt = Person | divider | Organisation; Organisation = one part in three columns. Import and some menu items are placeholders (toast).
+
 ## Failed / gotchas
 - The Pipedrive file still uses an older library version, so the frame mixes old names (`bg/page`, `text/body`, `radius/lg` = 8) and Hydra names. Code keeps old names at their old values; colliding Hydra names (radius-lg 40, icon sizes) were not imported.
 - Dev server logs a stale 500 while `sync-ds` swaps files; a reload fixes it.

@@ -113,6 +113,8 @@ export interface DropdownProps {
   onChange?: (value: string) => void;
   /** Visible label. */
   label?: string;
+  /** Keeps the label for screen readers only, for repeated rows where a visible label already sits above. */
+  hideLabel?: boolean;
   /** Text shown when nothing is selected. */
   placeholder?: string;
   /** Help text. */
@@ -130,7 +132,7 @@ export interface DropdownProps {
 }
 
 /** Choose one value from a list. It opens below the field and supports the arrow keys. To run commands use Menu; for two to four visible choices use Radio or SegmentedControl. */
-export function Dropdown({ options, value, onChange, label, placeholder = 'Select', help, error, disabled, required, id, className }: DropdownProps) {
+export function Dropdown({ options, value, onChange, label, hideLabel, placeholder = 'Select', help, error, disabled, required, id, className }: DropdownProps) {
   const f = useFieldIds(id);
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(0);
@@ -156,7 +158,7 @@ export function Dropdown({ options, value, onChange, label, placeholder = 'Selec
     }
   };
   return (
-    <FieldShell label={label} required={required} help={help} error={error} htmlFor={f.id} helpId={f.helpId} className={className}>
+    <FieldShell hideLabel={hideLabel} label={label} required={required} help={help} error={error} htmlFor={f.id} helpId={f.helpId} className={className}>
       <div className="eu-dd" ref={root}>
         <button id={f.id} type="button" disabled={disabled} role="combobox" aria-expanded={open} aria-haspopup="listbox" aria-controls={`${f.id}-list`} aria-invalid={error ? true : undefined} aria-activedescendant={open ? `${f.id}-o${active}` : undefined}
           className={cn('eu-dd__field eu-type-body-small', error && 'is-error', !sel && 'is-placeholder')} onClick={() => setOpen((o) => !o)} onKeyDown={onKey}>

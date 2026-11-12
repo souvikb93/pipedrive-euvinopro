@@ -287,7 +287,7 @@
   --eu-background-functional-neutral: var(--eu-prim-blue-gray-10); /* From Hydra. */
   --eu-border-functional-neutral: var(--eu-prim-blue-gray-20); /* From Hydra. */
   --eu-border-static-base: var(--eu-prim-blue-gray-100); /* From Hydra. */
-  --eu-foreground-static-placeholder: var(--eu-prim-blue-gray-50); /* From Hydra. */
+  --eu-foreground-static-placeholder: var(--eu-prim-blue-gray-60); /* Placeholder and empty-select text. blue-gray/60 for 4.5:1 on white (Hydra used /50, 3.2:1). */
   --eu-foreground-static-soft: var(--eu-prim-blue-gray-40); /* From Hydra. */
 
   /* Dimension: spacing, radius, size, border width. */
@@ -370,6 +370,8 @@
   --eu-numbers-00: 0px; /* From Hydra. */
   --eu-numbers-08: 8px; /* From Hydra. */
   --eu-numbers-12: 12px; /* From Hydra. */
+  --eu-size-dialog-xl: 960px; /* Landscape dialogs with two or three form columns, such as Add contact and Add organisation. */
+  --eu-numbers-20: 20px; /* Split button: space between the label and the divider. */
 
   /* Effects */
   --eu-shadow-sm: 0px 1px 2px 0px #0000000d;
