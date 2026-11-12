@@ -277,7 +277,7 @@
   --eu-foreground-functional-dark-warning: var(--eu-prim-yellow-dark); /* From Hydra. */
   --eu-background-functional-success: var(--eu-prim-green-light); /* From Hydra. */
   --eu-border-functional-success: var(--eu-prim-green-medium); /* From Hydra. */
-  --eu-foreground-functional-dark-success: var(--eu-prim-green-dark); /* From Hydra. */
+  --eu-foreground-functional-dark-success: var(--eu-prim-green-darker); /* Text on background/functional/success. green/darker for 4.5:1 contrast. */
   --eu-background-functional-info: var(--eu-prim-blue-light); /* From Hydra. */
   --eu-border-functional-info: var(--eu-prim-blue-medium); /* From Hydra. */
   --eu-foreground-functional-dark-info: var(--eu-prim-blue-dark); /* From Hydra. */

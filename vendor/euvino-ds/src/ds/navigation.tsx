@@ -411,7 +411,7 @@ export function PageHeader({ title, subtitle, breadcrumbs, actions, size = 'larg
       {breadcrumbs}
       <div className="eu-pagehead__row">
         {icon ? <span className="eu-pagehead__icon" aria-hidden="true"><Icon name={icon} size="lg" /></span> : null}
-        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{title}</h1>{subtitle ? <p className="eu-type-body-large eu-check__desc eu-text">{subtitle}</p> : null}</div>
+        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{title}</h1>{subtitle ? <p className="eu-type-body-large eu-pagehead__sub eu-text">{subtitle}</p> : null}</div>
         {actions ? <div className="eu-pagehead__actions">{actions}</div> : null}
       </div>
     </div>

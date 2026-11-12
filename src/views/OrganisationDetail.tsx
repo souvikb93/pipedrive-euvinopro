@@ -215,8 +215,8 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           ) : null}
 
           <Stack gap="1" padding="4">
-            <Text variant="caption" tone="muted">Aktualisiert: Donnerstag, 15. Oktober 2026 15:12</Text>
-            <Text variant="caption" tone="muted">Erstellt: Donnerstag, 4. März 2021 17:23</Text>
+            <Text variant="caption" tone="body">Aktualisiert: Donnerstag, 15. Oktober 2026 15:12</Text>
+            <Text variant="caption" tone="body">Erstellt: Donnerstag, 4. März 2021 17:23</Text>
           </Stack>
         </Stack>
 

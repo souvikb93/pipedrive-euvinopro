@@ -41,8 +41,8 @@ button { font-family: inherit; }
 .eu-btn--tertiary:not(.eu-btn--icon):is(:hover, :focus-visible, :active) { border-radius: var(--eu-radius-full); }
 .eu-btn--tertiary:focus-visible { background: var(--eu-background-static-base); color: var(--eu-foreground-interactive-focus); }
 .eu-btn--tertiary:active { background: var(--eu-background-static-base); color: var(--eu-foreground-interactive-pressed); }
-.eu-btn--primary-2 { background: var(--eu-action-primary); color: var(--eu-foreground-static-base); }
-.eu-btn--primary-2:hover { background: var(--eu-action-primary-hover); }
+.eu-btn--primary-2 { background: var(--eu-background-primary-default); border-color: var(--eu-border-primary-default); color: var(--eu-foreground-static-invert); } /* Deprecated: Hydra has no orange; same as primary */
+.eu-btn--primary-2:hover { background: var(--eu-background-primary-hover); border-color: var(--eu-border-primary-hover); }
 .eu-btn--danger { background: var(--eu-background-error-primary-default); border-color: var(--eu-border-error-default); color: var(--eu-foreground-static-invert); }
 .eu-btn--danger:focus-visible { background: var(--eu-background-error-primary-focus); border-color: var(--eu-border-error-focus); }
 .eu-btn--danger:active { background: var(--eu-background-error-primary-pressed); border-color: var(--eu-border-error-pressed); }
@@ -265,7 +265,7 @@ button { font-family: inherit; }
 .eu-alert__actions { display: flex; gap: var(--eu-spacing-2xs); margin-top: var(--eu-spacing-3xs); }
 .eu-toasts { position: fixed; z-index: var(--eu-layer-toast); right: var(--eu-spacing-m); bottom: var(--eu-spacing-m); display: flex; flex-direction: column; gap: var(--eu-spacing-2xs); width: min(var(--eu-size-dialog-sm), calc(100vw - var(--eu-spacing-2xl))); }
 .eu-toast { box-shadow: var(--eu-shadow-lg); align-items: center; }
-.eu-badge { display: inline-flex; align-items: center; gap: var(--eu-spacing-3xs); width: fit-content; border-radius: var(--eu-radius-full); font-weight: var(--eu-font-body-caption-strong-weight); border: var(--eu-border-width-sm) solid transparent; white-space: nowrap; --c: var(--eu-foreground-static-neutral); --t: var(--eu-background-functional-neutral); --b: var(--eu-border-functional-neutral); --f: var(--eu-background-static-inverse); --on: var(--eu-foreground-static-invert); }
+.eu-badge { display: inline-flex; align-items: center; gap: var(--eu-spacing-3xs); width: fit-content; border-radius: var(--eu-radius-full); font-weight: var(--eu-font-body-caption-strong-weight); border: var(--eu-border-width-sm) solid transparent; white-space: nowrap; --c: var(--eu-foreground-static-body); --t: var(--eu-background-functional-neutral); --b: var(--eu-border-functional-neutral); --f: var(--eu-background-static-inverse); --on: var(--eu-foreground-static-invert); }
 .eu-badge--success { --c: var(--eu-foreground-functional-dark-success); --t: var(--eu-background-functional-success); --b: var(--eu-border-functional-success); --f: var(--eu-status-text-success); }
 .eu-badge--info { --c: var(--eu-foreground-functional-dark-info); --t: var(--eu-background-functional-info); --b: var(--eu-border-functional-info); --f: var(--eu-status-text-info); }
 .eu-badge--warning { --c: var(--eu-foreground-functional-dark-warning); --t: var(--eu-background-functional-warning); --b: var(--eu-border-functional-warning); --f: var(--eu-status-warning); --on: var(--eu-foreground-static-base); }
@@ -605,3 +605,4 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-activity.is-clickable .eu-activity__card:has(.eu-activity__open:focus-visible) { outline: var(--eu-border-width-md) solid var(--eu-border-primary-focus); outline-offset: var(--eu-spacing-4xs); }
 .eu-tl--progress .eu-activity.is-current .eu-activity__card:hover { border-color: var(--eu-border-accent); }
 .eu-radio__el[aria-invalid] + .eu-radio__dot { background: var(--eu-background-functional-error); border-color: var(--eu-border-functional-error); }
+.eu-pagehead__sub { margin: 0; color: var(--eu-foreground-static-body); }
