@@ -34,6 +34,4 @@
 .form-columns > * { flex: 1 1 0; min-width: 0; }
 .entry-row > .entry-row__value { flex: 1 1 auto; min-width: 0; }
 .entry-row > .entry-row__type { flex: none; width: var(--eu-size-field-xs); }
-.contact-form > .contact-form__person { flex: 2 1 0; min-width: 0; }
-.contact-form > .contact-form__org { flex: 1 1 0; min-width: 0; }
 

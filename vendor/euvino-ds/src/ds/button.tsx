@@ -5,7 +5,7 @@ import { Loader } from './feedback';
 
 export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'style'> {
   /**
-   * Emphasis. `primary` = the main action of a view. `secondary` = a real alternative. `tertiary` = the least emphasis: a way out such as Cancel.
+   * Emphasis. `primary` = the main action of a view. `secondary` = a real alternative, and Cancel next to a primary action. `tertiary` = the least emphasis: text actions such as "Add phone number" or Import.
    * `primary-2` = deprecated: Hydra has no orange call to action, so it renders as `primary`. Use `primary`.
    * `danger` = the final irreversible action inside a confirmation. `danger-secondary` = the entry point that opens that confirmation.
    */

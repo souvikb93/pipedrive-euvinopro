@@ -32,6 +32,8 @@ Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0
 - Dev server logs a stale 500 while `sync-ds` swaps files; a reload fixes it.
 
 ## Next
-- Publish the Figma library (manual).
-- Turn off Vercel Authentication or make a share link before sending the product link to the client; make the GitHub repos visible to them.
-- Drop the deprecated token aliases once no product uses them.
+- UNCOMMITTED on localhost (both repos): Kontakt modal Person section in aligned rows (Name|Organisation, Telefon|E-Mail, Besitzer|Label, Anrede|Position, Sichtbar für|–), xlarge modal padding 24 all round; Kontakt / Unternehmen modals (German copy from Pipedrive, placeholders, one 24px edge, 32px column gap, fit at 780px), dialog titles H5, IconButton close + focus on first field, Cancel = secondary (rule in CLAUDE.md/AGENTS.md), tertiary text buttons: 4px gap + Selected icon stroke. Waiting for user review.
+- New DS components (code only so far): FieldAction (inline 'add another' link under fields: no padding, Medium 14, 16px icon, underline on hover) and CloseButton (dialogs 32/20, toasts 24/16, Regular stroke, round hover). Tertiary tweak reverted.
+- After approval: mirror in Figma (new Field Action + Close Button components) (Modal/Drawer close as IconButton, footer Abbrechen secondary, tertiary Button-Label gap 3xs + Selected icon weight), then commit + push (push = Vercel deploy).
+- Figma library still to be published by hand.
+- Drop deprecated token aliases once no product uses them.

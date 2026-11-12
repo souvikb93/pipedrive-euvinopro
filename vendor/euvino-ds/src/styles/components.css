@@ -141,7 +141,7 @@ button { font-family: inherit; }
 
 /* Dropdown + Menu */
 .eu-dd { position: relative; }
-.eu-dd__field { display: flex; align-items: center; gap: var(--eu-spacing-2xs); height: var(--eu-size-control-md); padding: var(--eu-spacing-2xs) var(--eu-spacing-2xs) var(--eu-spacing-2xs) var(--eu-spacing-xs); cursor: pointer; text-align: left; }
+.eu-dd__field { display: flex; align-items: center; gap: var(--eu-spacing-2xs); height: var(--eu-size-button-md); padding: var(--eu-spacing-2xs) var(--eu-spacing-2xs) var(--eu-spacing-2xs) var(--eu-spacing-xs); cursor: pointer; text-align: left; }
 .eu-dd__field:disabled { background: var(--eu-background-secondary-disabled); border-color: var(--eu-border-static-soft); color: var(--eu-foreground-interactive-disabled); cursor: not-allowed; }
 .eu-dd__field.is-placeholder { color: var(--eu-foreground-static-placeholder); }
 .eu-dd__value { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -628,3 +628,22 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-modal__body { overflow-y: auto; }
 .eu-modal--xlarge .eu-modal__head, .eu-modal--xlarge .eu-modal__foot { padding-bottom: var(--eu-spacing-s); border-bottom: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
 .eu-modal--xlarge .eu-modal__foot { padding-bottom: 0; padding-top: var(--eu-spacing-s); border-bottom: 0; border-top: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
+.eu-modal--xlarge .eu-modal__box { padding: var(--eu-spacing-m); gap: var(--eu-spacing-m); }
+.eu-modal--xlarge .eu-modal__head { align-items: center; }
+/* XLarge forms never scroll: the whole form is visible, and popovers (dropdown lists, focus rings) are not clipped. */
+.eu-modal--xlarge, .eu-modal--xlarge .eu-modal__box, .eu-modal--xlarge .eu-modal__body { overflow: visible; }
+.eu-modal--xlarge .eu-modal__box { max-height: none; }
+.eu-card--medium { gap: var(--eu-spacing-xs); }
+/* FieldAction: inline "add another" action under a field. Not a button: no padding or background, icon on the field's left edge, underline on hover. */
+.eu-field-action { display: inline-flex; align-items: center; align-self: flex-start; gap: var(--eu-spacing-3xs); padding: 0; border: 0; background: none; color: var(--eu-foreground-interactive-default); font-family: var(--eu-font-body); font-size: var(--eu-font-body-small-size); font-weight: var(--eu-font-body-small-weight); line-height: var(--eu-font-body-caption-medium-13-line); text-decoration: none; text-underline-offset: var(--eu-spacing-4xs); cursor: pointer; }
+.eu-field-action:hover .eu-field-action__label { text-decoration: underline; }
+.eu-field-action:hover { color: var(--eu-foreground-interactive-hover); }
+.eu-field-action:active { color: var(--eu-foreground-interactive-pressed); }
+.eu-field-action:disabled { color: var(--eu-foreground-interactive-disabled); cursor: not-allowed; }
+.eu-field-action:disabled .eu-field-action__label { text-decoration: none; }
+/* CloseButton: the X of dialogs, drawers, toasts and alerts */
+.eu-close { display: inline-flex; align-items: center; justify-content: center; flex: none; padding: 0; border: 0; border-radius: var(--eu-radius-sm); background: transparent; color: var(--eu-foreground-interactive-default); cursor: pointer; transition: background-color var(--eu-motion-duration-fast); }
+.eu-close--medium { width: var(--eu-size-control-sm); height: var(--eu-size-control-sm); }
+.eu-close--small { width: var(--eu-size-control-xs); height: var(--eu-size-control-xs); }
+.eu-close:hover { background: var(--eu-background-secondary-hover); color: var(--eu-foreground-interactive-hover); }
+.eu-close:active { background: var(--eu-background-secondary-pressed); }

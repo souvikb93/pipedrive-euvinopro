@@ -266,6 +266,8 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'titl
   padding?: 'medium' | 'large';
   /** Element to render. */
   as?: React.ElementType;
+  /** Heading level of `title`. Use 3 inside a Modal or under another h2. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4;
   /** Adds a chevron that shows and hides the content. Needs a `title`. */
   collapsible?: boolean;
   /** With `collapsible`: starts open. Defaults to true. */
@@ -275,7 +277,7 @@ export interface CardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'titl
 }
 
 /** The one surface for grouped content: white, radius/xl, soft shadow. The Figma Card/* layouts are all this with different content. Do not stack cards inside cards. */
-export function Card({ title, description, headerAction, footer, image, imageAlt = '', padding = 'large', as: As = 'section', collapsible, defaultOpen = true, toggleLabel, className, children, ...rest }: CardProps) {
+export function Card({ title, description, headerAction, footer, image, imageAlt = '', padding = 'large', as: As = 'section', collapsible, defaultOpen = true, toggleLabel, className, children, headingLevel = 2, ...rest }: CardProps) {
   const [open, setOpen] = React.useState(defaultOpen);
   const bodyId = React.useId();
   const shown = !collapsible || open;
@@ -287,7 +289,7 @@ export function Card({ title, description, headerAction, footer, image, imageAlt
   return (
     <As {...rest} className={cn('eu-card', `eu-card--${padding}`, collapsible && !open && 'is-collapsed', className)}>
       {image ? <img src={image} alt={imageAlt} className="eu-card__img" /> : null}
-      {title || headerAction || toggle ? <div className="eu-card__head"><div>{title ? <h2 className="eu-type-ui-label eu-alert__title">{title}</h2> : null}{description ? <p className="eu-type-body-small eu-check__desc eu-text">{description}</p> : null}</div>{headerAction || toggle ? <div className="eu-card__actions">{headerAction}{toggle}</div> : null}</div> : null}
+      {title || headerAction || toggle ? <div className="eu-card__head"><div>{title ? React.createElement(`h${headingLevel}`, { className: 'eu-type-ui-label eu-alert__title' }, title) : null}{description ? <p className="eu-type-body-small eu-check__desc eu-text">{description}</p> : null}</div>{headerAction || toggle ? <div className="eu-card__actions">{headerAction}{toggle}</div> : null}</div> : null}
       {shown ? (collapsible ? <div id={bodyId} className="eu-card__body">{children}</div> : children) : null}
       {shown && footer ? <div className="eu-card__foot">{footer}</div> : null}
     </As>

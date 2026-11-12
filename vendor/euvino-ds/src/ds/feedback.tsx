@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { cn } from './cn';
 import { Icon, type IconName } from './icon';
+import { Button } from './button';
+import { CloseButton } from './field-action';
 
 export type Status = 'default' | 'success' | 'info' | 'warning' | 'error';
 const STATUS_ICON: Record<Status, IconName> = { default: 'info', success: 'check-circle', info: 'info', warning: 'warning-triangle', error: 'warning-circle' };
@@ -78,7 +80,7 @@ export function Alert({ status = 'default', variant = 'outline', title, actions,
         {children ? <div className="eu-type-body-small eu-alert__text">{children}</div> : null}
         {actions ? <div className="eu-alert__actions">{actions}</div> : null}
       </div>
-      {onDismiss ? <button type="button" className="eu-input__btn" aria-label={dismissLabel} onClick={onDismiss}><Icon name="close" size="sm" /></button> : null}
+      {onDismiss ? <CloseButton label={dismissLabel} size="small" onClick={onDismiss} /> : null}
     </div>
   );
 }
@@ -141,7 +143,7 @@ export function ToastProvider({ children, dismissLabel = 'Dismiss' }: ToastProvi
             <Icon name={STATUS_ICON[t.status ?? 'default']} size="md" className="eu-alert__icon" />
             <div className="eu-alert__body"><div className="eu-type-ui-card-title eu-alert__title">{t.title}</div>{t.description ? <div className="eu-type-body-small eu-alert__text">{t.description}</div> : null}</div>
             {t.action ? <button type="button" className="eu-link eu-link--primary eu-type-ui-button" onClick={() => { t.action?.onClick(); remove(t.id); }}>{t.action.label}</button> : null}
-            <button type="button" className="eu-input__btn" aria-label={dismissLabel} onClick={() => remove(t.id)}><Icon name="close" size="sm" /></button>
+            <CloseButton label={dismissLabel} size="small" onClick={() => remove(t.id)} />
           </div>
         ))}
       </div>
@@ -161,7 +163,12 @@ function useDialog(open: boolean, onClose: () => void) {
   const ref = React.useRef<HTMLDialogElement>(null);
   React.useEffect(() => {
     const d = ref.current; if (!d) return;
-    if (open && !d.open) d.showModal?.();
+    if (open && !d.open) {
+      d.showModal?.();
+      // Start in the content, not on the close button: first field, else whatever the dialog chose.
+      const first = d.querySelector<HTMLElement>('.eu-modal__body input:not([type=hidden]):not(:disabled), .eu-modal__body textarea:not(:disabled), .eu-drawer__body input:not([type=hidden]):not(:disabled), .eu-drawer__body textarea:not(:disabled)');
+      first?.focus();
+    }
     if (!open && d.open) d.close?.();
   }, [open]);
   return { ref, onCancel: (e: React.SyntheticEvent) => { e.preventDefault(); onClose(); } };
@@ -197,8 +204,8 @@ export function Modal({ open, onClose, title, description, footer, footerStart, 
       {open ? (
         <div className="eu-modal__box">
           <header className="eu-modal__head">
-            <div><h2 id={tid} className="eu-type-mobile-h6 eu-modal__title">{title}</h2>{description ? <div className="eu-type-body-small eu-check__desc">{description}</div> : null}</div>
-            <button type="button" className="eu-input__btn" aria-label={closeLabel} onClick={onClose}><Icon name="close" size="md" /></button>
+            <div><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2>{description ? <div className="eu-type-body-small eu-check__desc">{description}</div> : null}</div>
+            <CloseButton label={closeLabel} onClick={onClose} />
           </header>
           {children ? <div className="eu-modal__body">{children}</div> : null}
           {footer || footerStart ? <footer className="eu-modal__foot">{footerStart ? <div className="eu-modal__foot-start">{footerStart}</div> : null}{footer}</footer> : null}
@@ -237,11 +244,11 @@ export function ConfirmDialog({ open, onCancel, onConfirm, title, children, conf
     <dialog ref={d.ref} onCancel={d.onCancel} role="alertdialog" aria-labelledby={tid} aria-describedby={did} className="eu-modal eu-modal--small" onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
       {open ? (
         <div className="eu-modal__box">
-          <header className="eu-modal__head"><h2 id={tid} className="eu-type-mobile-h6 eu-modal__title">{title}</h2></header>
+          <header className="eu-modal__head"><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2></header>
           <div id={did} className="eu-modal__body eu-type-body-small eu-check__desc">{children}</div>
           <footer className="eu-modal__foot">
-            <button type="button" autoFocus className="eu-btn eu-btn--tertiary eu-btn--medium" onClick={onCancel}>{cancelLabel}</button>
-            <button type="button" aria-busy={busy || undefined} className={cn('eu-btn eu-btn--medium', tone === 'danger' ? 'eu-btn--danger' : 'eu-btn--primary')} onClick={busy ? undefined : onConfirm}>{busy ? <Loader size="tiny" label="" /> : null}{confirmLabel}</button>
+            <Button variant="secondary" autoFocus onClick={onCancel}>{cancelLabel}</Button>
+            <Button variant={tone === 'danger' ? 'danger' : 'primary'} loading={busy} onClick={onConfirm}>{confirmLabel}</Button>
           </footer>
         </div>
       ) : null}
@@ -274,7 +281,7 @@ export function Drawer({ open, onClose, title, position = 'right', footer, close
     <dialog ref={d.ref} onCancel={d.onCancel} aria-labelledby={tid} className={cn('eu-drawer', `eu-drawer--${position}`)} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       {open ? (
         <div className="eu-drawer__box">
-          <header className="eu-modal__head"><h2 id={tid} className="eu-type-mobile-h6 eu-modal__title">{title}</h2><button type="button" className="eu-input__btn" aria-label={closeLabel} onClick={onClose}><Icon name="close" size="md" /></button></header>
+          <header className="eu-modal__head"><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2><CloseButton label={closeLabel} onClick={onClose} /></header>
           <div className="eu-modal__body eu-drawer__body">{children}</div>
           {footer ? <footer className="eu-modal__foot">{footer}</footer> : null}
         </div>

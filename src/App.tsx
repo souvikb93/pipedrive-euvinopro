@@ -284,12 +284,12 @@ export function App() {
 
   const OWNERS = ['Johannes', 'Maximilian Eul', 'Beate Schmitt'];
   const addContact = (n: NewContact) => {
-    const org = orgs.find((o) => o.id === n.organisationId);
+    const org = orgs.find((o) => o.name.toLowerCase() === n.organisation.trim().toLowerCase() || o.contactOrg.toLowerCase() === n.organisation.trim().toLowerCase());
     const phones = n.phones.map((p) => p.value.trim()).filter(Boolean);
     const mail = n.emails.find((e) => e.value.trim());
     const id = `c-${Date.now()}`;
     const c: Contact = {
-      id, name: n.name, label: 'lead', organisation: org?.contactOrg ?? '', email: mail?.value.trim() ?? '', emailType: mail ? mail.type : null,
+      id, name: n.name, label: 'lead', organisation: org?.contactOrg ?? n.organisation.trim(), email: mail?.value.trim() ?? '', emailType: mail ? mail.type : null,
       phones, phoneType: phones.length ? n.phones[0].type : null, wonDeals: 0, openDeals: 0, nextActivity: '', owner: n.owner,
     };
     setPeople((list) => [c, ...list]);
@@ -412,7 +412,7 @@ export function App() {
         </Header>
 
         <Stack as="main" gap="6" className="app-content">
-          <AddContactModal open={addingContact} onClose={() => setAddingContact(false)} onAdd={addContact} onImport={() => soon('Import')} organisations={orgs.map((o) => ({ id: o.id, name: o.name, website: o.website, phone: o.phone }))} labelOptions={contactLabels.options} owners={OWNERS} />
+          <AddContactModal open={addingContact} onClose={() => setAddingContact(false)} onAdd={addContact} onImport={() => soon('Import')} labelOptions={contactLabels.options} owners={OWNERS} />
           {heading ? <VisuallyHidden><Text as="h1" variant="h1">{heading}</Text></VisuallyHidden> : null}
 
           {route.name === 'organisation' ? (

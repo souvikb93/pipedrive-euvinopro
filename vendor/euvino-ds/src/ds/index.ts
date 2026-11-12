@@ -13,3 +13,4 @@ export { GlobalSearch, type GlobalSearchProps, type GlobalSearchCategory, type G
 export { LabelPicker, type LabelPickerProps, type LabelOption } from './label-picker';
 export { InlineEdit, type InlineEditProps } from './inline-edit';
 export { SplitButton, type SplitButtonProps } from './split-button';
+export { FieldAction, CloseButton, type FieldActionProps, type CloseButtonProps } from './field-action';
