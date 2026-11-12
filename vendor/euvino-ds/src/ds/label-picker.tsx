@@ -51,7 +51,7 @@ export function LabelPicker({ value, options, onChange, onCreate, label, labels 
   const place = React.useCallback(() => {
     const r = trigger.current?.getBoundingClientRect();
     if (!r) return;
-    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--eu-spacing-1')) || 0;
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--eu-spacing-3xs')) || 0;
     const h = panel.current?.offsetHeight ?? 0;
     const below = window.innerHeight - r.bottom;
     const up = h > 0 && below < h + gap && r.top > below;

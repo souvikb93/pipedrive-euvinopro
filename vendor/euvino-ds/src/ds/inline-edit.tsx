@@ -47,7 +47,7 @@ export function InlineEdit({ value, onChange, label, type = 'text', display, req
   const place = React.useCallback(() => {
     const r = root.current?.getBoundingClientRect();
     if (!r) return;
-    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--eu-spacing-1')) || 0;
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--eu-spacing-3xs')) || 0;
     const h = pop.current?.offsetHeight ?? 0;
     const below = window.innerHeight - r.bottom;
     const w = pop.current?.offsetWidth ?? 0;

@@ -2,6 +2,12 @@ import * as React from 'react';
 import { cn } from './cn';
 
 type SpaceToken = '0' | '0-5' | '1' | '1-5' | '2' | '2-5' | '3' | '4' | '5' | '6' | '8' | '10' | '12' | '16' | '20' | '24';
+/** Steps of the old numeric scale, mapped to the current `spacing/*` variables in Figma. */
+const SPACE: Record<SpaceToken, string> = {
+  '0': 'none', '0-5': '4xs', '1': '3xs', '1-5': 'deprecated-spacing-6', '2': '2xs', '2-5': 'deprecated-spacing-10', '3': 'xs', '4': 's',
+  '5': 'deprecated-spacing-20', '6': 'm', '8': 'l', '10': 'xl', '12': '2xl', '16': '4xl', '20': '5xl', '24': '6xl',
+};
+const space = (t: SpaceToken) => (SPACE[t].startsWith('deprecated') ? `var(--eu-${SPACE[t]})` : `var(--eu-spacing-${SPACE[t]})`);
 
 export interface StackProps extends React.HTMLAttributes<HTMLElement> {
   /** `vertical` for a column (default), `horizontal` for a row. */
@@ -28,8 +34,8 @@ export function Stack({ direction = 'vertical', gap = '4', padding, align, justi
       className={cn('eu-stack', className)}
       style={{
         flexDirection: direction === 'horizontal' ? 'row' : 'column',
-        gap: gap === '0' ? 0 : `var(--eu-spacing-${gap})`,
-        padding: padding ? (padding === '0' ? 0 : `var(--eu-spacing-${padding})`) : undefined,
+        gap: gap === '0' ? 0 : space(gap),
+        padding: padding ? (padding === '0' ? 0 : space(padding)) : undefined,
         alignItems: align && ({ start: 'flex-start', center: 'center', end: 'flex-end', stretch: 'stretch', baseline: 'baseline' } as const)[align],
         justifyContent: justify && ({ start: 'flex-start', center: 'center', end: 'flex-end', between: 'space-between' } as const)[justify],
         flexWrap: wrap ? 'wrap' : undefined,
@@ -45,6 +51,12 @@ export type TextStyle =
   | 'label' | 'card-title' | 'button';
 /** Text colour tokens, from `text/*`. */
 export type TextTone = 'primary' | 'body' | 'strong-body' | 'muted' | 'disabled' | 'inverse' | 'link' | 'success' | 'info' | 'warning' | 'error';
+/** Each tone's current `foreground/*` or `status/text/*` variable in Figma. */
+const TONE: Record<TextTone, string> = {
+  primary: 'foreground-static-base', body: 'foreground-static-body', 'strong-body': 'foreground-static-body', muted: 'foreground-static-neutral',
+  disabled: 'foreground-disabled', inverse: 'foreground-static-invert', link: 'foreground-interactive-default',
+  success: 'status-text-success', info: 'status-text-info', warning: 'status-text-warning', error: 'status-text-error',
+};
 
 const TYPE_CLASS: Record<TextStyle, string> = {
   h1: 'desktop-h1', h2: 'desktop-h2', h3: 'desktop-h3', h4: 'desktop-h4', h5: 'desktop-h5', h6: 'desktop-h6',
@@ -66,7 +78,7 @@ export interface TextProps extends React.HTMLAttributes<HTMLElement> {
 export function Text({ variant = 'body', tone, as, className, style, ...rest }: TextProps) {
   const As = as ?? DEFAULT_ELEMENT[variant] ?? 'p';
   const heading = /^h\d$/.test(variant) || variant === 'label' || variant === 'card-title';
-  return <As {...rest} className={cn(`eu-text eu-type-${TYPE_CLASS[variant]}`, className)} style={{ color: `var(--eu-text-${tone ?? (heading ? 'primary' : 'body')})`, ...style }} />;
+  return <As {...rest} className={cn(`eu-text eu-type-${TYPE_CLASS[variant]}`, className)} style={{ color: `var(--eu-${TONE[tone ?? (heading ? 'primary' : 'body')]})`, ...style }} />;
 }
 
 export interface VisuallyHiddenProps extends React.HTMLAttributes<HTMLSpanElement> {

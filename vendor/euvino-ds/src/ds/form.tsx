@@ -15,7 +15,7 @@ function FieldShell({ label, hideLabel, required, help, error, success, htmlFor,
   const msg = error ?? success ?? help;
   return (
     <div className={cn('eu-field', className)}>
-      {label ? <label htmlFor={htmlFor} className={cn('eu-field__label eu-type-ui-card-title', hideLabel && 'eu-sr')}>{label}{required ? <span className="eu-field__req" aria-hidden="true"> *</span> : null}</label> : null}
+      {label ? <label htmlFor={htmlFor} className={cn('eu-field__label eu-type-body-caption-medium-13', hideLabel && 'eu-sr')}>{label}{required ? <span className="eu-field__req" aria-hidden="true"> *</span> : null}</label> : null}
       {children}
       {msg || counter ? (
         <div className="eu-field__foot">
@@ -202,7 +202,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(functi
     <label className={cn('eu-check', `eu-check--${size}`, rest.disabled && 'is-disabled', className)}>
       <input {...rest} ref={inner} type="checkbox" aria-invalid={error ? true : undefined} className="eu-check__el" />
       <span className="eu-check__box" aria-hidden="true"><Icon name={indeterminate ? 'minus' : 'check'} size="xs" /></span>
-      {label || description ? <span className="eu-check__text">{label ? <span className="eu-type-body-small eu-check__label">{label}</span> : null}{description ? <span className="eu-type-body-caption eu-check__desc">{description}</span> : null}{error ? <span className="eu-type-body-caption eu-field__help is-error">{error}</span> : null}</span> : null}
+      {label || description ? <span className="eu-check__text">{label ? <span className={cn(size === 'medium' ? 'eu-type-body-base' : 'eu-type-body-small', 'eu-check__label')}>{label}</span> : null}{description ? <span className="eu-type-body-caption eu-check__desc">{description}</span> : null}{error ? <span className="eu-type-body-caption eu-field__help is-error">{error}</span> : null}</span> : null}
     </label>
   );
 });
@@ -220,7 +220,7 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(function Rad
     <label className={cn('eu-radio', rest.disabled && 'is-disabled', className)}>
       <input {...rest} ref={ref} type="radio" className="eu-radio__el" />
       <span className="eu-radio__dot" aria-hidden="true" />
-      {label || description ? <span className="eu-check__text">{label ? <span className="eu-type-body-small eu-check__label">{label}</span> : null}{description ? <span className="eu-type-body-caption eu-check__desc">{description}</span> : null}</span> : null}
+      {label || description ? <span className="eu-check__text">{label ? <span className="eu-type-body-base eu-check__label">{label}</span> : null}{description ? <span className="eu-type-body-caption eu-check__desc">{description}</span> : null}</span> : null}
     </label>
   );
 });
@@ -246,7 +246,7 @@ export interface RadioGroupProps {
 export function RadioGroup({ label, name, options, value, onChange, error, horizontal }: RadioGroupProps) {
   return (
     <fieldset className={cn('eu-group', horizontal && 'eu-group--row')}>
-      <legend className="eu-type-ui-card-title eu-field__label">{label}</legend>
+      <legend className="eu-type-body-caption-medium-13 eu-field__label">{label}</legend>
       <div className="eu-group__items">
         {options.map((o) => <Radio key={o.value} name={name} value={o.value} label={o.label} description={o.description} disabled={o.disabled} checked={value === o.value} onChange={() => onChange?.(o.value)} />)}
       </div>

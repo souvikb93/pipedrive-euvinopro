@@ -75,7 +75,7 @@ export interface GaugeProps {
 /** One score against a full range, drawn as a half circle. */
 export function Gauge({ value, label }: GaugeProps) {
   const v = Math.max(0, Math.min(100, value));
-  return <figure className="eu-chart eu-gauge" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}><svg viewBox="0 0 100 54"><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-bg-muted)" strokeWidth="9" /><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-chart-1)" strokeWidth="9" pathLength={100} strokeDasharray={`${v} 100`} /></svg><figcaption className="eu-type-body-small">{label}: {v}</figcaption></figure>;
+  return <figure className="eu-chart eu-gauge" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}><svg viewBox="0 0 100 54"><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-background-static-muted)" strokeWidth="9" /><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-chart-1)" strokeWidth="9" pathLength={100} strokeDasharray={`${v} 100`} /></svg><figcaption className="eu-type-body-small">{label}: {v}</figcaption></figure>;
 }
 
 export interface ProgressListProps {

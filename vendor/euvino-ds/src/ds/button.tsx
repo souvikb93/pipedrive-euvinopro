@@ -9,7 +9,7 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
    * `primary-2` = the orange marketing or commercial call to action, at most one per view; never for a normal form save.
    * `danger` = the final irreversible action inside a confirmation. `danger-secondary` = the entry point that opens that confirmation.
    */
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'primary-2' | 'danger' | 'danger-secondary';
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'primary-2' | 'danger' | 'danger-secondary' | 'danger-tertiary';
   /** Height: `tiny` 24, `small` 32, `medium` 40 (default), `large` 48, `giant` 56. */
   size?: 'tiny' | 'small' | 'medium' | 'large' | 'giant';
   /** Which icon to show. Buttons are text-only by default; add an icon only when it adds meaning. Pick the side with `iconPosition`. */
