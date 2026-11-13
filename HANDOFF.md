@@ -1,46 +1,44 @@
 # Handoff
 
 ## Goal
-Pipedrive "Kontakte — EuvinoPRO" in React on the EuvinoPRO design system (`@euvino/ds`), aligned with the Figma library (`eoPfuJuIddL9imDtGiK2oX`). Tokens only, German copy. Shows the client an enterprise design system, product and codebase built with an AI-native workflow.
+Pipedrive "Kontakte — EuvinoPRO" in React on the EuvinoPRO design system (`@euvino/ds`), aligned with the Figma library (`eoPfuJuIddL9imDtGiK2oX`). Tokens only, German copy. Shows the client an enterprise design system, product and codebase built with an AI-native workflow (see README).
 
 Working rules: show changes on localhost first; Figma only after approval; archive, never delete, in Figma; the user decides when to deploy (a push to `main` deploys to Vercel).
 
 ## State
-- Live: https://pipedrive-euvinopro.vercel.app (deployed from this commit).
-- Local: `npm run dev` → http://localhost:4340, e.g. `#/organisationen/schlumberger`.
-- Design system repo `~/euvinopro-ds` (souvikb93/winpro-ds) and this app are committed and pushed together.
-- Figma library has a saved version "Scheduling components".
+- Live: https://pipedrive-euvinopro.vercel.app, deployed from `main`. Local: `npm run dev` → http://localhost:4340.
+- DS repo `~/euvinopro-ds` (souvikb93/winpro-ds) and this app are committed and pushed together; `vendor/euvino-ds` is in sync.
+- Quality gate: `npm run check` (strict tsc incl. no unused code → `ds:check` on every source file → vitest → build). The DS has `npm run check` with 34 tests. An axe-core scan shows 0 violations on the lists, the organisation page, the drawer and the planner, and a fresh tab logs no console errors.
+- Figma: versions saved up to "Activity Card names, Status Summary duration". **The library still needs publishing by hand.**
 
-Organisation detail page:
-- Header: PageHeader with icon tile, name, label (LabelPicker small) and city.
-- Side card: Fokus (ActivityCard, always a Termin) → opens the reschedule modal; Organisationsdetails; Zugehörige Organisationen; Kontakte (call/mail icon buttons); Überblick (BreakdownBar); Leads.
-- Composer: only Notizen (Editor) and Aktivität (inline planner) are selectable; the other tabs hover only.
-- Verlauf: Timeline without scroll progress colouring.
+Organisation page:
+- Header: PageHeader with icon tile, label and city. Breadcrumb current page is regular weight in a darker colour (DS + Figma).
+- Side card: Fokus (ActivityCard; names via PeopleList), Organisationsdetails, Kontakte (call/mail open tel:/mailto:), Überblick, Leads. Sticky only while beside the main column.
+- Composer: Notizen (Editor with B/I/U toggle states) and Aktivität (planner). The other tabs show hover only.
+- Verlauf: `src/views/timeline/` on DS ActivityItem + PeopleList + FileChipList + InlineList. Filters show only categories with entries; Alle, Notizen, Aktivitäten, E-Mails and Dateien always show. Card click and "Details anzeigen" open a Drawer. Notes can be edited and deleted (with confirmation).
+- People rule (`src/views/shared/people.tsx`): other people are blue links to `#/kontakte/<id>`, your own name is plain, and team members show the "coming later" message. "+N" lists exactly the hidden people.
+- Lists: Kontaktperson column uses the same people rule; header "Organisation"; activity dates use InlineList.
 
-Scheduling (one data model, `src/data/availability.ts`, state in `src/views/scheduling/useScheduling.ts`):
-- Modal (Fokus card): StatusSummary (read-only time, Konflikt badge), Teilnehmer (PersonChip), AvailabilityTimeline. Opens on the scheduled time (Schlumberger demo: 09:00 conflict); free time for everyone is green; click a free slot to move; "Aktualisieren" blocks saving a clash.
-- Inline planner (Aktivität tab): Titel, Datum/Beginn/Ende/Dauer fields, same timeline; "Einladung senden".
-- Legend is fixed: Für alle frei · Belegt · Vorläufig, in both.
+Scheduling: one data model (`src/data/availability.ts`), state in `src/views/scheduling/useScheduling.ts`, and typed input parsing in `src/lib/time.ts`. Planner fields are four equal columns.
 
 ## Files
-- App: `src/views/OrganisationDetail.tsx`, `src/views/ActivityModal.tsx`, `src/views/PlanActivity.tsx`, `src/views/scheduling/ScheduleBody.tsx`, `src/views/scheduling/useScheduling.ts`, `src/data/availability.ts`, `src/data/history.ts`, `src/app.css` (layout only).
-- DS: `src/ds/scheduling.tsx` (AvailabilityTimeline, ActivityCard, DateNav, StatusSummary), `src/ds/editor.tsx`, `src/ds/button.tsx` (PersonChip, SegmentedControl size, Chip), `src/ds/display.tsx` (Avatar tone), `src/ds/navigation.tsx` (PageHeader meta), `src/ds/layout.tsx` (Text `caption-medium`), `src/styles/components.css`, `scripts/meta.json`, `scripts/build-catalog.mjs` (now includes editor and scheduling).
-- Figma scripts (session scratchpad, may be gone): helper `lib.js` binds every fill, stroke, size and spacing to variables and text styles; runner `node ~/tools/euvino-ds/build/run-in.mjs "EuvinoPRO Design System" script.js out.json`.
+- App: `src/App.tsx` (shell, lists, routing), `src/views/list/` (toolbar, menus, labels, sorts), `src/views/shared/people.tsx`, `src/views/timeline/`, `src/views/scheduling/`, `src/data/` (incl. `search.ts`), `src/lib/`, `tests/`, `scripts/ds-check.mjs`.
+- DS (new this round): `src/ds/people-list.tsx`, `file-chip.tsx`, `inline-list.tsx`; ActivityItem rhythm/marker/meta/lines in `display.tsx`; Editor toggles in `editor.tsx`; Combobox + typeable DatePicker in `form.tsx`; UserMenu name fix in `navigation.tsx`. `AGENTS.md`/`CLAUDE.md` component table updated.
+- Figma scripts (session scratchpad, may be gone): `lib.js` binds fills, strokes, sizes and spacing to variables and text styles; run with `node ~/tools/euvino-ds/build/run-in.mjs "EuvinoPRO Design System" script.js out.json`.
 
-## Changed (this session)
-- New DS components: AvailabilityTimeline, ActivityCard, DateNav, StatusSummary, PersonChip, Editor; SegmentedControl `size="small"`; Avatar `tone` (light default, solid); Text `caption-medium`; PageHeader meta row and icon tile.
-- App moved onto them; app CSS has no DS overrides and no raw values; `ds check` passes for every file.
-- Figma: new sections Availability Timeline, Breakdown Bar (Charts); Status Summary, Activity Card (Cards); Date Nav, Page Header (Navigation); Editor (Forms); Person Chip (Data Display). Segmented Control got Size=Small (existing variants renamed with Size=Medium). Avatar got Type=Letter Light. Icon `organisation` copied from Archive into the icon library (archive copy kept).
+## Changed (this round)
+- DS + Figma: People List, File Chip, Inline List (thin line separator, 8px either side; replaces every dot separator), Editor Tool states, Combobox, typeable Date Picker, rebuilt Activity Item (H6 subject, 4/12/16 rhythm, marker on the subject row, 2-line preview, File Chip footer, Button Select reply), Breadcrumb current page.
+- Code quality: every source file is DS-checked (not only App.tsx), strict unused checks are on, App.tsx is split into modules, there are no dead `noop` controls, and tests plus the README were added.
+- Accessibility fixes: table icon header named, UserMenu name matches the visible text, links in running text underlined, no `<div>` inside `<p>`.
 
 ## Failed / gotchas
-- Figma `loadFontAsync` hangs when given a style's fontName with `variationSettings`; load `{ family, style }` only.
-- `combineAsVariants` needs the components on the same page as the parent; append first.
-- Variant sets built with auto layout keep a fixed height after `resize`; set `primaryAxisSizingMode = 'AUTO'` afterwards.
-- `ds check` reads "from" in comments as an import; avoid `from "…"` in comments.
-- Run `npm run catalog` and `npm run llms` after DS API changes, or `npm run check` fails.
+- Figma: `loadFontAsync` hangs with `variationSettings` (load `{ family, style }`). `combineAsVariants` needs nodes on the same page. Auto-layout sets need `primaryAxisSizingMode = 'AUTO'` after resize. `getNodeByIdAsync` on instance-sublayer ids ("I…;…") can hang, so find nodes with `findOne` instead. Auto-width text trims trailing spaces, so use one text node with range fills.
+- `ds check` reads "from" in comments as an import, and "20px" in comments as a raw value.
+- Run `npm run catalog` and `npm run llms` after DS API changes; the catalog does not delete stale `docs/components/*.md` files.
+- An open popover inside an ActivityItem needs the higher-specificity lift rule (fixed in DS CSS).
 
 ## Next
 - Publish the Figma library by hand.
-- Figma timeline tentative stripes are drawn shapes (variables cannot pattern); code uses a token gradient.
-- Planner/modal time data is demo data; a real calendar source is not connected.
-- PersonChip default fill (background/functional/neutral) is light on white; revisit if it needs more contrast.
+- Build the Figma screens of this app (the user will say when).
+- Gaps (demo): Reply/Weiterleiten, Mit Element verbinden, profiles, row Bearbeiten/Löschen show "coming later"; downloads are placeholder files; calendars are demo data; no call recordings.
+- Figma timeline tentative stripes are drawn shapes (variables cannot do patterns).

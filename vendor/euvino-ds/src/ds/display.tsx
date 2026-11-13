@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cn } from './cn';
 import { Icon, type IconName } from './icon';
 import type { Status } from './feedback';
+import { InlineList } from './inline-list';
 
 export interface AvatarProps {
   /** Person's name. Gives the initials and the accessible name. */
@@ -182,26 +183,34 @@ export function Timeline({ children, label, progress }: TimelineProps) {
 }
 
 export interface ActivityItemProps {
-  /** Marker icon, such as `mail` for an email or `phone` for a call. */
+  /** Marker icon on the timeline rail, such as `mail` for an email or `phone` for a call. The card itself repeats no type icon. */
   icon: IconName;
-  /** Subject line. */
+  /** Subject line, the strongest text of the card. */
   title: React.ReactNode;
-  /** Line under the subject: date, sender and recipients. */
-  meta?: React.ReactNode;
-  /** Preview text. One line, ends with an ellipsis. */
+  /** Quiet line right under the subject: date, sender and recipients. Pass a list to split the facts with a thin line (InlineList). */
+  meta?: React.ReactNode | React.ReactNode[];
+  /** Preview text. One line by default; see `lines` and `expanded`. */
   children?: React.ReactNode;
-  /** Bottom row: people, organisation, links. */
+  /** Bottom row, such as attachments (FileChipList) or related people. Several children are split by a divider. */
   footer?: React.ReactNode;
-  /** Right of the subject: IconButtons and a Button such as Reply. */
+  /** Right of the subject: small buttons such as a Reply SplitButton and a more IconButton. The row keeps the height of a small button. */
   actions?: React.ReactNode;
-  /** Shows the whole preview text instead of one line. */
+  /** Shows the whole preview text. */
   expanded?: boolean;
-  /** Makes the card clickable (hover, press and focus states). The subject becomes the button; buttons inside keep their own action. */
+  /** Clamps the preview to this many lines with an ellipsis. The detail view shows the rest. */
+  lines?: number;
+  /** Makes the card clickable (hover, press and focus states). The subject becomes the button; links, buttons and popovers inside keep their own action. */
   onOpen?: () => void;
 }
 
-/** A rich event in a Timeline, such as an email or a call, shown as a card next to an icon marker. Figma: Email Activity Item. */
-export function ActivityItem({ icon, title, meta, children, footer, actions, expanded, onOpen }: ActivityItemProps) {
+/**
+ * A rich event in a Timeline, such as an email, call or note, shown as a card next to an icon marker.
+ * Rhythm: subject and meta form one heading block, the preview sits apart, the footer apart again. The marker lines up with the subject.
+ * Figma: Activity Item.
+ */
+export function ActivityItem({ icon, title, meta, children, footer, actions, expanded, lines, onOpen }: ActivityItemProps) {
+  const facts = Array.isArray(meta) ? meta.filter((m) => m !== null && m !== undefined && m !== false && m !== '') : meta;
+  const clamp = !expanded && lines !== undefined && lines > 1;
   return (
     <li className={cn('eu-tl__item eu-activity', onOpen && 'is-clickable')}>
       <span className="eu-activity__marker" aria-hidden="true"><Icon name={icon} size="sm" /></span>
@@ -210,8 +219,17 @@ export function ActivityItem({ icon, title, meta, children, footer, actions, exp
           <h3 className="eu-type-ui-card-title eu-activity__title">{onOpen ? <button type="button" className="eu-activity__open" onClick={onOpen}>{title}</button> : title}</h3>
           {actions ? <div className="eu-activity__actions">{actions}</div> : null}
         </div>
-        {meta ? <p className="eu-type-body-caption eu-activity__meta">{meta}</p> : null}
-        {children ? <p className={cn('eu-type-body-small eu-activity__body', expanded && 'is-expanded')}>{children}</p> : null}
+        {facts !== undefined && facts !== null && (!Array.isArray(facts) || facts.length) ? (
+          <div className="eu-type-body-caption eu-activity__meta">
+            {Array.isArray(facts) ? <InlineList items={facts} /> : facts}
+          </div>
+        ) : null}
+        {children ? (
+          <div
+            className={cn('eu-type-body-small eu-activity__body', expanded && 'is-expanded', clamp && 'is-clamped')}
+            style={clamp ? ({ '--eu-activity-lines': lines } as React.CSSProperties) : undefined}
+          >{children}</div>
+        ) : null}
         {footer ? <div className="eu-type-body-caption eu-activity__foot">{footer}</div> : null}
       </article>
     </li>

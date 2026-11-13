@@ -146,7 +146,10 @@ button { font-family: inherit; }
 .eu-dd__field.is-placeholder { color: var(--eu-foreground-static-placeholder); }
 .eu-dd__value { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .eu-dd__list, .eu-dd__pop { position: absolute; z-index: var(--eu-layer-raised); top: calc(100% + var(--eu-spacing-3xs)); left: 0; }
-.eu-dd__list { right: 0; }
+.eu-dd__list { right: 0; max-height: var(--eu-size-dialog-sm); overflow-y: auto; overscroll-behavior: contain; flex-wrap: nowrap; }
+.eu-dd__list .eu-menu__item { flex: none; }
+.eu-combo { padding-right: var(--eu-spacing-3xs); }
+.eu-dd.is-open .eu-combo { border-color: var(--eu-border-static-neutral); }
 .eu-menu { list-style: none; margin: 0; padding: var(--eu-spacing-2xs); display: flex; flex-direction: column; gap: var(--eu-spacing-3xs); border-radius: var(--eu-radius-sm); background: var(--eu-background-static-base); box-shadow: var(--eu-shadow-lg); outline: 0; }
 .eu-dd__list .eu-menu__item { min-height: var(--eu-size-control-md); }
 .eu-menu--pop { position: absolute; z-index: var(--eu-layer-raised); top: calc(100% + var(--eu-spacing-3xs)); right: 0; min-width: var(--eu-size-field-sm); }
@@ -361,7 +364,7 @@ button { font-family: inherit; }
 .eu-crumbs li { display: inline-flex; align-items: center; gap: var(--eu-spacing-2xs); }
 .eu-crumbs a { padding: var(--eu-spacing-3xs); margin: calc(var(--eu-spacing-3xs) * -1); border-radius: var(--eu-radius-xs); color: var(--eu-foreground-static-neutral); text-decoration: none; }
 .eu-crumbs a:hover { color: var(--eu-foreground-interactive-default); text-decoration: underline; }
-.eu-crumbs__cur { padding: 0; color: var(--eu-foreground-static-base); font-size: var(--eu-font-ui-card-title-size); font-weight: var(--eu-font-ui-card-title-weight); line-height: var(--eu-font-ui-card-title-line); }
+.eu-crumbs__cur { padding: 0; color: var(--eu-foreground-static-base); } /* Current page: same size and weight as the trail, only the darker colour. */
 .eu-pages { display: inline-flex; align-items: center; gap: var(--eu-spacing-3xs); }
 .eu-pages__item { display: inline-flex; align-items: center; justify-content: center; width: var(--eu-size-control-md); height: var(--eu-size-control-md); border: 0; border-radius: var(--eu-radius-full); background: transparent; color: var(--eu-foreground-interactive-default); cursor: pointer; }
 .eu-pages__item:hover { background: var(--eu-background-accent-subtle); }
@@ -538,17 +541,23 @@ button { font-family: inherit; }
 .eu-kv__label { color: var(--eu-foreground-static-neutral); }
 .eu-kv__value { margin: 0; min-width: 0; color: var(--eu-foreground-static-base); overflow-wrap: anywhere; }
 .eu-topnav__item { display: inline-flex; align-items: center; gap: var(--eu-spacing-2xs); }
-.eu-activity { gap: var(--eu-spacing-xs); padding-bottom: var(--eu-spacing-xs); }
-.eu-tl__item.eu-activity:not(:last-child)::before { left: calc(var(--eu-size-control-sm) / 2); top: var(--eu-size-control-sm); border-left: var(--eu-border-width-sm) dashed var(--eu-border-static-soft); }
-.eu-activity__marker { display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--eu-size-control-sm); height: var(--eu-size-control-sm); border: var(--eu-border-width-sm) solid var(--eu-border-static-soft); border-radius: var(--eu-radius-full); background: var(--eu-background-static-base); color: var(--eu-foreground-icon-muted); }
-.eu-activity__card { display: flex; flex-direction: column; gap: var(--eu-spacing-2xs); flex: 1; min-width: 0; padding: var(--eu-spacing-s); border: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); border-radius: var(--eu-radius-sm); background: var(--eu-background-static-base); }
-.eu-activity__head { display: flex; align-items: center; justify-content: space-between; gap: var(--eu-spacing-xs); }
+.eu-activity { --eu-activity-marker-offset: calc(var(--eu-spacing-s) + var(--eu-size-button-sm) / 2 - var(--eu-size-control-sm) / 2); gap: var(--eu-spacing-xs); padding-bottom: var(--eu-spacing-xs); }
+/* Marker centred on the subject row (card padding + half a small button); the dashed rail runs from marker to marker. */
+.eu-tl__item.eu-activity:not(:last-child)::before { left: calc(var(--eu-size-control-sm) / 2); top: calc(var(--eu-activity-marker-offset) + var(--eu-size-control-sm)); bottom: calc(var(--eu-activity-marker-offset) * -1); border-left: var(--eu-border-width-sm) dashed var(--eu-border-static-soft); }
+.eu-activity__marker { display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--eu-size-control-sm); height: var(--eu-size-control-sm); border: var(--eu-border-width-sm) solid var(--eu-border-static-soft); border-radius: var(--eu-radius-full); background: var(--eu-background-static-base); color: var(--eu-foreground-icon-muted); margin-top: var(--eu-activity-marker-offset); }
+.eu-activity__card { display: flex; flex-direction: column; flex: 1; min-width: 0; padding: var(--eu-spacing-s); border: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); border-radius: var(--eu-radius-sm); background: var(--eu-background-static-base); }
+/* Rhythm: subject and meta are one heading block (3xs), the preview sits apart (xs), the footer apart again (s). The head keeps the height of a small button. */
+.eu-activity__head { display: flex; align-items: center; justify-content: space-between; gap: var(--eu-spacing-xs); height: var(--eu-size-button-sm); }
 .eu-activity__title { margin: 0; color: var(--eu-foreground-static-base); }
 .eu-activity__actions { display: flex; align-items: center; gap: var(--eu-spacing-2xs); flex: none; }
-.eu-activity__meta { margin: 0; color: var(--eu-foreground-static-neutral); }
-.eu-activity__body { margin: 0; color: var(--eu-foreground-static-base); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.eu-activity__meta { margin: var(--eu-spacing-3xs) 0 0; color: var(--eu-foreground-static-neutral); }
+.eu-activity__body { margin: var(--eu-spacing-xs) 0 0; color: var(--eu-foreground-static-base); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .eu-activity__body.is-expanded { white-space: normal; overflow: visible; }
-.eu-activity__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--eu-spacing-xs); color: var(--eu-foreground-static-neutral); }
+.eu-activity__body.is-clamped { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--eu-activity-lines); line-clamp: var(--eu-activity-lines); white-space: normal; }
+/* Links inside running text are underlined too, so colour is not the only cue (WCAG 1.4.1). */
+:is(.eu-activity__meta, .eu-activity__body) .eu-link--link { text-decoration: underline; text-decoration-thickness: var(--eu-border-width-sm); text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: var(--eu-spacing-4xs); }
+:is(.eu-activity__meta, .eu-activity__body) .eu-link--link:hover { text-decoration-color: currentColor; }
+.eu-activity__foot { margin-top: var(--eu-spacing-s); display: flex; flex-wrap: wrap; align-items: center; gap: var(--eu-spacing-xs); color: var(--eu-foreground-static-neutral); }
 .eu-activity__foot > * + * { padding-left: var(--eu-spacing-xs); border-left: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); }
 
 /* InlineEdit: change a value in place (table cells, detail fields). */
@@ -608,7 +617,10 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-activity__open { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .eu-activity__open::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .eu-activity__open:focus-visible { outline: none; }
-.eu-activity.is-clickable .eu-activity__actions, .eu-activity.is-clickable .eu-activity__foot { position: relative; z-index: var(--eu-layer-raised); }
+.eu-activity.is-clickable .eu-activity__actions, .eu-activity.is-clickable .eu-activity__foot, .eu-activity.is-clickable :is(.eu-activity__meta, .eu-activity__body) :is(a, button, .eu-tip-wrap) { position: relative; z-index: var(--eu-layer-raised); }
+/* An open popover lifts its entry above the next entries and above the footer of its own card. */
+.eu-activity:has(.eu-popover) { position: relative; z-index: var(--eu-layer-tooltip); }
+.eu-activity .eu-tip-wrap:has(.eu-popover), .eu-activity.is-clickable :is(.eu-activity__meta, .eu-activity__body) .eu-tip-wrap:has(.eu-popover) { z-index: var(--eu-layer-tooltip); }
 .eu-activity.is-clickable .eu-activity__card:hover { border-color: var(--eu-border-static-soft); box-shadow: var(--eu-shadow-md); }
 .eu-activity.is-clickable .eu-activity__card:has(.eu-activity__open:active) { background: var(--eu-background-static-soft); box-shadow: none; }
 .eu-activity.is-clickable .eu-activity__card:has(.eu-activity__open:focus-visible) { outline: var(--eu-border-width-md) solid var(--eu-border-primary-focus); outline-offset: var(--eu-spacing-4xs); }
@@ -677,6 +689,11 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-editor.is-open .eu-editor__field { min-height: var(--eu-spacing-6xl); resize: vertical; }
 .eu-editor__bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--eu-spacing-2xs); padding: var(--eu-spacing-2xs) var(--eu-spacing-xs); border-top: var(--eu-border-width-sm) solid var(--eu-border-static-soft); }
 .eu-editor__tools { display: flex; align-items: center; gap: var(--eu-spacing-3xs); }
+.eu-editor__tool { color: var(--eu-foreground-icon-default); }
+.eu-editor__tool:hover { background: var(--eu-background-static-muted); color: var(--eu-foreground-static-base); }
+.eu-editor__tool:active { background: var(--eu-background-accent-subtle); }
+.eu-editor__tool.is-active { background: var(--eu-background-accent-subtle); color: var(--eu-foreground-interactive-default); }
+.eu-editor__tool.is-active:hover { background: var(--eu-background-accent-subtle); color: var(--eu-foreground-interactive-hover); }
 .eu-editor__tools .eu-divider--vertical { height: var(--eu-size-icon-sm); align-self: center; margin: 0 var(--eu-spacing-3xs); }
 .eu-editor__actions { display: flex; align-items: center; gap: var(--eu-spacing-2xs); margin-left: auto; }
 
@@ -780,3 +797,19 @@ button.eu-ftabs__item:hover:not(.is-selected) { background: var(--eu-background-
 .eu-pchip__remove:disabled { cursor: default; color: var(--eu-foreground-disabled); background: none; }
 .eu-avail__mark--conflict { border: var(--eu-border-width-md) solid var(--eu-status-error); border-radius: var(--eu-radius-xs); }
 .eu-avatar--solid { background: var(--eu-background-primary-default); color: var(--eu-foreground-static-invert); }
+
+/* PeopleList: inline names with a "+N" list. Buttons look like the links next to them. */
+.eu-people button.eu-link { font: inherit; }
+.eu-people__more { display: inline-flex; }
+.eu-people__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--eu-spacing-2xs); }
+.eu-people__item { display: flex; flex-direction: column; }
+.eu-people__detail { color: var(--eu-foreground-static-neutral); }
+
+/* FileChip: attachment pill with its own download button. */
+.eu-filechips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--eu-spacing-2xs); }
+.eu-filechip { display: inline-flex; align-items: center; gap: var(--eu-spacing-3xs); min-width: 0; max-width: 100%; padding: var(--eu-spacing-4xs) var(--eu-spacing-4xs) var(--eu-spacing-4xs) var(--eu-spacing-xs); border: var(--eu-border-width-sm) solid var(--eu-border-static-subtle); border-radius: var(--eu-radius-full); background: var(--eu-background-static-soft); color: var(--eu-foreground-icon-muted); }
+.eu-filechip__name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: var(--eu-size-field-sm); color: var(--eu-foreground-static-body); }
+.eu-usermenu__avatar { display: inline-flex; }
+
+/* InlineList: facts on one line split by a thin vertical line, 8px either side. */
+.eu-inline-list__sep { display: inline-block; width: var(--eu-border-width-sm); height: var(--eu-spacing-xs); margin-inline: var(--eu-spacing-2xs); background: var(--eu-border-static-soft); vertical-align: middle; }

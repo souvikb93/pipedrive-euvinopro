@@ -349,8 +349,9 @@ export interface UserMenuProps extends Omit<React.ButtonHTMLAttributes<HTMLButto
 /** Profile trigger for the Header. Wrap it in Menu to add the account commands. */
 export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu({ name, subtitle, src, compact, size = 'medium', className, ...rest }, ref) {
   return (
-    <button {...rest} ref={ref} type="button" aria-label={compact ? name : undefined} className={cn('eu-usermenu', className)}>
-      <Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} />
+    <button {...rest} ref={ref} type="button" className={cn('eu-usermenu', className)}>
+      {compact ? <span className="eu-sr">{name}</span> : null}
+      <span aria-hidden="true" className="eu-usermenu__avatar"><Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} /></span>
       {compact ? null : <span className="eu-usermenu__text"><span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>{subtitle ? <span className="eu-type-body-caption eu-usermenu__sub">{subtitle}</span> : null}</span>}
       <Icon name="nav-down" size={size === 'large' ? 'md' : 'sm'} />
     </button>

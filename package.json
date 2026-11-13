@@ -9,8 +9,10 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4340",
     "typecheck": "tsc --noEmit",
-    "ds:check": "npm --prefix ../euvinopro-ds run -s ds -- check $PWD/src/App.tsx",
-    "sync-ds": "node scripts/sync-ds.mjs && npm install"
+    "ds:check": "node scripts/ds-check.mjs",
+    "sync-ds": "node scripts/sync-ds.mjs && npm install",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run ds:check && npm run test && vite build"
   },
   "dependencies": {
     "@euvino/ds": "file:./vendor/euvino-ds",
@@ -18,10 +20,14 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
     "typescript": "^5.7.0",
-    "vite": "^5.4.21"
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
   }
 }

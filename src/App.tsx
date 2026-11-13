@@ -9,7 +9,6 @@ import {
   LabelPicker,
   LinkButton,
   Menu,
-  SegmentedControl,
   SideNav,
   SplitButton,
   Stack,
@@ -18,18 +17,20 @@ import {
   UserMenu,
   VisuallyHidden,
   useToast,
-  type GlobalSearchCategory,
   type GlobalSearchHit,
-  type LabelOption,
-  type MenuItemDef,
   type SideNavItem,
-  type Status,
   type TableColumn,
 } from '@euvino/ds';
 import './app.css';
-import { contacts as initialContacts, TOTAL_CONTACTS, type Contact, type ContactLabel } from './data/contacts';
+import { contacts as initialContacts, TOTAL_CONTACTS, type Contact } from './data/contacts';
 import { organisations as initialOrganisations, type Organisation } from './data/organisations';
 import { hrefFor, useRoute, type View } from './route';
+import { People } from './views/shared/people';
+import { CATEGORIES, inCategory, searchAll } from './data/search';
+import { activityKey, slug } from './lib/format';
+import { LABEL_TEXTS, useLabels } from './views/list/labels';
+import { CONTACT_SORTS, ORG_SORTS, type ContactSort, type OrgSort } from './views/list/sorts';
+import { ActivityWhen, FilterMenu, Linked, RowActions, SortMenu, Toolbar } from './views/list/ListParts';
 import { OrganisationDetail } from './views/OrganisationDetail';
 import { AddOrganisationModal, type NewOrganisation } from './views/AddOrganisationModal';
 import { AddContactModal, type NewContact } from './views/AddContactModal';
@@ -55,173 +56,6 @@ const MORE: SideNavItem[] = [
   { label: 'Einstellungen', icon: 'settings', href: '#' },
 ];
 
-// Figma: Badge Size=Tiny, Style=Subtle. State per label.
-const LABELS: Record<ContactLabel, { text: string; status: Status }> = {
-  customer: { text: 'Customer', status: 'success' },
-  partner: { text: 'Partner', status: 'default' },
-  prospect: { text: 'Prospect', status: 'warning' },
-  'hot-lead': { text: 'Hot Lead', status: 'error' },
-  lead: { text: 'Lead', status: 'info' },
-};
-const baseLabelOptions = (): LabelOption[] => (Object.keys(LABELS) as ContactLabel[]).map((id) => ({ id, label: LABELS[id].text, status: LABELS[id].status }));
-const LABEL_TEXTS = { search: 'Label suchen', add: 'Label hinzufügen', addNamed: (n: string) => `„${n}“ als Label hinzufügen`, empty: 'Kein Label gefunden', none: 'Kein Label' };
-
-const VIEWS = [
-  { value: 'contacts', label: 'Kontakte', icon: 'user' as const },
-  { value: 'organisations', label: 'Organisationen', icon: 'building' as const },
-  { value: 'timeline', label: 'Timeline', icon: 'calendar' as const },
-];
-
-const noop = () => {};
-const slug = (v: string) => v.toLowerCase().replace(/[^a-z0-9äöüß]+/g, '-').replace(/^-|-$/g, '');
-
-/** "11.11.2026 · 09:00" as a sortable string. */
-const activityKey = (v: string) => v.replace(/^(\d{2})\.(\d{2})\.(\d{4}) · (.*)$/, '$3$2$1 $4');
-
-/** Link text in foreground/link; the note in brackets stays normal body text. */
-function Linked({ links, note, scheme }: { links: string[]; note: string | null; scheme: 'mailto' | 'tel' }) {
-  return (
-    <>
-      {links.map((l, i) => (
-        <React.Fragment key={l}>
-          {i > 0 ? ' ' : null}
-          <LinkButton variant="link" href={`${scheme}:${scheme === 'tel' ? l.replace(/[^+\d]/g, '') : l}`}>{l}</LinkButton>
-        </React.Fragment>
-      ))}
-      {note ? ` (${note})` : null}
-    </>
-  );
-}
-
-const CATEGORIES: Array<Omit<GlobalSearchCategory, 'count'>> = [
-  { id: 'all', label: 'Alle Kategorien', icon: 'view-grid' },
-  { id: 'deals', label: 'Deals', icon: 'coin' },
-  { id: 'leads', label: 'Leads', icon: 'star' },
-  { id: 'contacts', label: 'Kontakte', icon: 'user' },
-  { id: 'organisations', label: 'Organisationen', icon: 'building' },
-  { id: 'activities', label: 'Aktivitäten', icon: 'calendar' },
-  { id: 'products', label: 'Produkte', icon: 'box' },
-  { id: 'files', label: 'Dateien', icon: 'attachment' },
-  { id: 'knowledge', label: 'Knowledge Base', icon: 'book' },
-  { id: 'apps', label: 'Apps', icon: 'app-window' },
-];
-
-type Hit = GlobalSearchHit & { kind: 'contacts' | 'organisations'; lead: boolean };
-
-/** All hits for the text, organisations first, then people. */
-function searchAll(query: string, people: Contact[]): Hit[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
-  const has = (v: string) => v.toLowerCase().includes(q);
-  const orgs = [...new Set(people.map((c) => c.organisation))].flatMap((o): Hit[] => {
-    const members = people.filter((c) => c.organisation === o);
-    const viaEmail = members.filter((c) => has(c.email));
-    if (!has(o) && viaEmail.length === 0) return [];
-    const lines = [`${members.length} Kontaktpersonen`];
-    if (viaEmail.length) lines.push(`Gefundene Übereinstimmung in E-Mail: ${viaEmail.map((c) => c.email).join(', ')}`);
-    return [{ id: `org-${o}`, title: o, icon: 'building', lines, kind: 'organisations', lead: false }];
-  });
-  const found = people
-    .filter((c) => [c.name, c.email, c.organisation, ...c.phones].some(has))
-    .map((c): Hit => ({
-      id: c.id,
-      title: c.name,
-      person: c.name,
-      lines: [`${c.organisation} · ${c.email}`, ...(c.phones.some(has) ? [c.phones.join(', ')] : [])],
-      kind: 'contacts',
-      lead: c.label === 'lead' || c.label === 'hot-lead',
-    }));
-  return [...orgs, ...found];
-}
-
-function inCategory(hits: Hit[], id: string) {
-  if (id === 'all') return hits;
-  if (id === 'leads') return hits.filter((h) => h.lead);
-  return hits.filter((h) => h.kind === id);
-}
-
-type ContactSort = 'name' | 'organisation' | 'next';
-const CONTACT_SORTS: Array<{ key: ContactSort; label: string }> = [
-  { key: 'name', label: 'Name (A–Z)' },
-  { key: 'organisation', label: 'Organisation (A–Z)' },
-  { key: 'next', label: 'Nächste Aktivität' },
-];
-type OrgSort = 'name' | 'owner' | 'next' | 'last';
-const ORG_SORTS: Array<{ key: OrgSort; label: string }> = [
-  { key: 'name', label: 'Organisationsname (A–Z)' },
-  { key: 'owner', label: 'Besitzer (A–Z)' },
-  { key: 'next', label: 'Nächste Aktivität' },
-  { key: 'last', label: 'Letzte Aktivität (neueste zuerst)' },
-];
-
-/** Label column, label filter and sort menu behave the same in every view; each view keeps its own state. */
-function useLabels<T extends { id: string; label: string }>(rows: T[]) {
-  const [options, setOptions] = React.useState<LabelOption[]>(baseLabelOptions);
-  const [labelOf, setLabelOf] = React.useState<Record<string, string>>(() => Object.fromEntries(rows.map((r) => [r.id, r.label])));
-  const name = (id: string | null) => options.find((o) => o.id === id)?.label ?? '';
-  const create = (rowId: string, label: string) => {
-    const id = `custom-${slug(label)}`;
-    setOptions((o) => (o.some((x) => x.id === id) ? o : [...o, { id, label, status: 'default' }]));
-    setLabelOf((m) => ({ ...m, [rowId]: id }));
-  };
-  return { options, labelOf, setLabelOf, name, create };
-}
-
-function Toolbar({ view, onView, count, primary, filter, sort }: { view: View; onView: (v: string) => void; count: string; primary: React.ReactNode; filter: React.ReactNode; sort: React.ReactNode }) {
-  return (
-    <Stack direction="horizontal" gap="4" justify="between" align="center" wrap className="app-toolbar">
-      <SegmentedControl label="Ansicht" value={view} onChange={onView} options={VIEWS} />
-      <Stack direction="horizontal" gap="4" align="end" wrap>
-        <Text variant="caption" tone="body">{count}</Text>
-        <Stack direction="horizontal" gap="2" align="center">
-          {primary}
-          {filter}
-          {sort}
-        </Stack>
-      </Stack>
-    </Stack>
-  );
-}
-
-function FilterMenu({ active, activeName, options, onPick }: { active: string | null; activeName: string; options: LabelOption[]; onPick: (id: string | null) => void }) {
-  return (
-    <Menu
-      label="Nach Label filtern"
-      trigger={<IconButton icon="filter" label={active ? `Filter einstellen (aktiv: ${activeName})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(active)} />}
-      items={[
-        { label: 'Alle Labels', selected: active === null, onSelect: () => onPick(null) },
-        ...options.map((o): MenuItemDef => ({ label: o.label, selected: active === o.id, onSelect: () => onPick(o.id) })),
-      ]}
-    />
-  );
-}
-
-function SortMenu<K extends string>({ active, sorts, onPick }: { active: K | null; sorts: Array<{ key: K; label: string }>; onPick: (k: K | null) => void }) {
-  return (
-    <Menu
-      label="Sortieren"
-      trigger={<IconButton icon="sort" label={active ? `Sortieren (${sorts.find((o) => o.key === active)?.label})` : 'Sortieren'} variant="secondary" indicator={Boolean(active)} />}
-      items={[
-        { label: 'Standard', selected: active === null, onSelect: () => onPick(null) },
-        ...sorts.map((o): MenuItemDef => ({ label: o.label, selected: active === o.key, onSelect: () => onPick(o.key) })),
-      ]}
-    />
-  );
-}
-
-function RowActions({ name }: { name: string }) {
-  return (
-    <Menu
-      label={`Aktionen für ${name}`}
-      trigger={<IconButton icon="more-horiz" label={`Aktionen für ${name}`} size="tiny" />}
-      items={[
-        { label: 'Bearbeiten', icon: 'edit', onSelect: noop },
-        { label: 'E-Mail senden', icon: 'mail', onSelect: noop },
-        { label: 'Löschen', icon: 'trash', danger: true, onSelect: noop },
-      ]}
-    />
-  );
-}
 
 export function App() {
   const [route, go] = useRoute();
@@ -337,26 +171,26 @@ export function App() {
     { key: 'phone', header: 'Telefonnummer', overflow: 'truncate', render: (c) => <Linked links={c.phones} note={c.phoneType} scheme="tel" /> },
     { key: 'won', header: 'Abgeschlossene Deals', fit: true, render: (c) => c.wonDeals },
     { key: 'open', header: 'Offene Deals', fit: true, render: (c) => c.openDeals },
-    { key: 'next', header: 'Datum nächste Aktivität', fit: true, overflow: 'nowrap', render: (c) => c.nextActivity },
+    { key: 'next', header: 'Datum nächste Aktivität', fit: true, overflow: 'nowrap', render: (c) => <ActivityWhen value={c.nextActivity} /> },
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (c) => c.owner },
-    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" />, render: (c) => <RowActions name={c.name} /> },
+    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" label="Zeilenaktionen" />, render: (c) => <RowActions name={c.name} email={c.email} onSoon={soon} /> },
   ];
 
   const orgColumns: Array<TableColumn<Organisation>> = [
-    { key: 'name', header: 'Organisationsname', overflow: 'truncate', render: (o) => <Text as="span" variant="body-small" tone="primary"><LinkButton variant="plain" href={hrefFor.organisation(o.id)}>{o.name}</LinkButton></Text> },
+    { key: 'name', header: 'Organisation', overflow: 'truncate', render: (o) => <Text as="span" variant="body-small" tone="primary"><LinkButton variant="plain" href={hrefFor.organisation(o.id)}>{o.name}</LinkButton></Text> },
     { key: 'label', header: 'Label', fit: true, render: (o) => (
         <LabelPicker label={`Label für ${o.name}`} value={orgLabels.labelOf[o.id] ?? null} options={orgLabels.options}
           onChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [o.id]: id }))} onCreate={(n) => orgLabels.create(o.id, n)} labels={LABEL_TEXTS} />
       ) },
-    { key: 'person', header: 'Kontaktperson', overflow: 'truncate', render: (o) => {
+    { key: 'person', header: 'Kontaktperson', overflow: 'nowrap', render: (o) => {
         const p = peopleOf(o);
-        return p.length ? <>{p[0].name}{p.length > 1 ? <Text as="span" variant="body-small" tone="muted">{` +${p.length - 1}`}</Text> : null}</> : <Text as="span" variant="body-small" tone="muted">–</Text>;
+        return p.length ? <People list={p.map((c) => ({ name: c.name, email: c.email }))} max={1} /> : <Text as="span" variant="body-small" tone="muted">–</Text>;
       } },
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (o) => o.owner },
     { key: 'address', header: 'Adresse', overflow: 'truncate', render: (o) => o.address },
-    { key: 'next', header: 'Nächste Aktivität', fit: true, overflow: 'nowrap', render: (o) => o.nextActivity || '–' },
-    { key: 'last', header: 'Letzte Aktivität', fit: true, overflow: 'nowrap', render: (o) => o.lastActivity || '–' },
-    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" />, render: (o) => <RowActions name={o.name} /> },
+    { key: 'next', header: 'Nächste Aktivität', fit: true, overflow: 'nowrap', render: (o) => <ActivityWhen value={o.nextActivity} /> },
+    { key: 'last', header: 'Letzte Aktivität', fit: true, overflow: 'nowrap', render: (o) => <ActivityWhen value={o.lastActivity} /> },
+    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" label="Zeilenaktionen" />, render: (o) => <RowActions name={o.name} onSoon={soon} /> },
   ];
 
   const detail = route.name === 'organisation' ? orgs.find((o) => o.id === route.id) : undefined;
@@ -396,8 +230,8 @@ export function App() {
                 label="Konto"
                 trigger={<UserMenu name="Johannes Finzer" compact />}
                 items={[
-                  { label: 'Profil', icon: 'user', onSelect: noop },
-                  { label: 'Abmelden', icon: 'logout', onSelect: noop },
+                  { label: 'Profil', icon: 'user', onSelect: () => soon('Profil') },
+                  { label: 'Abmelden', icon: 'logout', onSelect: () => soon('Abmelden') },
                 ]}
               />
             </>
@@ -405,7 +239,7 @@ export function App() {
         >
           <GlobalSearch
             label="Kontakte, Organisationen und mehr suchen"
-            placeholder={route.name === 'list' && listView === 'organisations' ? 'Organisationen suchen' : 'Search'}
+            placeholder={route.name === 'list' && listView === 'organisations' ? 'Organisationen suchen' : 'Suche'}
             value={query}
             onChange={onQuery}
             categories={categories}

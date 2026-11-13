@@ -23,6 +23,9 @@
   position: sticky;
   top: min(var(--eu-spacing-m), calc(100dvh - var(--detail-side-h, 100dvh) - var(--eu-spacing-m)));
 }
+.detail-side[data-stacked] {
+  position: static;
+}
 .detail-main {
   flex: 1 1 var(--eu-size-dialog-md);
   min-width: 0;
@@ -38,6 +41,5 @@
 .entry-row > .entry-row__value { flex: 1 1 auto; min-width: 0; }
 .entry-row > .entry-row__type { flex: none; width: var(--eu-size-field-xs); }
 
-/* Planner: date and time as form fields, as in Teams. Missing in the DS: a column grid layout component (same as form-columns). */
-.sched-fields { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: var(--eu-spacing-s); }
-
+/* Planner: Datum, Beginn, Ende and Dauer as four equal form fields, as in Teams. Missing in the DS: a column grid layout component (same as form-columns). */
+.sched-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--eu-spacing-s); }

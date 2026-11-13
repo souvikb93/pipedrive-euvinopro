@@ -93,6 +93,22 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
   );
 });
 
+/** Keeps the highlighted option of an open list visible while it scrolls. */
+function useScrollIntoView(open: boolean, optionId: string) {
+  const wasOpen = React.useRef(false);
+  React.useLayoutEffect(() => {
+    if (!open) { wasOpen.current = false; return; }
+    const el = typeof document === 'undefined' ? null : document.getElementById(optionId);
+    const list = el?.parentElement;
+    if (el && list) {
+      // Opens with the current value in the middle, then follows the keyboard.
+      if (!wasOpen.current) list.scrollTop = el.offsetTop - (list.clientHeight - el.offsetHeight) / 2;
+      else if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ block: 'nearest' });
+    }
+    wasOpen.current = true;
+  }, [open, optionId]);
+}
+
 export interface DropdownOption {
   /** Value reported by `onChange`. */
   value: string;
@@ -144,6 +160,8 @@ export function Dropdown({ options, value, onChange, label, hideLabel, placehold
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
+  useScrollIntoView(open, `${f.id}-o${active}`);
+  const openList = () => { setActive(Math.max(0, options.findIndex((o) => o.value === value))); setOpen(true); };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') setOpen(false);
     else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -159,9 +177,9 @@ export function Dropdown({ options, value, onChange, label, hideLabel, placehold
   };
   return (
     <FieldShell hideLabel={hideLabel} label={label} required={required} help={help} error={error} htmlFor={f.id} helpId={f.helpId} className={className}>
-      <div className="eu-dd" ref={root}>
+      <div className={cn('eu-dd', open && 'is-open')} ref={root}>
         <button id={f.id} type="button" disabled={disabled} role="combobox" aria-expanded={open} aria-haspopup="listbox" aria-controls={`${f.id}-list`} aria-invalid={error ? true : undefined} aria-activedescendant={open ? `${f.id}-o${active}` : undefined}
-          className={cn('eu-dd__field eu-type-body-small', error && 'is-error', !sel && 'is-placeholder')} onClick={() => setOpen((o) => !o)} onKeyDown={onKey}>
+          className={cn('eu-dd__field eu-type-body-small', error && 'is-error', !sel && 'is-placeholder')} onClick={() => (open ? setOpen(false) : openList())} onKeyDown={onKey}>
           {sel?.icon ? <Icon name={sel.icon} size="md" /> : null}
           <span className="eu-dd__value">{sel?.label ?? placeholder}</span>
           <Icon name={open ? 'nav-up' : 'nav-down'} size="md" />
@@ -173,6 +191,118 @@ export function Dropdown({ options, value, onChange, label, hideLabel, placehold
                 className={cn('eu-menu__item eu-type-body-small', o.value === value && 'is-selected', i === active && 'is-active', o.disabled && 'is-disabled')}
                 onMouseEnter={() => setActive(i)} onClick={() => { if (!o.disabled) { onChange?.(o.value); setOpen(false); } }}>
                 {o.icon ? <Icon name={o.icon} size="md" /> : null}<span>{o.label}</span>{o.value === value ? <Icon name="check" size="md" className="eu-menu__check" /> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </FieldShell>
+  );
+}
+
+export interface ComboboxProps {
+  /** Suggestions, one row each. The list scrolls and opens at the current value. */
+  options: DropdownOption[];
+  /** Current value. */
+  value?: string;
+  /** Called with a picked option or a typed value that `parse` accepted. */
+  onChange?: (value: string) => void;
+  /** Turns typed text into a value, or `undefined` when it cannot be read. Without it only option labels are accepted. */
+  parse?: (text: string) => string | undefined;
+  /** Text shown for a value that is not in `options`. Defaults to the value. */
+  format?: (value: string) => string;
+  /** Visible label. */
+  label?: string;
+  /** Keeps the label for screen readers only. */
+  hideLabel?: boolean;
+  /** Placeholder while empty. */
+  placeholder?: string;
+  /** Help text. */
+  help?: React.ReactNode;
+  /** Error message. */
+  error?: string;
+  /** Blocks interaction. */
+  disabled?: boolean;
+  /** Marks the field as required. */
+  required?: boolean;
+  /** Explicit id for the input. */
+  id?: string;
+  /** Extra class. */
+  className?: string;
+  /** Accessible name of the open button. Pass it in the page's language. */
+  toggleLabel?: string;
+}
+
+/** A field you can type into or pick from a scrolling list, such as a time or a duration. Text is read on Enter or when the field loses focus; unreadable text goes back to the last value. For a fixed list without typing use Dropdown. */
+export function Combobox({ options, value, onChange, parse, format, label, hideLabel, placeholder, help, error, disabled, required, id, className, toggleLabel = 'Show options' }: ComboboxProps) {
+  const f = useFieldIds(id);
+  const shown = (v?: string) => (v === undefined ? '' : options.find((o) => o.value === v)?.label ?? (format ? format(v) : v));
+  const [text, setText] = React.useState(shown(value));
+  const [open, setOpen] = React.useState(false);
+  const [active, setActive] = React.useState(0);
+  const root = React.useRef<HTMLDivElement>(null);
+  const input = React.useRef<HTMLInputElement>(null);
+  const editing = React.useRef(false);
+  React.useEffect(() => { if (!editing.current) setText(shown(value)); }, [value, options]); // eslint-disable-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+  useScrollIntoView(open, `${f.id}-o${active}`);
+  const indexOf = (v?: string) => Math.max(0, options.findIndex((o) => o.value === v));
+  const openList = () => { setActive(indexOf(value)); setOpen(true); };
+  const pick = (v: string) => { editing.current = false; onChange?.(v); setText(shown(v)); setOpen(false); };
+  const commit = () => {
+    editing.current = false;
+    const t = text.trim();
+    const byLabel = options.find((o) => o.label.toLowerCase() === t.toLowerCase());
+    const v = byLabel?.value ?? (t ? parse?.(t) : undefined);
+    if (v !== undefined && v !== value) { onChange?.(v); setText(shown(v)); } else setText(shown(value));
+  };
+  const onKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!open) { openList(); return; }
+      const d = e.key === 'ArrowDown' ? 1 : -1;
+      setActive((a) => (a + d + options.length) % options.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const o = options[active];
+      if (open && !editing.current && o && !o.disabled) pick(o.value); else { commit(); setOpen(false); }
+    } else if (e.key === 'Escape') {
+      if (open) { e.preventDefault(); setOpen(false); }
+      editing.current = false; setText(shown(value));
+    } else if (e.key === 'Tab') setOpen(false);
+  };
+  const onType = (t: string) => {
+    editing.current = true; setText(t);
+    const q = t.trim().toLowerCase();
+    const i = q ? options.findIndex((o) => o.label.toLowerCase().startsWith(q)) : -1;
+    if (i >= 0) { setActive(i); setOpen(true); }
+  };
+  return (
+    <FieldShell label={label} hideLabel={hideLabel} required={required} help={help} error={error} htmlFor={f.id} helpId={f.helpId} className={className}>
+      <div className={cn('eu-dd', open && 'is-open')} ref={root}>
+        <span className={cn('eu-input eu-input--medium eu-combo', error && 'is-error', disabled && 'is-disabled')}>
+          <input ref={input} id={f.id} type="text" inputMode="text" autoComplete="off" role="combobox" disabled={disabled} required={required} placeholder={placeholder}
+            aria-expanded={open} aria-controls={`${f.id}-list`} aria-autocomplete="list" aria-invalid={error ? true : undefined}
+            aria-activedescendant={open ? `${f.id}-o${active}` : undefined} aria-describedby={error || help ? f.helpId : undefined}
+            className="eu-input__el eu-type-body-small" value={text}
+            onChange={(e) => onType(e.target.value)} onKeyDown={onKey} onBlur={commit} onClick={() => !open && openList()} />
+          <button type="button" tabIndex={-1} disabled={disabled} className="eu-input__btn" aria-label={toggleLabel} aria-expanded={open}
+            onMouseDown={(e) => e.preventDefault()} onClick={() => { if (open) setOpen(false); else { openList(); input.current?.focus(); } }}>
+            <Icon name={open ? 'nav-up' : 'nav-down'} size="md" />
+          </button>
+        </span>
+        {open ? (
+          <ul id={`${f.id}-list`} role="listbox" aria-label={label} className="eu-menu eu-dd__list">
+            {options.map((o, i) => (
+              <li key={o.value} id={`${f.id}-o${i}`} role="option" aria-selected={o.value === value} aria-disabled={o.disabled || undefined}
+                className={cn('eu-menu__item eu-type-body-small', o.value === value && 'is-selected', i === active && 'is-active', o.disabled && 'is-disabled')}
+                onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setActive(i)} onClick={() => { if (!o.disabled) pick(o.value); }}>
+                <span>{o.label}</span>{o.value === value ? <Icon name="check" size="md" className="eu-menu__check" /> : null}
               </li>
             ))}
           </ul>
@@ -479,13 +609,32 @@ export interface DatePickerProps extends Omit<CalendarProps, 'defaultMonth'> {
   error?: string;
   /** Blocks interaction. */
   disabled?: boolean;
+  /** Accessible name of the calendar button. Pass it in the page's language. */
+  calendarLabel?: string;
 }
 
-/** A field that opens a Calendar. Use it for dates near today; use Input for known dates such as birthdays. */
-export function DatePicker({ label, placeholder = 'Select date', help, error, disabled, value, onChange, min, max, locale = 'en' }: DatePickerProps) {
+/** Reads a typed day such as 12.11.2026, 12.11.26, 12.11., 12/11/2026 or 2026-11-12 as ISO. Day comes first except in ISO. */
+export function parseDay(text: string, base = new Date()): string | undefined {
+  const t = text.trim();
+  let y: number, m: number, d: number;
+  const isoM = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  const dmy = /^(\d{1,2})[./ -](\d{1,2})(?:[./ -](\d{2,4}))?\.?$/.exec(t);
+  if (isoM) { y = +isoM[1]; m = +isoM[2]; d = +isoM[3]; }
+  else if (dmy) { d = +dmy[1]; m = +dmy[2]; y = dmy[3] ? +dmy[3] : base.getFullYear(); if (y < 100) y += 2000; }
+  else return undefined;
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return undefined;
+  return iso(date);
+}
+
+/** A date field you can type into, with a button that opens a Calendar. Accepts 12.11.2026, 12.11. and ISO. Use it for dates near today; use Input for known dates such as birthdays. */
+export function DatePicker({ label, placeholder = 'Select date', help, error, disabled, value, onChange, min, max, locale = 'en', calendarLabel = 'Open calendar' }: DatePickerProps) {
   const f = useFieldIds();
   const [open, setOpen] = React.useState(false);
+  const fmt = (v?: string) => (v ? new Date(v + 'T00:00').toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }) : '');
+  const [text, setText] = React.useState(fmt(value));
   const root = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => setText(fmt(value)), [value, locale]); // eslint-disable-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!open) return;
     const h = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
@@ -493,12 +642,22 @@ export function DatePicker({ label, placeholder = 'Select date', help, error, di
     document.addEventListener('mousedown', h); document.addEventListener('keydown', k);
     return () => { document.removeEventListener('mousedown', h); document.removeEventListener('keydown', k); };
   }, [open]);
+  const inRange = (d: string) => (!min || d >= min) && (!max || d <= max);
+  const commit = () => {
+    const d = text.trim() ? parseDay(text) : undefined;
+    if (d && inRange(d)) { if (d !== value) onChange?.(d); setText(fmt(d)); } else setText(fmt(value));
+  };
   return (
     <FieldShell label={label} help={help} error={error} htmlFor={f.id} helpId={f.helpId}>
-      <div className="eu-dd" ref={root}>
-        <button id={f.id} type="button" disabled={disabled} aria-expanded={open} aria-haspopup="dialog" className={cn('eu-dd__field eu-type-body-small', error && 'is-error', !value && 'is-placeholder')} onClick={() => setOpen((o) => !o)}>
-          <Icon name="calendar" size="md" /><span className="eu-dd__value">{value ? new Date(value + 'T00:00').toLocaleDateString(locale, { dateStyle: 'medium' }) : placeholder}</span>
-        </button>
+      <div className={cn('eu-dd', open && 'is-open')} ref={root}>
+        <span className={cn('eu-input eu-input--medium eu-combo', error && 'is-error', disabled && 'is-disabled')}>
+          <input id={f.id} type="text" inputMode="numeric" autoComplete="off" disabled={disabled} placeholder={placeholder} value={text}
+            aria-invalid={error ? true : undefined} aria-describedby={error || help ? f.helpId : undefined} className="eu-input__el eu-type-body-small"
+            onChange={(e) => setText(e.target.value)} onBlur={commit} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } else if (e.key === 'ArrowDown' && e.altKey) setOpen(true); }} />
+          <button type="button" disabled={disabled} className="eu-input__btn" aria-label={calendarLabel} aria-expanded={open} aria-haspopup="dialog" onClick={() => setOpen((o) => !o)}>
+            <Icon name="calendar" size="md" />
+          </button>
+        </span>
         {open ? <div role="dialog" aria-label={label} className="eu-dd__pop"><Calendar value={value} min={min} max={max} locale={locale} onChange={(d) => { onChange?.(d); setOpen(false); }} /></div> : null}
       </div>
     </FieldShell>

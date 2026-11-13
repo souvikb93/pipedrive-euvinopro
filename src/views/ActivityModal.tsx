@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Modal } from '@euvino/ds';
+import { Button, InlineList, Modal } from '@euvino/ds';
 import type { FocusActivity } from '../data/history';
 import { allFree, type Participant } from '../data/availability';
 import { ScheduleBody } from './scheduling/ScheduleBody';
@@ -50,7 +50,7 @@ export function ActivityModal({ open, onClose, activity, organisation, participa
       onClose={onClose}
       size="xlarge"
       title={activity.title}
-      description={`${activity.type} · ${organisation}`}
+      description={<InlineList items={[activity.type, organisation]} />}
       closeLabel="Schließen"
       footer={
         <>

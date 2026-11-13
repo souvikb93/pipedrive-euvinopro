@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   ActivityCard,
-  ActivityItem,
   Editor,
   Avatar,
   Badge,
@@ -11,17 +10,16 @@ import {
   Divider,
   EmptyState,
   FilterTabs,
+  InlineList,
   Icon,
   IconButton,
   KeyValueList,
   LabelPicker,
   LinkButton,
-  Menu,
   PageHeader,
   Stack,
   Text,
   Timeline,
-  Toggle,
   TopNav,
   type IconName,
   type LabelOption,
@@ -31,7 +29,10 @@ import { organisations, type Organisation } from '../data/organisations';
 import { TEAM, addDays, hm, shortDay, type Participant } from '../data/availability';
 import { PlanActivity } from './PlanActivity';
 import { ActivityModal } from './ActivityModal';
-import { TODAY, daysSince, germanDate, historyFor, nextActivityFor, shortGermanDate, type FocusActivity, type HistoryEntry, type HistoryKind } from '../data/history';
+import { TODAY, daysSince, entryText, historyFor, nextActivityFor, shortGermanDate, type FocusActivity, type HistoryEntry, type HistoryKind, type PersonRef } from '../data/history';
+import { HistoryCard, type HistoryHandlers } from './timeline/HistoryCard';
+import { DeleteEntry, HistoryDetails } from './timeline/HistoryDetails';
+import { CURRENT_USER, People, PersonAction } from './shared/people';
 import { hrefFor } from '../route';
 
 // Layout from Figma (Pipedrive New, node 1:3486); copy and history pattern from the German reference screen.
@@ -46,23 +47,20 @@ const COMPOSER: Array<{ id: string; label: string; icon: IconName; placeholder: 
   { id: 'documents', label: 'Dokumente', icon: 'page', placeholder: 'Beschreibung zum Dokument', kind: 'note', saved: 'Dokument gespeichert' },
 ];
 
-const KIND_ICON: Record<HistoryKind, IconName> = { email: 'mail', note: 'edit', call: 'phone', activity: 'calendar', whatsapp: 'chat-bubble', file: 'attachment', change: 'clock' };
 
-// History filters. Only Alle, Notizen and Aktivitäten can be chosen for now; the others are shown but inert.
-const FILTERS: Array<{ id: string; label: string; kinds: HistoryKind[] | null; live: boolean; counted: boolean }> = [
-  { id: 'all', label: 'Alle', kinds: null, live: true, counted: false },
-  { id: 'notes', label: 'Notizen', kinds: ['note'], live: true, counted: true },
-  { id: 'activities', label: 'Aktivitäten', kinds: ['activity', 'call'], live: true, counted: true },
-  { id: 'whatsapp', label: 'WhatsApp', kinds: ['whatsapp'], live: false, counted: false },
-  { id: 'emails', label: 'E-Mails', kinds: ['email'], live: false, counted: false },
-  { id: 'files', label: 'Dateien', kinds: ['file'], live: false, counted: false },
-  { id: 'documents', label: 'Dokumente', kinds: [], live: false, counted: false },
-  { id: 'leads', label: 'Leads', kinds: [], live: false, counted: false },
-  { id: 'deals', label: 'Deals', kinds: [], live: false, counted: false },
-  { id: 'changes', label: 'Änderungsprotokoll', kinds: ['change'], live: false, counted: false },
+// History filters. Alle, Notizen, Aktivitäten, E-Mails and Dateien are always there; the others show only when this organisation has entries of that kind.
+const FILTERS: Array<{ id: string; label: string; kinds: HistoryKind[] | null; always: boolean }> = [
+  { id: 'all', label: 'Alle', kinds: null, always: true },
+  { id: 'notes', label: 'Notizen', kinds: ['note'], always: true },
+  { id: 'activities', label: 'Aktivitäten', kinds: ['activity', 'call'], always: true },
+  { id: 'emails', label: 'E-Mails', kinds: ['email'], always: true },
+  { id: 'files', label: 'Dateien', kinds: ['file'], always: true },
+  { id: 'whatsapp', label: 'WhatsApp', kinds: ['whatsapp'], always: false },
+  { id: 'documents', label: 'Dokumente', kinds: [], always: false },
+  { id: 'leads', label: 'Leads', kinds: [], always: false },
+  { id: 'deals', label: 'Deals', kinds: [], always: false },
+  { id: 'changes', label: 'Änderungsprotokoll', kinds: ['change'], always: false },
 ];
-
-const noop = () => {};
 
 /** City and country out of an address such as "Street 1, 12345 City, Country". */
 function placeOf(address: string): string {
@@ -74,8 +72,6 @@ function placeOf(address: string): string {
 
 /** Fokus: the next planned activity, first section of the side card. The whole box opens the activity; the names inside are their own links. */
 function FocusActivityBox({ activity, participants, onOpen, onSoon }: { activity: FocusActivity | null; participants: Participant[]; onOpen: () => void; onSoon: (what: string) => void }) {
-  const shown = participants.slice(0, 2);
-  const more = participants.length - shown.length;
   return (
     <>
       {activity ? (
@@ -84,21 +80,13 @@ function FocusActivityBox({ activity, participants, onOpen, onSoon }: { activity
           type={activity.type}
           onOpen={onOpen}
           rows={[
-            { icon: 'calendar', content: `${shortDay(activity.day)} · ${hm(activity.start)}–${hm(activity.end)}` },
+            { icon: 'calendar', content: <InlineList items={[shortDay(activity.day), `${hm(activity.start)}–${hm(activity.end)}`]} /> },
             {
               icon: 'user',
               content: (
-                <>
-                  {shown.map((p, i) => (
-                    <React.Fragment key={p.id}>
-                      {i > 0 ? ', ' : null}
-                      {p.kind === 'contact'
-                        ? <LinkButton variant="link" href={hrefFor.contact(p.id)}>{p.name}</LinkButton>
-                        : <LinkButton variant="link" href="#" onClick={(e) => { e.preventDefault(); onSoon(p.name); }}>{p.name}</LinkButton>}
-                    </React.Fragment>
-                  ))}
-                  {more > 0 ? <Text as="span" variant="body-small" tone="muted">{` +${more}`}</Text> : null}
-                </>
+                <PersonAction.Provider value={onSoon}>
+                  <People list={participants.map((p) => ({ name: p.name }))} />
+                </PersonAction.Provider>
               ),
             },
           ]}
@@ -108,52 +96,11 @@ function FocusActivityBox({ activity, participants, onOpen, onSoon }: { activity
   );
 }
 
+/** You, the signed-in user: author of new notes and planned activities. */
+const ME_REF: PersonRef = { name: CURRENT_USER, email: 'johannes.finzer@euvino.de' };
+
 // Activity kinds counted in Überblick, with their German names.
 const ACTIVITY_LABEL: Partial<Record<HistoryKind, string>> = { call: 'Anruf', activity: 'Termin', note: 'Notiz', email: 'E-Mail', whatsapp: 'WhatsApp' };
-
-function EntryActions({ e }: { e: HistoryEntry }) {
-  if (e.kind === 'email') {
-    return (
-      <>
-        <IconButton icon="arrow-separate-vertical" label="Ganze Unterhaltung anzeigen" size="small" />
-        <Menu label="Sichtbarkeit" trigger={<IconButton icon="lock" label="Sichtbarkeit: privat" size="small" variant="primary" />} items={[{ label: 'Privat', icon: 'lock', selected: true, onSelect: noop }, { label: 'Mit dem Team teilen', icon: 'group', selected: false, onSelect: noop }]} />
-        {e.attachments?.length ? (
-          <Menu label="Anhänge" trigger={<IconButton icon="attachment" label={`${e.attachments.length} Anhang`} size="small" variant="secondary" />} items={e.attachments.map((a) => ({ label: a, icon: 'download' as IconName, onSelect: noop }))} />
-        ) : null}
-        <Button variant="secondary" size="small" icon="reply">Antworten</Button>
-        <Menu label="Weitere Antwortoptionen" trigger={<IconButton icon="nav-down" label="Weitere Antwortoptionen" size="small" variant="secondary" />} items={[{ label: 'Allen antworten', onSelect: noop }, { label: 'Weiterleiten', onSelect: noop }]} />
-      </>
-    );
-  }
-  if (e.kind === 'whatsapp') return <Button variant="secondary" size="small" icon="reply">Antworten</Button>;
-  if (e.kind === 'file') {
-    return (
-      <>
-        <IconButton icon="download" label={`${e.title} herunterladen`} size="small" variant="secondary" />
-        <Menu label={`Aktionen für ${e.title}`} trigger={<IconButton icon="more-horiz" label={`Aktionen für ${e.title}`} size="small" />} items={[{ label: 'Umbenennen', icon: 'edit', onSelect: noop }, { label: 'Löschen', icon: 'trash', danger: true, onSelect: noop }]} />
-      </>
-    );
-  }
-  if (e.kind === 'change') return null;
-  return (
-    <Menu
-      label={`Aktionen für ${e.title}`}
-      trigger={<IconButton icon="more-horiz" label={`Aktionen für ${e.title}`} size="small" />}
-      items={[{ label: 'Bearbeiten', icon: 'edit', onSelect: noop }, ...(e.kind === 'note' ? [{ label: 'Anheften', icon: 'star' as IconName, onSelect: noop }] : []), { label: 'Löschen', icon: 'trash', danger: true, onSelect: noop }]}
-    />
-  );
-}
-
-function EntryFooter({ e }: { e: HistoryEntry }) {
-  if (!e.people && !e.organisation && e.kind !== 'email') return null;
-  return (
-    <>
-      {e.people ? <Stack as="span" direction="horizontal" gap="1" align="center"><Icon name="user" size="sm" />{e.people}</Stack> : null}
-      {e.organisation ? <Stack as="span" direction="horizontal" gap="1" align="center"><Icon name="building" size="sm" />{e.organisation}</Stack> : null}
-      {e.kind === 'email' ? <Stack as="span" direction="horizontal" gap="1" align="center"><Icon name="link" size="sm" /><LinkButton variant="link" href="#">Element verbinden</LinkButton></Stack> : null}
-    </>
-  );
-}
 
 export interface OrganisationDetailProps {
   organisation: Organisation;
@@ -173,11 +120,27 @@ export interface OrganisationDetailProps {
 export function OrganisationDetail({ organisation: o, people, labelOptions, labelId, onLabelChange, onLabelCreate, onAddContact, onSoon, onNotify }: OrganisationDetailProps) {
   const [composer, setComposer] = React.useState('notes');
   const [historyFilter, setHistoryFilter] = React.useState('all');
-  const [expandAll, setExpandAll] = React.useState(false);
   const [draft, setDraft] = React.useState('');
   const [added, setAdded] = React.useState<HistoryEntry[]>([]);
-  React.useEffect(() => { setDraft(''); setAdded([]); }, [o.id]);
-  const history = React.useMemo(() => [...added, ...historyFor(o, people)], [added, o, people]);
+  const [edits, setEdits] = React.useState<Record<string, Partial<HistoryEntry>>>({});
+  const [removed, setRemoved] = React.useState<string[]>([]);
+  const [detail, setDetail] = React.useState<{ id: string; editing: boolean } | null>(null);
+  const [deleting, setDeleting] = React.useState<HistoryEntry | null>(null);
+  React.useEffect(() => { setDraft(''); setAdded([]); setEdits({}); setRemoved([]); setDetail(null); }, [o.id]);
+  const history = React.useMemo(
+    () => [...added, ...historyFor(o, people)].filter((h) => !removed.includes(h.id)).map((h) => (edits[h.id] ? { ...h, ...edits[h.id] } : h)),
+    [added, o, people, removed, edits],
+  );
+  const open = detail ? history.find((h) => h.id === detail.id) ?? null : null;
+  const handlers: HistoryHandlers = {
+    onDetails: (e) => setDetail({ id: e.id, editing: false }),
+    onEdit: (e) => setDetail({ id: e.id, editing: true }),
+    onDelete: (e) => setDeleting(e),
+    onReply: (e, how) => onSoon(how === 'forward' ? 'Weiterleiten' : how === 'all' ? `Allen antworten: ${e.title}` : `Antworten an ${e.by?.name ?? 'Absender'}`),
+    onShare: (e) => onNotify(`„${e.title}“ mit dem Team geteilt`),
+    onLink: () => onSoon('Mit Element verbinden'),
+    onPerson: (name) => onSoon(name),
+  };
   const contactsAsPeople = React.useMemo<Participant[]>(() => people.map((p) => ({ id: p.id, name: p.name, photo: p.photo, kind: 'contact' })), [people]);
   const [focus, setFocus] = React.useState(() => nextActivityFor(o, Math.max(0, organisations.findIndex((x) => x.id === o.id))));
   const [focusPeople, setFocusPeople] = React.useState<Participant[]>([]);
@@ -195,10 +158,16 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
   React.useLayoutEffect(() => {
     const el = sideRef.current;
     if (!el) return undefined;
-    const measure = () => el.style.setProperty('--detail-side-h', `${el.offsetHeight}px`);
+    // Sticky only while the side column sits beside the main column; once the layout wraps it scrolls normally.
+    const measure = () => {
+      el.style.setProperty('--detail-side-h', `${el.offsetHeight}px`);
+      const main = el.nextElementSibling as HTMLElement | null;
+      el.toggleAttribute('data-stacked', !!main && main.offsetTop > el.offsetTop);
+    };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
+    if (el.parentElement) ro.observe(el.parentElement);
     return () => ro.disconnect();
   }, []);
 
@@ -209,7 +178,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
       .map(([k, label]) => ({ label, value: history.filter((h) => h.kind === k).length }))
       .filter((a) => a.value > 0)
       .sort((a, b) => b.value - a.value);
-    const mentions = (name: string) => history.filter((h) => [h.title, h.meta, h.people ?? '', h.preview ?? ''].some((t) => t.includes(name))).length;
+    const mentions = (name: string) => history.filter((h) => entryText(h).includes(name)).length;
     const users = people
       .map((p) => ({ label: p.name, value: mentions(p.name), href: hrefFor.contact(p.id) }))
       .filter((u) => u.value > 0)
@@ -236,7 +205,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
   ];
 
   const countOf = (kinds: HistoryKind[] | null) => (kinds === null ? history.length : history.filter((h) => kinds.includes(h.kind)).length);
-  const active = FILTERS.find((f) => f.id === historyFilter) ?? FILTERS[0];
+  const active = FILTERS.find((f) => f.id === historyFilter && (f.always || countOf(f.kinds) > 0)) ?? FILTERS[0];
   const shown = active.kinds === null ? history : history.filter((h) => active.kinds?.includes(h.kind));
   const tab = COMPOSER.find((c) => c.id === composer) ?? COMPOSER[0];
 
@@ -269,8 +238,8 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
               <LinkButton variant="link" href={hrefFor.contact(p.id)}>{p.name}</LinkButton>
             </Stack>
             <Stack direction="horizontal" gap="1" align="center">
-              <IconButton icon="phone" label={`${p.name} anrufen`} size="small" disabled={!p.phones.length} onClick={() => onSoon(`${p.name} anrufen`)} />
-              <IconButton icon="mail" label={`E-Mail an ${p.name}`} size="small" disabled={!p.email} onClick={() => onSoon(`E-Mail an ${p.name}`)} />
+              <IconButton icon="phone" label={`${p.name} anrufen`} size="small" disabled={!p.phones.length} onClick={() => { window.location.href = `tel:${p.phones[0].replace(/[^+\d]/g, '')}`; }} />
+              <IconButton icon="mail" label={`E-Mail an ${p.name}`} size="small" disabled={!p.email} onClick={() => { window.location.href = `mailto:${p.email}`; }} />
             </Stack>
           </Stack>
         ))}
@@ -348,7 +317,7 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                 onCancel={() => setComposer('notes')}
                 onPlan={(a, list) => {
                   setComposer('notes');
-                  setAdded((h) => [{ id: `plan-${Date.now()}`, kind: a.kind === 'call' ? 'call' : 'activity', day: a.day, title: `${a.type} geplant: ${a.title}`, meta: `${hm(a.start)}–${hm(a.end)} · ${list.map((p) => p.name).join(', ')}`, people: list.length > 1 ? `${list[1].name}${list.length > 2 ? ` (+${list.length - 2})` : ''}` : undefined }, ...h]);
+                  setAdded((h) => [{ id: `plan-${Date.now()}`, kind: a.kind === 'call' ? 'call' : 'activity', day: a.day, time: hm(a.start), span: `${hm(a.start)}–${hm(a.end)}`, title: `${a.type}: ${a.title}`, by: ME_REF, to: list.slice(1).map((p): PersonRef => ({ name: p.name })), contacts: list.filter((p) => p.kind === 'contact').map((p): PersonRef => ({ name: p.name })), organisations: [o.name] }, ...h]);
                   if (!focus || a.day < focus.day || (a.day === focus.day && a.start < focus.start)) { setFocus(a); setFocusPeople(list); }
                   onNotify(`Einladung an ${list.length - 1} Teilnehmer gesendet`);
                 }}
@@ -362,7 +331,8 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
                 onSave={(text) => {
                   const today = `${TODAY.getFullYear()}-${String(TODAY.getMonth() + 1).padStart(2, '0')}-${String(TODAY.getDate()).padStart(2, '0')}`;
                   const plain = text.replace(/\*\*|<\/?u>|(^|\s)_|_(\s|$)/g, '$1$2');
-                  setAdded((a) => [{ id: `new-${Date.now()}`, kind: tab.kind, day: today, title: tab.label === 'Notizen' ? 'Notiz' : tab.label, meta: 'Johannes Finzer', preview: plain }, ...a]);
+                  const now = new Date();
+                  setAdded((a) => [{ id: `new-${Date.now()}`, kind: tab.kind, day: today, time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`, title: tab.label === 'Notizen' ? 'Notiz' : tab.label, by: ME_REF, preview: plain, organisations: [o.name] }, ...a]);
                   setDraft('');
                   onNotify(tab.saved);
                 }}
@@ -372,35 +342,19 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           </Card>
 
           <Stack gap="4">
-            <Stack direction="horizontal" gap="2" align="center" justify="between" wrap>
-              <Text as="h2" variant="h5">Verlauf</Text>
-              <Toggle label="Alle Elemente ausklappen" checked={expandAll} onChange={setExpandAll} textSide="left" />
-            </Stack>
+            <Text as="h2" variant="h5">Verlauf</Text>
             {(
               <>
                 <FilterTabs
                   variant="chip"
                   label="Verlauf filtern"
-                  value={historyFilter}
+                  value={active.id}
                   onChange={setHistoryFilter}
-                  items={FILTERS.map((f) => ({ id: f.id, label: f.label, count: f.counted ? countOf(f.kinds) : undefined, inert: !f.live }))}
+                  items={FILTERS.filter((f) => f.always || countOf(f.kinds) > 0).map((f) => ({ id: f.id, label: f.label, count: f.kinds === null ? undefined : countOf(f.kinds) }))}
                 />
                 {shown.length ? (
                   <Timeline label="Verlauf">
-                    {shown.map((e) => (
-                      <ActivityItem
-                        key={e.id}
-                        icon={KIND_ICON[e.kind]}
-                        title={e.title}
-                        meta={`${germanDate(e.day)} · ${e.meta}`}
-                        actions={<EntryActions e={e} />}
-                        footer={<EntryFooter e={e} />}
-                        expanded={expandAll}
-                        onOpen={noop}
-                      >
-                        {e.preview}
-                      </ActivityItem>
-                    ))}
+                    {shown.map((e) => <HistoryCard key={e.id} e={e} h={handlers} />)}
                   </Timeline>
                 ) : (
                   <EmptyState
@@ -416,6 +370,18 @@ export function OrganisationDetail({ organisation: o, people, labelOptions, labe
           </Stack>
         </Stack>
       </Stack>
+      <HistoryDetails
+        e={open}
+        editing={!!detail?.editing}
+        h={handlers}
+        onClose={() => setDetail(null)}
+        onSave={(e, text) => { setEdits((x) => ({ ...x, [e.id]: { ...x[e.id], preview: text, body: undefined } })); setDetail({ id: e.id, editing: false }); onNotify('Notiz gespeichert'); }}
+      />
+      <DeleteEntry
+        e={deleting}
+        onCancel={() => setDeleting(null)}
+        onConfirm={() => { if (deleting) { setRemoved((r) => [...r, deleting.id]); if (detail?.id === deleting.id) setDetail(null); onNotify(`„${deleting.title}“ gelöscht`); } setDeleting(null); }}
+      />
       {focus ? (
         <ActivityModal
           open={activityOpen}

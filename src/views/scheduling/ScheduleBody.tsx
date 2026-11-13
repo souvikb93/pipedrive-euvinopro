@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AvailabilityTimeline, StatusSummary, PersonChip, Badge, Button, DatePicker, Dropdown, FieldAction, Icon, Menu, Stack, Text } from '@euvino/ds';
+import { InlineList, AvailabilityTimeline, StatusSummary, PersonChip, Badge, Button, Combobox, DatePicker, FieldAction, Icon, Menu, Stack, Text } from '@euvino/ds';
 import {
   DAY_END,
   DAY_START,
@@ -19,6 +19,7 @@ import {
   type Slot,
 } from '../../data/availability';
 import type { Scheduling } from './useScheduling';
+import { durationLabel, parseDuration, parseTime } from '../../lib/time';
 
 const names = (list: Participant[]) =>
   list
@@ -27,7 +28,6 @@ const names = (list: Participant[]) =>
     .replace(/, ([^,]*)$/, ' und $1');
 const TIMES = Array.from({ length: (DAY_END - DAY_START) / 15 + 1 }, (_, i) => DAY_START + i * 15);
 const DURATIONS = [15, 30, 45, 60, 90, 120];
-const durationLabel = (m: number) => (m < 60 ? `${m} Min.` : m % 60 ? `${Math.floor(m / 60)} Std. ${m % 60} Min.` : `${m / 60} Std.`);
 
 /** Two free slots for everyone, never the chosen one and never side by side, so each reads as its own option. */
 export function suggestionsFor(s: Scheduling): Slot[] {
@@ -75,10 +75,16 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
       {editable ? (
         <Stack gap="2">
           <div className="sched-fields">
-            <DatePicker label="Datum" locale="de-DE" value={s.sel.day} onChange={s.setDay} />
-            <Dropdown label="Beginn" value={String(s.sel.start)} onChange={(v) => s.setStart(Number(v))} options={TIMES.slice(0, -1).map((t) => ({ value: String(t), label: hm(t) }))} />
-            <Dropdown label="Ende" value={String(s.sel.end)} onChange={(v) => s.setEnd(Number(v))} options={TIMES.filter((t) => t > s.sel.start).map((t) => ({ value: String(t), label: hm(t) }))} />
-            <Dropdown label="Dauer" value={String(s.duration)} onChange={(v) => s.setDuration(Number(v))} options={durations.map((d) => ({ value: String(d), label: durationLabel(d) }))} />
+            <DatePicker label="Datum" locale="de-DE" placeholder="TT.MM.JJJJ" calendarLabel="Kalender öffnen" value={s.sel.day} onChange={s.setDay} />
+            <Combobox label="Beginn" toggleLabel="Uhrzeiten anzeigen" value={String(s.sel.start)} format={(v) => hm(Number(v))}
+              parse={(t) => { const v = parseTime(t); return v !== undefined && v < DAY_END ? String(v) : undefined; }}
+              onChange={(v) => s.setStart(Number(v))} options={TIMES.slice(0, -1).map((t) => ({ value: String(t), label: hm(t) }))} />
+            <Combobox label="Ende" toggleLabel="Uhrzeiten anzeigen" value={String(s.sel.end)} format={(v) => hm(Number(v))}
+              parse={(t) => { const v = parseTime(t); return v !== undefined && v > s.sel.start ? String(v) : undefined; }}
+              onChange={(v) => s.setEnd(Number(v))} options={TIMES.filter((t) => t > s.sel.start).map((t) => ({ value: String(t), label: hm(t) }))} />
+            <Combobox label="Dauer" toggleLabel="Dauer auswählen" value={String(s.duration)} format={(v) => durationLabel(Number(v))}
+              parse={(t) => { const v = parseDuration(t); return v !== undefined && s.sel.start + v <= DAY_END ? String(v) : undefined; }}
+              onChange={(v) => s.setDuration(Number(v))} options={durations.map((d) => ({ value: String(d), label: durationLabel(d) }))} />
           </div>
           <Text as="div" variant="caption" tone={s.valid ? 'success' : 'error'} aria-live="polite">
             <Stack direction="horizontal" gap="2" align="center">
@@ -93,8 +99,7 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
           tone={s.valid ? 'default' : 'error'}
           title={
             <>
-              {`${shortDay(s.sel.day)} · ${range(s.sel)} `}
-              <Text as="span" variant="body-small" tone="muted">{`· ${durationLabel(s.duration)}`}</Text>
+              <InlineList items={[shortDay(s.sel.day), range(s.sel), <Text as="span" variant="body-small" tone="muted">{durationLabel(s.duration)}</Text>]} />
             </>
           }
           description={note}
@@ -126,7 +131,7 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
               label="Teilnehmer hinzufügen"
               trigger={<FieldAction>Hinzufügen</FieldAction>}
               items={addable.map((c) => ({
-                label: c.kind === 'team' ? `${c.name} · Team` : c.name,
+                label: c.kind === 'team' ? `${c.name} (Team)` : c.name,
                 icon: c.kind === 'team' ? ('user' as const) : ('user-circle' as const),
                 onSelect: () => s.setPeople([...s.people, c]),
               }))}
