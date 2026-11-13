@@ -98,16 +98,18 @@ export interface SegmentedControlProps {
   onChange: (value: string) => void;
   /** Accessible name of the group, such as "View". */
   label: string;
+  /** `medium` 40 high (default). `small` 32 high with caption text, for toolbars inside cards. */
+  size?: 'medium' | 'small';
   /** Extra class. */
   className?: string;
 }
 
 /** Switches the display of the same content in place, such as List and Grid. Not for page navigation (TopNav). Segments share the width equally, sized to the longest label. */
-export function SegmentedControl({ options, value, onChange, label, className }: SegmentedControlProps) {
+export function SegmentedControl({ options, value, onChange, label, size = 'medium', className }: SegmentedControlProps) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn('eu-seg', className)}>
+    <div role="radiogroup" aria-label={label} className={cn('eu-seg', size === 'small' && 'eu-seg--small', className)}>
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item eu-type-body-small', o.value === value && 'is-selected eu-mode-icon-weight-selected')} onClick={() => onChange(o.value)}>
+        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item', size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small', o.value === value && 'is-selected eu-mode-icon-weight-selected')} onClick={() => onChange(o.value)}>
           {o.icon ? <Icon name={o.icon} size="sm" /> : null}
           <span className="eu-seg__label" data-label={o.label}>{o.label}</span>
         </button>
@@ -136,6 +138,44 @@ export function Chip({ selected, icon, onRemove, removeLabel = 'Remove', classNa
         {children}
       </button>
       {onRemove ? <button type="button" className="eu-chip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}><Icon name="close" size="xs" /></button> : null}
+    </span>
+  );
+}
+
+export interface PersonChipProps {
+  /** Person's name. Shown, and gives the avatar's initials. */
+  name: string;
+  /** Picture URL. Without it the avatar shows initials. */
+  photo?: string;
+  /** Extra text after the name, such as "(Sie)". */
+  suffix?: string;
+  /** Shows the remove button. Leave out for someone who cannot be removed, such as the organiser. */
+  onRemove?: () => void;
+  /** Accessible name of the remove button, such as "Maximilian Eul entfernen". */
+  removeLabel?: string;
+  /** Opens the person, such as their contact. Makes the name area a button. */
+  onClick?: () => void;
+  /** `medium` 32 high (default). `small` 28 high with caption text. */
+  size?: 'medium' | 'small';
+  disabled?: boolean;
+}
+
+/**
+ * A person in a field or list, such as a participant: avatar (initials or picture), name and a remove button.
+ * Not a filter: use Chip for filters and tags. Grey fill, no stroke; the avatar sits inset on the left.
+ */
+export function PersonChip({ name, photo, suffix, onRemove, removeLabel = 'Remove', onClick, size = 'medium', disabled }: PersonChipProps) {
+  const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+  const body = (
+    <>
+      <span className="eu-pchip__avatar" aria-hidden="true">{photo ? <img src={photo} alt="" /> : initials}</span>
+      <span className="eu-pchip__name">{name}{suffix ? ` ${suffix}` : ''}</span>
+    </>
+  );
+  return (
+    <span className={cn('eu-pchip', `eu-pchip--${size}`, size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small', onClick && 'is-clickable', disabled && 'is-disabled')}>
+      {onClick ? <button type="button" className="eu-pchip__main" onClick={onClick} disabled={disabled}>{body}</button> : <span className="eu-pchip__main">{body}</span>}
+      {onRemove ? <button type="button" className="eu-pchip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}><Icon name="close" size="xs" /></button> : null}
     </span>
   );
 }

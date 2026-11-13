@@ -12,13 +12,15 @@ export interface AvatarProps {
   size?: 'tiny' | 'small' | 'medium' | 'large' | 'giant';
   /** Status dot. Pair it with text if the status matters. */
   status?: 'online' | 'offline' | 'busy';
+  /** Initials on `light` accent tint (default, Figma Type=Letter Light) or `solid` accent (Figma Type=Letter). */
+  tone?: 'light' | 'solid';
 }
 
 /** A person as picture or initials. */
-export function Avatar({ name, src, size = 'medium', status }: AvatarProps) {
+export function Avatar({ name, src, size = 'medium', status, tone = 'light' }: AvatarProps) {
   const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
   return (
-    <span className={cn('eu-avatar', `eu-avatar--${size}`)} role="img" aria-label={name}>
+    <span className={cn('eu-avatar', `eu-avatar--${size}`, tone === 'solid' && 'eu-avatar--solid')} role="img" aria-label={name}>
       {src ? <img src={src} alt="" /> : <span aria-hidden="true">{initials}</span>}
       {status ? <span className={cn('eu-avatar__dot', `is-${status}`)} /> : null}
     </span>

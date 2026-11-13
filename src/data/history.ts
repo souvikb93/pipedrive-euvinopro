@@ -19,8 +19,19 @@ export interface HistoryEntry {
   attachments?: string[];
 }
 
-const TODAY = new Date('2026-11-11T00:00');
+export const TODAY = new Date('2026-11-11T00:00');
 const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+/** "4. März 2021". */
+export function shortGermanDate(day: string): string {
+  const d = new Date(`${day}T00:00`);
+  return `${d.getDate()}. ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** Whole days from `day` to today. */
+export function daysSince(day: string): number {
+  return Math.max(0, Math.round((TODAY.getTime() - new Date(`${day}T00:00`).getTime()) / 86400000));
+}
 
 /** "15. Oktober 2026 (vor 27 Tagen)". */
 export function germanDate(day: string): string {
@@ -78,4 +89,36 @@ function generate(o: Organisation, people: Contact[]): HistoryEntry[] {
 
 export function historyFor(o: Organisation, people: Contact[]): HistoryEntry[] {
   return o.id === 'peter-mertes' ? PETER_MERTES : generate(o, people);
+}
+
+/** The next planned activity of an organisation, shown in the Fokus card and edited in the activity modal. */
+export interface FocusActivity {
+  kind: 'call' | 'activity' | 'email';
+  /** Activity type in German, such as "Anruf". */
+  type: string;
+  title: string;
+  /** ISO day, such as "2026-11-12". */
+  day: string;
+  /** Minutes from midnight. */
+  start: number;
+  end: number;
+  /** Person the activity is assigned to. */
+  assignee: string;
+}
+
+// Fokus shows a Termin for every organisation: only meetings have participants whose calendars can be compared.
+const NEXT: Array<Pick<FocusActivity, 'kind' | 'type' | 'title'>> = [
+  { kind: 'activity', type: 'Termin', title: 'Rückmeldung zum Produktkatalog einholen' },
+  { kind: 'activity', type: 'Termin', title: 'Jahresgespräch 2027 vorbereiten' },
+  { kind: 'activity', type: 'Termin', title: 'Offene GDSN-Daten abstimmen' },
+  { kind: 'activity', type: 'Termin', title: 'Preisliste 2027 besprechen' },
+];
+
+/** Builds the Fokus activity from the organisation's `nextActivity` ("12.11.2026 · 10:30"). Returns null when none is planned. */
+export function nextActivityFor(o: Organisation, index: number): FocusActivity | null {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4}) · (\d{2}):(\d{2})$/.exec(o.nextActivity);
+  if (!m) return null;
+  const [, dd, mm, yyyy, hh, min] = m;
+  const start = Number(hh) * 60 + Number(min);
+  return { ...NEXT[index % NEXT.length], day: `${yyyy}-${mm}-${dd}`, start, end: start + 30, assignee: 'Johannes Finzer' };
 }

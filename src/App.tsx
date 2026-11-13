@@ -250,6 +250,15 @@ export function App() {
     return list;
   }, [people, contactFilter, contactLabelFilter, contactLabels.labelOf, contactSort]);
 
+  // A contact link (#/kontakte/<id>) opens the list narrowed to that record, like picking it in the search.
+  const linkedContact = route.name === 'list' ? route.contactId : undefined;
+  React.useEffect(() => {
+    if (!linkedContact) return;
+    const c = people.find((p) => p.id === linkedContact);
+    setContactFilter(linkedContact);
+    setQuery(c?.name ?? '');
+  }, [linkedContact]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ---- Organisations (own state; nothing here touches the contacts view)
   const [orgs, setOrgs] = React.useState<Organisation[]>(initialOrganisations);
   const orgLabels = useLabels(orgs);
@@ -424,6 +433,9 @@ export function App() {
                 labelId={orgLabels.labelOf[detail.id] ?? null}
                 onLabelChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [detail.id]: id }))}
                 onLabelCreate={(n) => orgLabels.create(detail.id, n)}
+                onAddContact={() => setAddingContact(true)}
+                onSoon={soon}
+                onNotify={(title) => toast({ title, status: 'success' })}
               />
             ) : (
               <Stack gap="4">

@@ -1,39 +1,46 @@
 # Handoff
 
 ## Goal
-Build the Figma frame "Kontakte — EuvinoPRO" (Pipedrive New `I3W13uloSbJdlSmy0rLRIK`, node `21:20587`) in React with the EuvinoPRO design system, no hard-coded values, and deploy it.
+Pipedrive "Kontakte — EuvinoPRO" in React on the EuvinoPRO design system (`@euvino/ds`), aligned with the Figma library (`eoPfuJuIddL9imDtGiK2oX`). Tokens only, German copy. Shows the client an enterprise design system, product and codebase built with an AI-native workflow.
+
+Working rules: show changes on localhost first; Figma only after approval; archive, never delete, in Figma; the user decides when to deploy (a push to `main` deploys to Vercel).
 
 ## State
-- Live: https://pipedrive-euvinopro.vercel.app (Vercel project `pipedrive-euvinopro`, Vercel Authentication protection is on). Repo: `souvikb93/pipedrive-euvinopro` (private). Older repo `souvikb93/pipedrive-euvino` is the remote `old-origin`.
-- Local: `npm run dev` on http://localhost:4340.
-- Header is 56 (size/header-sm, common SaaS height); side nav is an expandable rail (toggle or `[`, page dimmed and blurred while open) with German labels and a Mehr menu that takes items that do not fit the window height (Projekte, Kampagnen, Einstellungen in Mehr are placeholders); global search panel opens from the header.
-- Views via hash route: #/kontakte (default), #/organisationen (org table, Organisation hinzufügen modal), Timeline (looks normal, click does nothing; #/timeline shows Kontakte), #/organisationen/<id> (layout from Figma 1:3486, German copy and Verlauf from the reference screen; dummy history for every organisation in src/data/history.ts). Tables and the detail page are read-only except labels (LabelPicker).
-- Matches the frame: search 400 × 38 at the same position, side nav 72 with 48 tiles, 24 icons, 16 gaps, sticky and not scrollable; rows 38; links in `foreground/link`, "(Büro)" in body colour; Filter button white.
+- Live: https://pipedrive-euvinopro.vercel.app (deployed from this commit).
+- Local: `npm run dev` → http://localhost:4340, e.g. `#/organisationen/schlumberger`.
+- Design system repo `~/euvinopro-ds` (souvikb93/winpro-ds) and this app are committed and pushed together.
+- Figma library has a saved version "Scheduling components".
+
+Organisation detail page:
+- Header: PageHeader with icon tile, name, label (LabelPicker small) and city.
+- Side card: Fokus (ActivityCard, always a Termin) → opens the reschedule modal; Organisationsdetails; Zugehörige Organisationen; Kontakte (call/mail icon buttons); Überblick (BreakdownBar); Leads.
+- Composer: only Notizen (Editor) and Aktivität (inline planner) are selectable; the other tabs hover only.
+- Verlauf: Timeline without scroll progress colouring.
+
+Scheduling (one data model, `src/data/availability.ts`, state in `src/views/scheduling/useScheduling.ts`):
+- Modal (Fokus card): StatusSummary (read-only time, Konflikt badge), Teilnehmer (PersonChip), AvailabilityTimeline. Opens on the scheduled time (Schlumberger demo: 09:00 conflict); free time for everyone is green; click a free slot to move; "Aktualisieren" blocks saving a clash.
+- Inline planner (Aktivität tab): Titel, Datum/Beginn/Ende/Dauer fields, same timeline; "Einladung senden".
+- Legend is fixed: Für alle frei · Belegt · Vorläufig, in both.
 
 ## Files
-- `src/App.tsx` screen, `src/app.css` layout (tokens only), `src/data/contacts.ts` rows read from Figma.
-- `vendor/euvino-ds` copy of `@euvino/ds`. Never edit; change `../euvinopro-ds` and run `npm run sync-ds`.
+- App: `src/views/OrganisationDetail.tsx`, `src/views/ActivityModal.tsx`, `src/views/PlanActivity.tsx`, `src/views/scheduling/ScheduleBody.tsx`, `src/views/scheduling/useScheduling.ts`, `src/data/availability.ts`, `src/data/history.ts`, `src/app.css` (layout only).
+- DS: `src/ds/scheduling.tsx` (AvailabilityTimeline, ActivityCard, DateNav, StatusSummary), `src/ds/editor.tsx`, `src/ds/button.tsx` (PersonChip, SegmentedControl size, Chip), `src/ds/display.tsx` (Avatar tone), `src/ds/navigation.tsx` (PageHeader meta), `src/ds/layout.tsx` (Text `caption-medium`), `src/styles/components.css`, `scripts/meta.json`, `scripts/build-catalog.mjs` (now includes editor and scheduling).
+- Figma scripts (session scratchpad, may be gone): helper `lib.js` binds every fill, stroke, size and spacing to variables and text styles; runner `node ~/tools/euvino-ds/build/run-in.mjs "EuvinoPRO Design System" script.js out.json`.
 
-## Design system (`~/euvinopro-ds`, repo souvikb93/winpro-ds, committed 9a13f4e)
-- `figma/hydra.json` + `scripts/build-tokens.mjs`: Hydra tokens with new names, text-style variables. Text styles refreshed from Figma.
-- New: `LabelPicker` (labels change in the table, new labels can be added), `GlobalSearch` (panel with categories and highlighted hits, token background/highlight), `SideNav expandable`, `SearchField`, `Input variant="filled"`, `LinkButton variant="link"`, `SideNav logo/sticky/countStatus/theme`, `Header layout="between"`, `UserMenu size` + chevron, `Table` column `overflow` and `fit`, 11 icons, bottle mark.
-- Figma (own file `eoPfuJuIddL9imDtGiK2oX` only): added variables `foreground/link/default`, `foreground/link/hover`, `size/field-lg`, `background/highlight`, `blur/backdrop`; Segmented Control segments now Fill equally. Hydra file untouched.
-
-## Figma library (eoPfuJuIddL9imDtGiK2oX), version "EuvinoPRO DS v2.0"
-- Hydra components are the source of truth; 557 uses swapped, old ones in Archive / Replaced by Hydra. Restore points: "Before Hydra component swap", "Before DS reorganisation".
-- Pages: Cover, Getting started, Foundations, Icons & Brand, Guidelines | Actions, Forms, Navigation, Data Display, Feedback & Overlays, Charts, Cards, Patterns | Examples | Internal, Archive. Every component section starts with a spec card (Guidelines, Examples for Button/Input/Badge, Properties).
-- Code-born patterns added to Figma: Global Search, Label Picker, Activity Item, Key Value List.
-- Code tokens = Figma variables (367, diffed equal). Library still has to be published by hand in Figma.
-
-- Toolbar CTAs are SplitButtons (+ Kontakt / + Organisation) opening landscape modals (Modal size xlarge): Kontakt = Person | divider | Organisation; Organisation = one part in three columns. Import and some menu items are placeholders (toast).
+## Changed (this session)
+- New DS components: AvailabilityTimeline, ActivityCard, DateNav, StatusSummary, PersonChip, Editor; SegmentedControl `size="small"`; Avatar `tone` (light default, solid); Text `caption-medium`; PageHeader meta row and icon tile.
+- App moved onto them; app CSS has no DS overrides and no raw values; `ds check` passes for every file.
+- Figma: new sections Availability Timeline, Breakdown Bar (Charts); Status Summary, Activity Card (Cards); Date Nav, Page Header (Navigation); Editor (Forms); Person Chip (Data Display). Segmented Control got Size=Small (existing variants renamed with Size=Medium). Avatar got Type=Letter Light. Icon `organisation` copied from Archive into the icon library (archive copy kept).
 
 ## Failed / gotchas
-- The Pipedrive file still uses an older library version, so the frame mixes old names (`bg/page`, `text/body`, `radius/lg` = 8) and Hydra names. Code keeps old names at their old values; colliding Hydra names (radius-lg 40, icon sizes) were not imported.
-- Dev server logs a stale 500 while `sync-ds` swaps files; a reload fixes it.
+- Figma `loadFontAsync` hangs when given a style's fontName with `variationSettings`; load `{ family, style }` only.
+- `combineAsVariants` needs the components on the same page as the parent; append first.
+- Variant sets built with auto layout keep a fixed height after `resize`; set `primaryAxisSizingMode = 'AUTO'` afterwards.
+- `ds check` reads "from" in comments as an import; avoid `from "…"` in comments.
+- Run `npm run catalog` and `npm run llms` after DS API changes, or `npm run check` fails.
 
 ## Next
-- UNCOMMITTED on localhost (both repos): Kontakt modal Person section in aligned rows (Name|Organisation, Telefon|E-Mail, Besitzer|Label, Anrede|Position, Sichtbar für|–), xlarge modal padding 24 all round; Kontakt / Unternehmen modals (German copy from Pipedrive, placeholders, one 24px edge, 32px column gap, fit at 780px), dialog titles H5, IconButton close + focus on first field, Cancel = secondary (rule in CLAUDE.md/AGENTS.md), tertiary text buttons: 4px gap + Selected icon stroke. Waiting for user review.
-- New DS components (code only so far): FieldAction (inline 'add another' link under fields: no padding, Medium 14, 16px icon, underline on hover) and CloseButton (dialogs 32/20, toasts 24/16, Regular stroke, round hover). Tertiary tweak reverted.
-- After approval: mirror in Figma (new Field Action + Close Button components) (Modal/Drawer close as IconButton, footer Abbrechen secondary, tertiary Button-Label gap 3xs + Selected icon weight), then commit + push (push = Vercel deploy).
-- Figma library still to be published by hand.
-- Drop deprecated token aliases once no product uses them.
+- Publish the Figma library by hand.
+- Figma timeline tentative stripes are drawn shapes (variables cannot pattern); code uses a token gradient.
+- Planner/modal time data is demo data; a real calendar source is not connected.
+- PersonChip default fill (background/functional/neutral) is light on white; revisit if it needs more contrast.

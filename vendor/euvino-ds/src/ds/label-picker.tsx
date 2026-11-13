@@ -26,6 +26,8 @@ export interface LabelPickerProps {
   label: string;
   /** Names of the built-in parts. Pass them in the page's language. */
   labels?: { search?: string; add?: string; addNamed?: (name: string) => string; empty?: string; none?: string };
+  /** Badge size of the current label: `tiny` in tables and lists (default), `small` in a PageHeader meta row. */
+  size?: 'tiny' | 'small';
 }
 
 /**
@@ -33,7 +35,7 @@ export interface LabelPickerProps {
  * The popover has a search, the labels as badges (the current one checked) and an add button for a new label.
  * Arrow keys move, Enter picks, Escape closes. It is positioned against the window, so table scrolling never cuts it off.
  */
-export function LabelPicker({ value, options, onChange, onCreate, label, labels }: LabelPickerProps) {
+export function LabelPicker({ value, options, onChange, onCreate, label, labels, size = 'tiny' }: LabelPickerProps) {
   const id = React.useId();
   const trigger = React.useRef<HTMLButtonElement>(null);
   const panel = React.useRef<HTMLDivElement>(null);
@@ -102,7 +104,7 @@ export function LabelPicker({ value, options, onChange, onCreate, label, labels 
         aria-label={`${label}: ${current ? current.label : labels?.none ?? 'none'}`}
         className="eu-labelpick__trigger" onClick={() => (open ? close() : setOpen(true))}
       >
-        {current ? <Badge size="tiny" status={current.status}>{current.label}</Badge> : <span className="eu-type-body-small eu-labelpick__none">{labels?.none ?? '–'}</span>}
+        {current ? <Badge size={size} status={current.status}>{current.label}</Badge> : <span className="eu-type-body-small eu-labelpick__none">{labels?.none ?? '–'}</span>}
         <span className="eu-labelpick__edit" aria-hidden="true"><Icon name="edit" size="sm" /></span>
       </button>
       {open ? (

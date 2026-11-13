@@ -19,6 +19,9 @@
 .detail-side {
   flex: 0 0 var(--eu-size-rail);
   max-width: 100%;
+  /* Scrolls with the page, then holds once its end reaches the bottom of the window (height measured in JS). */
+  position: sticky;
+  top: min(var(--eu-spacing-m), calc(100dvh - var(--detail-side-h, 100dvh) - var(--eu-spacing-m)));
 }
 .detail-main {
   flex: 1 1 var(--eu-size-dialog-md);
@@ -34,4 +37,7 @@
 .form-columns > * { flex: 1 1 0; min-width: 0; }
 .entry-row > .entry-row__value { flex: 1 1 auto; min-width: 0; }
 .entry-row > .entry-row__type { flex: none; width: var(--eu-size-field-xs); }
+
+/* Planner: date and time as form fields, as in Teams. Missing in the DS: a column grid layout component (same as form-columns). */
+.sched-fields { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: var(--eu-spacing-s); }
 

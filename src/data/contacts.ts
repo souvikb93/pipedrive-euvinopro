@@ -17,6 +17,8 @@ export interface Contact {
   openDeals: number;
   nextActivity: string;
   owner: string;
+  /** Profile picture URL. Sample portraits for the prototype. */
+  photo?: string;
 }
 
 export const TOTAL_CONTACTS = 1430;
@@ -36,7 +38,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "11.11.2026 · 09:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/10.jpg"
   },
   {
     "id": "c2",
@@ -52,7 +55,8 @@ export const contacts: Contact[] = [
     "wonDeals": 1,
     "openDeals": 0,
     "nextActivity": "12.11.2026 · 10:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/10.jpg"
   },
   {
     "id": "c3",
@@ -68,7 +72,8 @@ export const contacts: Contact[] = [
     "wonDeals": 2,
     "openDeals": 0,
     "nextActivity": "13.11.2026 · 11:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/13.jpg"
   },
   {
     "id": "c4",
@@ -85,7 +90,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "14.11.2026 · 12:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/16.jpg"
   },
   {
     "id": "c5",
@@ -101,7 +107,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "15.11.2026 · 13:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/13.jpg"
   },
   {
     "id": "c6",
@@ -118,7 +125,8 @@ export const contacts: Contact[] = [
     "wonDeals": 2,
     "openDeals": 0,
     "nextActivity": "16.11.2026 · 14:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/16.jpg"
   },
   {
     "id": "c7",
@@ -134,7 +142,8 @@ export const contacts: Contact[] = [
     "wonDeals": 2,
     "openDeals": 0,
     "nextActivity": "17.11.2026 · 15:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/19.jpg"
   },
   {
     "id": "c8",
@@ -150,7 +159,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "18.11.2026 · 16:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/19.jpg"
   },
   {
     "id": "c9",
@@ -166,7 +176,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "19.11.2026 · 09:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/22.jpg"
   },
   {
     "id": "c10",
@@ -182,7 +193,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "20.11.2026 · 10:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/25.jpg"
   },
   {
     "id": "c11",
@@ -198,7 +210,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "21.11.2026 · 11:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/28.jpg"
   },
   {
     "id": "c12",
@@ -215,7 +228,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "22.11.2026 · 12:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/31.jpg"
   },
   {
     "id": "c13",
@@ -232,7 +246,8 @@ export const contacts: Contact[] = [
     "wonDeals": 1,
     "openDeals": 0,
     "nextActivity": "23.11.2026 · 13:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/34.jpg"
   },
   {
     "id": "c14",
@@ -248,7 +263,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "24.11.2026 · 14:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/22.jpg"
   },
   {
     "id": "c15",
@@ -264,7 +280,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "25.11.2026 · 15:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/25.jpg"
   },
   {
     "id": "c16",
@@ -280,7 +297,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "26.11.2026 · 16:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/28.jpg"
   },
   {
     "id": "c17",
@@ -296,7 +314,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "27.11.2026 · 09:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/37.jpg"
   },
   {
     "id": "c18",
@@ -312,7 +331,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "28.11.2026 · 10:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/31.jpg"
   },
   {
     "id": "c19",
@@ -328,7 +348,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "11.11.2026 · 11:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/40.jpg"
   },
   {
     "id": "c20",
@@ -344,7 +365,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "12.11.2026 · 12:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/43.jpg"
   },
   {
     "id": "c21",
@@ -360,7 +382,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "13.11.2026 · 13:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/34.jpg"
   },
   {
     "id": "c22",
@@ -376,7 +399,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "14.11.2026 · 14:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/46.jpg"
   },
   {
     "id": "c23",
@@ -392,7 +416,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "15.11.2026 · 15:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/49.jpg"
   },
   {
     "id": "c24",
@@ -408,7 +433,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "16.11.2026 · 16:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/52.jpg"
   },
   {
     "id": "c25",
@@ -424,7 +450,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "17.11.2026 · 09:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/55.jpg"
   },
   {
     "id": "c26",
@@ -440,7 +467,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "18.11.2026 · 10:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/58.jpg"
   },
   {
     "id": "c27",
@@ -456,7 +484,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "19.11.2026 · 11:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/61.jpg"
   },
   {
     "id": "c28",
@@ -472,7 +501,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "20.11.2026 · 12:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/64.jpg"
   },
   {
     "id": "c29",
@@ -488,7 +518,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "21.11.2026 · 13:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/67.jpg"
   },
   {
     "id": "c30",
@@ -504,7 +535,8 @@ export const contacts: Contact[] = [
     "wonDeals": 2,
     "openDeals": 0,
     "nextActivity": "22.11.2026 · 14:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/70.jpg"
   },
   {
     "id": "c31",
@@ -521,7 +553,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "23.11.2026 · 15:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/73.jpg"
   },
   {
     "id": "c32",
@@ -537,7 +570,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "24.11.2026 · 16:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/76.jpg"
   },
   {
     "id": "c33",
@@ -553,7 +587,8 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "25.11.2026 · 09:00",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/79.jpg"
   },
   {
     "id": "c34",
@@ -569,6 +604,347 @@ export const contacts: Contact[] = [
     "wonDeals": 0,
     "openDeals": 0,
     "nextActivity": "26.11.2026 · 10:30",
-    "owner": "Johannes"
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/82.jpg"
+  },
+  {
+    "id": "c35",
+    "name": "Monika Geil",
+    "label": "customer",
+    "organisation": "Weingut Helmut Geil",
+    "email": "monika.geil@weingut-helmut-geil.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6244 2211"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "01.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/37.jpg"
+  },
+  {
+    "id": "c36",
+    "name": "Jonas Brenner",
+    "label": "partner",
+    "organisation": "Weingut Helmut Geil",
+    "email": "jonas.brenner@weingut-helmut-geil.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6244 2212"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "02.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/85.jpg"
+  },
+  {
+    "id": "c37",
+    "name": "Stefanie Wagner",
+    "label": "prospect",
+    "organisation": "Weinland Rheingau e. G.",
+    "email": "stefanie.wagner@rheingauerwein.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6123 908120"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "03.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/40.jpg"
+  },
+  {
+    "id": "c38",
+    "name": "Florian Hesse",
+    "label": "hot-lead",
+    "organisation": "Weinland Rheingau e. G.",
+    "email": "florian.hesse@rheingauerwein.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6123 908134"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "04.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/88.jpg"
+  },
+  {
+    "id": "c39",
+    "name": "Julia Hartmann",
+    "label": "lead",
+    "organisation": "Rotkäppchen-Mumm Sektkellerei",
+    "email": "julia.hartmann@rotkaeppchen-mumm.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 34464 34120"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "05.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/43.jpg"
+  },
+  {
+    "id": "c40",
+    "name": "Peter Janson",
+    "label": "customer",
+    "organisation": "Weingut Schloss Janson",
+    "email": "peter@schloss-janson.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6359 41481"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "06.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/91.jpg"
+  },
+  {
+    "id": "c41",
+    "name": "Lena Vogt",
+    "label": "partner",
+    "organisation": "Weingut Schloss Janson",
+    "email": "lena.vogt@schloss-janson.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 6359 41482"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "07.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/46.jpg"
+  },
+  {
+    "id": "c42",
+    "name": "Carsten Schmidt",
+    "label": "prospect",
+    "organisation": "Weinladen Schmidt GmbH",
+    "email": "carsten.schmidt@weinladen.com",
+    "emailType": "Büro",
+    "phones": [
+      "+49 30 20039530"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "08.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/94.jpg"
+  },
+  {
+    "id": "c43",
+    "name": "Nadine Krüger",
+    "label": "hot-lead",
+    "organisation": "Weinladen Schmidt GmbH",
+    "email": "nadine.krueger@weinladen.com",
+    "emailType": "Büro",
+    "phones": [
+      "+49 30 20039532"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "09.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/49.jpg"
+  },
+  {
+    "id": "c44",
+    "name": "Birgit Lohmann",
+    "label": "lead",
+    "organisation": "Eggers & Franke Holding GmbH",
+    "email": "b.lohmann@egfra.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 421 3684210"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "10.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/52.jpg"
+  },
+  {
+    "id": "c45",
+    "name": "Tobias Meyer",
+    "label": "customer",
+    "organisation": "Eggers & Franke Holding GmbH",
+    "email": "t.meyer@egfra.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 421 3684225"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "11.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/97.jpg"
+  },
+  {
+    "id": "c46",
+    "name": "Sabine Wolf",
+    "label": "partner",
+    "organisation": "Wein Wolf GmbH",
+    "email": "s.wolf@weinwolf.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 228 449090"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "12.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/55.jpg"
+  },
+  {
+    "id": "c47",
+    "name": "Michael Becker",
+    "label": "prospect",
+    "organisation": "Wein Wolf GmbH",
+    "email": "m.becker@weinwolf.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 228 449091"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "13.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/100.jpg"
+  },
+  {
+    "id": "c48",
+    "name": "Martin Keller",
+    "label": "hot-lead",
+    "organisation": "VINUM Distribution GmbH",
+    "email": "martin@vinum-distribution.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 89 5432101"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "14.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/103.jpg"
+  },
+  {
+    "id": "c49",
+    "name": "Laura Seidel",
+    "label": "lead",
+    "organisation": "VINUM Distribution GmbH",
+    "email": "laura@vinum-distribution.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 89 5432102"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "15.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/58.jpg"
+  },
+  {
+    "id": "c50",
+    "name": "Katharina Freund",
+    "label": "customer",
+    "organisation": "Weinkontor Freund GmbH",
+    "email": "Katharina.Freund@weinkontor-freund.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 4171 78420"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "16.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/61.jpg"
+  },
+  {
+    "id": "c51",
+    "name": "Henrik Sørensen",
+    "label": "partner",
+    "organisation": "AMKA GmbH",
+    "email": "hs@amka-deutschland.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 461 9097710"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "17.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/106.jpg"
+  },
+  {
+    "id": "c52",
+    "name": "Melanie Thiel",
+    "label": "prospect",
+    "organisation": "AMKA GmbH",
+    "email": "mt@amka-deutschland.de",
+    "emailType": "Büro",
+    "phones": [
+      "+49 461 9097712"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "18.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/64.jpg"
+  },
+  {
+    "id": "c53",
+    "name": "Isabel García",
+    "label": "hot-lead",
+    "organisation": "Wein & Vinos GmbH",
+    "email": "isabel.garcia@weinhandel.example",
+    "emailType": "Büro",
+    "phones": [
+      "+49 30 6121010"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "19.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/women/67.jpg"
+  },
+  {
+    "id": "c54",
+    "name": "Sven Albrecht",
+    "label": "lead",
+    "organisation": "Wein & Vinos GmbH",
+    "email": "sven.albrecht@weinhandel.example",
+    "emailType": "Büro",
+    "phones": [
+      "+49 30 6121012"
+    ],
+    "phoneType": "Büro",
+    "wonDeals": 0,
+    "openDeals": 0,
+    "nextActivity": "20.12.2026 · 10:00",
+    "owner": "Johannes",
+    "photo": "https://randomuser.me/api/portraits/men/109.jpg"
   }
 ];

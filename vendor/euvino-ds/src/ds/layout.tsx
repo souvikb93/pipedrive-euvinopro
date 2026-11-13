@@ -50,7 +50,7 @@ export function Stack({ direction = 'vertical', gap = '4', padding, align, justi
 /** Every text style in the Figma library. */
 export type TextStyle =
   | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'body-large' | 'body' | 'body-small' | 'caption' | 'caption-strong' | 'micro'
-  | 'label' | 'card-title' | 'button';
+  | 'label' | 'card-title' | 'button' | 'caption-medium';
 /** Text colour tokens, from `text/*`. */
 export type TextTone = 'primary' | 'body' | 'strong-body' | 'muted' | 'disabled' | 'inverse' | 'link' | 'success' | 'info' | 'warning' | 'error';
 /** Each tone's current `foreground/*` or `status/text/*` variable in Figma. */
@@ -63,12 +63,12 @@ const TONE: Record<TextTone, string> = {
 const TYPE_CLASS: Record<TextStyle, string> = {
   h1: 'desktop-h1', h2: 'desktop-h2', h3: 'desktop-h3', h4: 'desktop-h4', h5: 'desktop-h5', h6: 'desktop-h6',
   'body-large': 'body-large', body: 'body-base', 'body-small': 'body-small', caption: 'body-caption', 'caption-strong': 'body-caption-strong', micro: 'body-micro',
-  label: 'ui-label', 'card-title': 'ui-card-title', button: 'ui-button',
+  label: 'ui-label', 'card-title': 'ui-card-title', button: 'ui-button', 'caption-medium': 'body-caption-medium-13',
 };
-const DEFAULT_ELEMENT: Partial<Record<TextStyle, React.ElementType>> = { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', caption: 'span', 'caption-strong': 'span', micro: 'span', label: 'span', 'card-title': 'h3', button: 'span' };
+const DEFAULT_ELEMENT: Partial<Record<TextStyle, React.ElementType>> = { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', caption: 'span', 'caption-strong': 'span', micro: 'span', label: 'span', 'card-title': 'h3', button: 'span', 'caption-medium': 'span' };
 
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
-  /** Text style from the library. `h1` to `h6` are Roboto Condensed Bold; everything else is Roboto. */
+  /** Text style from the library. `h1` to `h6` are Roboto Condensed Bold; everything else is Roboto. `caption-medium` is the field-label style (13 medium), for headings that sit among form fields. */
   variant?: TextStyle;
   /** Colour token. Defaults to `primary` for headings and `body` for reading text. */
   tone?: TextTone;
@@ -79,7 +79,7 @@ export interface TextProps extends React.HTMLAttributes<HTMLElement> {
 /** Any text set in a library text style and colour token. Use it for headings, paragraphs and captions instead of raw font sizes. */
 export function Text({ variant = 'body', tone, as, className, style, ...rest }: TextProps) {
   const As = as ?? DEFAULT_ELEMENT[variant] ?? 'p';
-  const heading = /^h\d$/.test(variant) || variant === 'label' || variant === 'card-title';
+  const heading = /^h\d$/.test(variant) || variant === 'label' || variant === 'card-title' || variant === 'caption-medium';
   return <As {...rest} className={cn(`eu-text eu-type-${TYPE_CLASS[variant]}`, className)} style={{ color: `var(--eu-${TONE[tone ?? (heading ? 'primary' : 'body')]})`, ...style }} />;
 }
 

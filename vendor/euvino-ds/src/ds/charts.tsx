@@ -3,6 +3,7 @@ import { cn } from './cn';
 import { Icon } from './icon';
 import { ProgressBar } from './feedback';
 import { Card } from './display';
+import { LinkButton } from './button';
 
 const series = (i: number) => `var(--eu-chart-${(i % 6) + 1})`;
 
@@ -86,6 +87,38 @@ export interface ProgressListProps {
 /** Labelled progress bars in a list. */
 export function ProgressList({ items }: ProgressListProps) {
   return <div className="eu-progresslist">{items.map((i) => <ProgressBar key={i.label} value={i.value} label={i.label} showLabel showValue />)}</div>;
+}
+
+export interface BreakdownDatum extends ChartDatum {
+  /** Makes the name a link, such as the contact record of a user. */
+  href?: string;
+}
+
+export interface BreakdownBarProps {
+  /** Accessible name of the whole breakdown, such as "Top-Aktivitäten". */
+  label: string;
+  /** Parts of the whole, largest first. Values are counts; the share is worked out. */
+  items: BreakdownDatum[];
+}
+
+/** One stacked bar plus rows of name, count and share. Use it for compact breakdowns in a side panel. */
+export function BreakdownBar({ label, items }: BreakdownBarProps) {
+  const total = items.reduce((n, i) => n + i.value, 0) || 1;
+  return (
+    <figure className="eu-chart eu-breakdown" aria-label={label}>
+      <span className="eu-breakdown__bar" aria-hidden="true">{items.map((d, i) => <span key={d.label} className="eu-breakdown__seg" style={{ flexGrow: d.value, background: series(i) }} />)}</span>
+      <ul className="eu-breakdown__list eu-type-body-small">
+        {items.map((d, i) => (
+          <li key={d.label} className="eu-breakdown__row">
+            <span className="eu-legend__sw" style={{ background: series(i) }} aria-hidden="true" />
+            <span className="eu-breakdown__name">{d.href ? <LinkButton variant="link" href={d.href}>{d.label}</LinkButton> : d.label}</span>
+            <span className="eu-breakdown__num">{d.value}</span>
+            <span className="eu-breakdown__num">{Math.round((d.value / total) * 100)}%</span>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  );
 }
 
 export interface StatProps {

@@ -260,7 +260,7 @@ export function Breadcrumbs({ items, label = 'Breadcrumb' }: BreadcrumbsProps) {
       <ol className="eu-crumbs eu-type-body-small">
         {items.map((it, i) => {
           const last = i === items.length - 1;
-          return <li key={`${i}-${it.label}`}>{last ? <span aria-current="page" className="eu-crumbs__cur">{it.label}</span> : <a href={it.href ?? '#'}>{it.label}</a>}{last ? null : <Icon name="nav-right" size="sm" />}</li>;
+          return <li key={`${i}-${it.label}`}>{last ? <span aria-current="page" className="eu-crumbs__cur">{it.label}</span> : <a href={it.href ?? '#'}>{it.label}</a>}{last ? null : <Icon name="nav-right" size="xs" />}</li>;
         })}
       </ol>
     </nav>
@@ -400,18 +400,21 @@ export interface PageHeaderProps {
   actions?: React.ReactNode;
   /** `large` Heading H1 for top-level pages (default). `medium` Heading H4 for record pages, such as one organisation. */
   size?: 'large' | 'medium';
-  /** Icon in a tile before the title, such as `building` for an organisation. */
+  /** Icon in a tile before the title, such as `building` for an organisation. With `meta`, the tile sits beside the title and the meta row. */
   icon?: IconName;
+  /** Row under the title for short record facts, such as a LabelPicker and a location. Wrap each fact in its own span; they sit on one line, spaced apart. */
+  meta?: React.ReactNode;
 }
 
 /** Page title, subtitle and primary action. Use one per page, at the top of the content. */
-export function PageHeader({ title, subtitle, breadcrumbs, actions, size = 'large', icon }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, breadcrumbs, actions, size = 'large', icon, meta }: PageHeaderProps) {
+  const tile = icon ? <span className={cn('eu-pagehead__icon', meta != null && 'eu-pagehead__icon--tile')} aria-hidden="true"><Icon name={icon} size="lg" /></span> : null;
   return (
     <div className={cn('eu-pagehead', `eu-pagehead--${size}`)}>
       {breadcrumbs}
       <div className="eu-pagehead__row">
-        {icon ? <span className="eu-pagehead__icon" aria-hidden="true"><Icon name={icon} size="lg" /></span> : null}
-        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{title}</h1>{subtitle ? <p className="eu-type-body-large eu-pagehead__sub eu-text">{subtitle}</p> : null}</div>
+        {meta ? tile : null}
+        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{meta ? null : tile}{title}</h1>{meta ? <div className="eu-type-body-small eu-pagehead__meta">{meta}</div> : null}{subtitle ? <p className="eu-type-body-large eu-pagehead__sub eu-text">{subtitle}</p> : null}</div>
         {actions ? <div className="eu-pagehead__actions">{actions}</div> : null}
       </div>
     </div>
