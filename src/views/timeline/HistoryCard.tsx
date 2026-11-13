@@ -136,7 +136,7 @@ export function ReplyButton({ e, h, variant = 'secondary' }: { e: HistoryEntry; 
 }
 
 function Actions({ e, h }: { e: HistoryEntry; h: HistoryHandlers }) {
-  // Ghost button: lower emphasis than Reply; the DS more-horiz icon has solid, large dots.
+  // Ghost button, same small size as the Reply split button so their hover areas match.
   const more = (
     <Menu
       label={`Aktionen für ${e.title}`}
@@ -144,7 +144,7 @@ function Actions({ e, h }: { e: HistoryEntry; h: HistoryHandlers }) {
         <IconButton
           icon="more-horiz"
           variant="tertiary"
-          size="medium"
+          size="small"
 
           label={`Aktionen für ${e.title}`}
         />
