@@ -33,21 +33,29 @@ export function useScheduling(init: SchedulingInit) {
     return best ? { slot: best, auto: true } : { slot: next, auto: false };
   }, []);
 
-  const apply = (r: { slot: Slot; auto: boolean }) => { setSel(r.slot); setAuto(r.auto); };
-
-  /** Starts over from new data, such as when a modal opens. */
-  const reset = React.useCallback((i: SchedulingInit) => {
-    const ref = i.requested?.start ?? WORK_START + 30;
-    setPeopleState(i.people);
-    setRequested(i.requested ?? null);
-    setReference(ref);
-    const given = { day: i.day, start: i.start, end: i.end };
-    const r = i.autoSelect === false ? { slot: given, auto: false } : resolve(given, i.people, ref);
+  const apply = (r: { slot: Slot; auto: boolean }) => {
     setSel(r.slot);
     setAuto(r.auto);
-  }, [resolve]);
+  };
 
-  React.useEffect(() => { reset(init); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  /** Starts over from new data, such as when a modal opens. */
+  const reset = React.useCallback(
+    (i: SchedulingInit) => {
+      const ref = i.requested?.start ?? WORK_START + 30;
+      setPeopleState(i.people);
+      setRequested(i.requested ?? null);
+      setReference(ref);
+      const given = { day: i.day, start: i.start, end: i.end };
+      const r = i.autoSelect === false ? { slot: given, auto: false } : resolve(given, i.people, ref);
+      setSel(r.slot);
+      setAuto(r.auto);
+    },
+    [resolve],
+  );
+
+  React.useEffect(() => {
+    reset(init);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- set up once on mount; later changes go through reset()
 
   const duration = sel.end - sel.start;
   const ranked = React.useMemo(() => rankedSlots(people, sel.day, duration, reference), [people, sel.day, duration, reference]);
@@ -57,16 +65,39 @@ export function useScheduling(init: SchedulingInit) {
   const freeDay = ranked.length ? null : nextFreeDay(people, sel.day, duration);
 
   return {
-    people, sel, duration, requested, requestedBlocked, auto, ranked, valid, blocked, freeDay,
+    people,
+    sel,
+    duration,
+    requested,
+    requestedBlocked,
+    auto,
+    ranked,
+    valid,
+    blocked,
+    freeDay,
     reset,
     setDay: (day: string) => apply(resolve({ day, start: sel.start, end: sel.start + duration }, people, reference)),
     setDuration: (d: number) => apply(resolve({ ...sel, end: sel.start + d }, people, reference)),
     setEnd: (end: number) => apply(resolve({ ...sel, end }, people, reference)),
     /** By hand: kept as chosen. */
-    setStart: (start: number) => { setSel({ ...sel, start, end: start + duration }); setAuto(false); setReference(start); },
-    pick: (s: Slot) => { setSel(s); setAuto(false); },
-    pickAt: (day: string, start: number) => { setSel({ day, start, end: start + duration }); setAuto(false); setReference(start); },
-    setPeople: (list: Participant[]) => { setPeopleState(list); apply(resolve(sel, list, reference)); },
+    setStart: (start: number) => {
+      setSel({ ...sel, start, end: start + duration });
+      setAuto(false);
+      setReference(start);
+    },
+    pick: (s: Slot) => {
+      setSel(s);
+      setAuto(false);
+    },
+    pickAt: (day: string, start: number) => {
+      setSel({ day, start, end: start + duration });
+      setAuto(false);
+      setReference(start);
+    },
+    setPeople: (list: Participant[]) => {
+      setPeopleState(list);
+      apply(resolve(sel, list, reference));
+    },
   };
 }
 

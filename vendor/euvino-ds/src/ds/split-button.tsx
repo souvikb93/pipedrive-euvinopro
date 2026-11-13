@@ -27,8 +27,16 @@ export interface SplitButtonProps {
  * Main action plus a menu of related actions, split by a divider (Hydra "Button Select").
  * Use it when one action is the usual choice and a few others belong to it, such as "Kontakt" with "Import".
  */
-export function SplitButton({ children, onClick, items, menuLabel, variant = 'primary', size = 'medium', icon, disabled }: SplitButtonProps) {
-  const iconSize = size === 'small' ? 'sm' : 'md';
+export function SplitButton({
+  children,
+  onClick,
+  items,
+  menuLabel,
+  variant = 'primary',
+  size = 'medium',
+  icon,
+  disabled,
+}: SplitButtonProps) {
   return (
     <span role="group" className={cn('eu-split', `eu-split--${variant}`, `eu-split--${size}`)}>
       <Button variant={variant} size={size} icon={icon} disabled={disabled} onClick={onClick} className="eu-split__main">
@@ -39,7 +47,7 @@ export function SplitButton({ children, onClick, items, menuLabel, variant = 'pr
         items={items}
         trigger={
           <Button variant={variant} size={size} disabled={disabled} aria-label={menuLabel} className="eu-split__toggle">
-            <Icon name="nav-down" size={iconSize} />
+            <Icon name="nav-down" size="md" />
           </Button>
         }
       />

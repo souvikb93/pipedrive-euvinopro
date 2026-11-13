@@ -34,7 +34,7 @@ export function ActivityModal({ open, onClose, activity, organisation, participa
       s.reset(init());
       setSaveError(false);
     }
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps -- reset only when the modal opens, not on every edit
 
   const save = () => {
     if (!allFree(s.people, s.sel)) {

@@ -4,7 +4,6 @@ import {
   Button,
   GlobalSearch,
   Header,
-  Icon,
   IconButton,
   LabelPicker,
   LinkButton,
@@ -38,24 +37,23 @@ import { AddContactModal, type NewContact } from './views/AddContactModal';
 // Figma: Side Nav, Content=Icon, Theme=Dark, Logo on. Icons in the Figma order, German labels.
 // Order is priority: when the window is short, items move into Mehr from the end. Kontakte (this page) stays visible.
 const NAV: SideNavItem[] = [
-  { label: 'Lead-Posteingang', icon: 'page-edit', href: '#' },
-  { label: 'Deals', icon: 'precision-tool', href: '#' },
-  { label: 'Umsatzprognose', icon: 'coin', href: '#' },
-  { label: 'Aktivitäten', icon: 'chat-bubble-check', href: '#' },
-  { label: 'E-Mail', icon: 'send-mail', href: '#', count: 1 },
-  { label: 'Kalender', icon: 'shop', href: '#', count: 3, countStatus: 'error' },
+  { label: 'Lead-Posteingang', icon: 'page-edit' },
+  { label: 'Deals', icon: 'precision-tool' },
+  { label: 'Umsatzprognose', icon: 'coin' },
+  { label: 'Aktivitäten', icon: 'chat-bubble-check' },
+  { label: 'E-Mail', icon: 'send-mail', count: 1 },
+  { label: 'Kalender', icon: 'shop', count: 3, countStatus: 'error' },
   { label: 'Kontakte', icon: 'id-card', href: '#/kontakte', selected: true },
-  { label: 'Einblicke', icon: 'stats-down-square', href: '#' },
-  { label: 'Produkte', icon: 'box-iso', href: '#' },
+  { label: 'Einblicke', icon: 'stats-down-square' },
+  { label: 'Produkte', icon: 'box-iso' },
 ];
 
-// Always in the Mehr menu (placeholders until the real list is known).
+// Always in the Mehr menu. Sections without a page yet say so when chosen.
 const MORE: SideNavItem[] = [
-  { label: 'Projekte', icon: 'page', href: '#' },
-  { label: 'Kampagnen', icon: 'globe', href: '#' },
-  { label: 'Einstellungen', icon: 'settings', href: '#' },
+  { label: 'Projekte', icon: 'page' },
+  { label: 'Kampagnen', icon: 'globe' },
+  { label: 'Einstellungen', icon: 'settings' },
 ];
-
 
 export function App() {
   const [route, go] = useRoute();
@@ -64,7 +62,9 @@ export function App() {
   const soon = (what: string) => toast({ title: `${what} folgt in einer späteren Version`, status: 'info' });
   const listView: View = route.name === 'list' ? route.view : 'organisations';
   // Timeline has no page yet: it looks like the other options, but choosing it keeps the current view.
-  const onView = (v: string) => { if (v !== 'timeline') go(hrefFor.view(v as View)); };
+  const onView = (v: string) => {
+    if (v !== 'timeline') go(hrefFor.view(v as View));
+  };
 
   // ---- Contacts (Kontakte and Timeline show this list, as before)
   const [people, setPeople] = React.useState<Contact[]>(initialContacts);
@@ -78,7 +78,8 @@ export function App() {
     let list = contactFilter ? people.filter((c) => c.id === contactFilter || `org-${c.organisation}` === contactFilter) : people;
     if (contactLabelFilter) list = list.filter((c) => contactLabels.labelOf[c.id] === contactLabelFilter);
     if (contactSort) {
-      const by = (c: Contact) => (contactSort === 'next' ? activityKey(c.nextActivity) : contactSort === 'organisation' ? c.organisation : c.name);
+      const by = (c: Contact) =>
+        contactSort === 'next' ? activityKey(c.nextActivity) : contactSort === 'organisation' ? c.organisation : c.name;
       list = [...list].sort((a, b) => by(a).localeCompare(by(b), 'de'));
     }
     return list;
@@ -91,7 +92,7 @@ export function App() {
     const c = people.find((p) => p.id === linkedContact);
     setContactFilter(linkedContact);
     setQuery(c?.name ?? '');
-  }, [linkedContact]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [linkedContact]); // eslint-disable-line react-hooks/exhaustive-deps -- follow the link once, not every list change
 
   // ---- Organisations (own state; nothing here touches the contacts view)
   const [orgs, setOrgs] = React.useState<Organisation[]>(initialOrganisations);
@@ -104,7 +105,14 @@ export function App() {
   const orgRows = React.useMemo(() => {
     let list = orgLabelFilter ? orgs.filter((o) => orgLabels.labelOf[o.id] === orgLabelFilter) : orgs;
     if (orgSort) {
-      const by = (o: Organisation) => (orgSort === 'next' ? activityKey(o.nextActivity) : orgSort === 'last' ? activityKey(o.lastActivity) : orgSort === 'owner' ? o.owner : o.name);
+      const by = (o: Organisation) =>
+        orgSort === 'next'
+          ? activityKey(o.nextActivity)
+          : orgSort === 'last'
+            ? activityKey(o.lastActivity)
+            : orgSort === 'owner'
+              ? o.owner
+              : o.name;
       list = [...list].sort((a, b) => by(a).localeCompare(by(b), 'de'));
       if (orgSort === 'last') list.reverse();
     }
@@ -115,25 +123,50 @@ export function App() {
     let id = slug(n.name) || 'organisation';
     while (orgs.some((o) => o.id === id)) id = `${id}-2`;
     const org: Organisation = {
-      id, name: n.name, kind: n.producerType, contactOrg: n.name, owner: n.owner, address: n.address, label: 'lead',
-      nextActivity: '', lastActivity: '', website: n.website, phone: n.phone, managingDirector: n.managingDirector, industry: n.industry, postalCode: n.postalCode,
+      id,
+      name: n.name,
+      kind: n.producerType,
+      contactOrg: n.name,
+      owner: n.owner,
+      address: n.address,
+      label: 'lead',
+      nextActivity: '',
+      lastActivity: '',
+      website: n.website,
+      phone: n.phone,
+      managingDirector: n.managingDirector,
+      industry: n.industry,
+      postalCode: n.postalCode,
     };
     setOrgs((list) => [org, ...list]);
     if (n.label) orgLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
-    else orgLabels.setLabelOf((m) => { const next = { ...m }; delete next[id]; return next; });
+    else orgLabels.setLabelOf((m) => Object.fromEntries(Object.entries(m).filter(([key]) => key !== id)));
     setAdding(false);
     toast({ title: `${n.name} hinzugefügt`, status: 'success' });
   };
 
   const OWNERS = ['Johannes', 'Maximilian Eul', 'Beate Schmitt'];
   const addContact = (n: NewContact) => {
-    const org = orgs.find((o) => o.name.toLowerCase() === n.organisation.trim().toLowerCase() || o.contactOrg.toLowerCase() === n.organisation.trim().toLowerCase());
+    const org = orgs.find(
+      (o) =>
+        o.name.toLowerCase() === n.organisation.trim().toLowerCase() || o.contactOrg.toLowerCase() === n.organisation.trim().toLowerCase(),
+    );
     const phones = n.phones.map((p) => p.value.trim()).filter(Boolean);
     const mail = n.emails.find((e) => e.value.trim());
     const id = `c-${Date.now()}`;
     const c: Contact = {
-      id, name: n.name, label: 'lead', organisation: org?.contactOrg ?? n.organisation.trim(), email: mail?.value.trim() ?? '', emailType: mail ? mail.type : null,
-      phones, phoneType: phones.length ? n.phones[0].type : null, wonDeals: 0, openDeals: 0, nextActivity: '', owner: n.owner,
+      id,
+      name: n.name,
+      label: 'lead',
+      organisation: org?.contactOrg ?? n.organisation.trim(),
+      email: mail?.value.trim() ?? '',
+      emailType: mail ? mail.type : null,
+      phones,
+      phoneType: phones.length ? n.phones[0].type : null,
+      wonDeals: 0,
+      openDeals: 0,
+      nextActivity: '',
+      owner: n.owner,
     };
     setPeople((list) => [c, ...list]);
     if (n.label) contactLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
@@ -144,13 +177,19 @@ export function App() {
   // ---- Global search
   const [query, setQuery] = React.useState('');
   const [category, setCategory] = React.useState('all');
-  React.useEffect(() => { setCategory(listView === 'organisations' ? 'organisations' : 'all'); }, [listView]);
+  React.useEffect(() => {
+    setCategory(listView === 'organisations' ? 'organisations' : 'all');
+  }, [listView]);
   const hits = React.useMemo(() => searchAll(query, people), [query, people]);
   const results = React.useMemo(() => inCategory(hits, category), [hits, category]);
   const categories = CATEGORIES.map((c) => ({ ...c, count: query.trim() ? inCategory(hits, c.id).length : undefined }));
   const onSelect = (hit: GlobalSearchHit) => {
     const org = hit.id.startsWith('org-') ? orgs.find((o) => `org-${o.contactOrg}` === hit.id) : undefined;
-    if (listView === 'organisations' && org) { go(hrefFor.organisation(org.id)); setQuery(''); return; }
+    if (listView === 'organisations' && org) {
+      go(hrefFor.organisation(org.id));
+      setQuery('');
+      return;
+    }
     setContactFilter(hit.id);
     setQuery(hit.title);
     if (route.name !== 'list' || listView === 'organisations') go(hrefFor.view('contacts'));
@@ -161,42 +200,132 @@ export function App() {
   };
 
   const contactColumns: Array<TableColumn<Contact>> = [
-    { key: 'name', header: 'Name', overflow: 'truncate', render: (c) => <Text as="span" variant="body-small" tone="primary">{c.name}</Text> },
-    { key: 'label', header: 'Label', fit: true, render: (c) => (
-        <LabelPicker label={`Label für ${c.name}`} value={contactLabels.labelOf[c.id] ?? null} options={contactLabels.options}
-          onChange={(id) => contactLabels.setLabelOf((m) => ({ ...m, [c.id]: id }))} onCreate={(n) => contactLabels.create(c.id, n)} labels={LABEL_TEXTS} />
-      ) },
+    {
+      key: 'name',
+      header: 'Name',
+      overflow: 'truncate',
+      render: (c) => (
+        <Text as="span" variant="body-small" tone="primary">
+          {c.name}
+        </Text>
+      ),
+    },
+    {
+      key: 'label',
+      header: 'Label',
+      fit: true,
+      render: (c) => (
+        <LabelPicker
+          label={`Label für ${c.name}`}
+          value={contactLabels.labelOf[c.id] ?? null}
+          options={contactLabels.options}
+          onChange={(id) => contactLabels.setLabelOf((m) => ({ ...m, [c.id]: id }))}
+          onCreate={(n) => contactLabels.create(c.id, n)}
+          labels={LABEL_TEXTS}
+        />
+      ),
+    },
     { key: 'organisation', header: 'Organisation', overflow: 'truncate', render: (c) => c.organisation },
-    { key: 'email', header: 'E-Mail', overflow: 'truncate', render: (c) => <Linked links={[c.email]} note={c.emailType} scheme="mailto" /> },
-    { key: 'phone', header: 'Telefonnummer', overflow: 'truncate', render: (c) => <Linked links={c.phones} note={c.phoneType} scheme="tel" /> },
+    {
+      key: 'email',
+      header: 'E-Mail',
+      overflow: 'truncate',
+      render: (c) => <Linked links={[c.email]} note={c.emailType} scheme="mailto" />,
+    },
+    {
+      key: 'phone',
+      header: 'Telefonnummer',
+      overflow: 'truncate',
+      render: (c) => <Linked links={c.phones} note={c.phoneType} scheme="tel" />,
+    },
     { key: 'won', header: 'Abgeschlossene Deals', fit: true, render: (c) => c.wonDeals },
     { key: 'open', header: 'Offene Deals', fit: true, render: (c) => c.openDeals },
-    { key: 'next', header: 'Datum nächste Aktivität', fit: true, overflow: 'nowrap', render: (c) => <ActivityWhen value={c.nextActivity} /> },
+    {
+      key: 'next',
+      header: 'Datum nächste Aktivität',
+      fit: true,
+      overflow: 'nowrap',
+      render: (c) => <ActivityWhen value={c.nextActivity} />,
+    },
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (c) => c.owner },
-    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" label="Zeilenaktionen" />, render: (c) => <RowActions name={c.name} email={c.email} onSoon={soon} /> },
+    {
+      key: 'actions',
+      fit: true,
+      header: 'Aktionen',
+      align: 'center',
+      render: (c) => <RowActions name={c.name} email={c.email} onSoon={soon} />,
+    },
   ];
 
   const orgColumns: Array<TableColumn<Organisation>> = [
-    { key: 'name', header: 'Organisation', overflow: 'truncate', render: (o) => <Text as="span" variant="body-small" tone="primary"><LinkButton variant="plain" href={hrefFor.organisation(o.id)}>{o.name}</LinkButton></Text> },
-    { key: 'label', header: 'Label', fit: true, render: (o) => (
-        <LabelPicker label={`Label für ${o.name}`} value={orgLabels.labelOf[o.id] ?? null} options={orgLabels.options}
-          onChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [o.id]: id }))} onCreate={(n) => orgLabels.create(o.id, n)} labels={LABEL_TEXTS} />
-      ) },
-    { key: 'person', header: 'Kontaktperson', overflow: 'nowrap', render: (o) => {
+    {
+      key: 'name',
+      header: 'Organisation',
+      overflow: 'truncate',
+      render: (o) => (
+        <Text as="span" variant="body-small" tone="primary">
+          <LinkButton variant="plain" href={hrefFor.organisation(o.id)}>
+            {o.name}
+          </LinkButton>
+        </Text>
+      ),
+    },
+    {
+      key: 'label',
+      header: 'Label',
+      fit: true,
+      render: (o) => (
+        <LabelPicker
+          label={`Label für ${o.name}`}
+          value={orgLabels.labelOf[o.id] ?? null}
+          options={orgLabels.options}
+          onChange={(id) => orgLabels.setLabelOf((m) => ({ ...m, [o.id]: id }))}
+          onCreate={(n) => orgLabels.create(o.id, n)}
+          labels={LABEL_TEXTS}
+        />
+      ),
+    },
+    {
+      key: 'person',
+      header: 'Kontaktperson',
+      overflow: 'nowrap',
+      render: (o) => {
         const p = peopleOf(o);
-        return p.length ? <People list={p.map((c) => ({ name: c.name, email: c.email }))} max={1} /> : <Text as="span" variant="body-small" tone="muted">–</Text>;
-      } },
+        return p.length ? (
+          <People list={p.map((c) => ({ name: c.name, email: c.email }))} max={1} />
+        ) : (
+          <Text as="span" variant="body-small" tone="muted">
+            –
+          </Text>
+        );
+      },
+    },
     { key: 'owner', header: 'Besitzer', fit: true, overflow: 'nowrap', render: (o) => o.owner },
     { key: 'address', header: 'Adresse', overflow: 'truncate', render: (o) => o.address },
     { key: 'next', header: 'Nächste Aktivität', fit: true, overflow: 'nowrap', render: (o) => <ActivityWhen value={o.nextActivity} /> },
     { key: 'last', header: 'Letzte Aktivität', fit: true, overflow: 'nowrap', render: (o) => <ActivityWhen value={o.lastActivity} /> },
-    { key: 'actions', fit: true, header: <Icon name="settings" size="sm" label="Zeilenaktionen" />, render: (o) => <RowActions name={o.name} onSoon={soon} /> },
+    {
+      key: 'actions',
+      fit: true,
+      header: 'Aktionen',
+      align: 'center',
+      render: (o) => <RowActions name={o.name} onSoon={soon} />,
+    },
   ];
 
   const detail = route.name === 'organisation' ? orgs.find((o) => o.id === route.id) : undefined;
+  // The browser tab names the page, so history entries and screen-reader page announcements are meaningful.
+  const pageTitle = detail ? detail.name : listView === 'organisations' ? 'Organisationen' : 'Kontakte';
+  React.useEffect(() => {
+    document.title = `${pageTitle} – EuvinoPRO`;
+  }, [pageTitle]);
   const crumbs =
     route.name === 'organisation'
-      ? [{ label: 'Kontakte', href: hrefFor.view('contacts') }, { label: 'Organisationen', href: hrefFor.view('organisations') }, { label: detail?.name ?? 'Organisation' }]
+      ? [
+          { label: 'Kontakte', href: hrefFor.view('contacts') },
+          { label: 'Organisationen', href: hrefFor.view('organisations') },
+          { label: detail?.name ?? 'Organisation' },
+        ]
       : [{ label: 'Kontakte', href: hrefFor.view('contacts') }, { label: listView === 'organisations' ? 'Organisationen' : 'Kontakte' }];
   const heading = route.name === 'organisation' ? null : listView === 'organisations' ? 'Organisationen' : 'Kontakte';
   const contactsNarrowed = Boolean(contactFilter || contactLabelFilter);
@@ -205,11 +334,11 @@ export function App() {
     <Stack direction="horizontal" gap="0" align="start" className="app-shell">
       <SideNav
         label="Hauptnavigation"
-        items={NAV}
+        items={NAV.map((i) => (i.href ? i : { ...i, onClick: () => soon(i.label) }))}
         collapsed
         expandable
         overflow
-        moreItems={MORE}
+        moreItems={MORE.map((i) => (i.href ? i : { ...i, onClick: () => soon(i.label) }))}
         theme="dark"
         logo
         logoLabel="EuvinoPRO"
@@ -247,16 +376,33 @@ export function App() {
             onCategoryChange={setCategory}
             results={results}
             onSelect={onSelect}
-            heading={category === 'all' ? 'Alle Suchergebnisse' : CATEGORIES.find((c) => c.id === category)?.label ?? ''}
+            heading={category === 'all' ? 'Alle Suchergebnisse' : (CATEGORIES.find((c) => c.id === category)?.label ?? '')}
             emptyText="Keine Treffer in dieser Kategorie"
-            footer={<LinkButton variant="secondary" href="#">Schnellhilfe</LinkButton>}
+            footer={
+              <Button variant="tertiary" size="small" onClick={() => soon('Schnellhilfe')}>
+                Schnellhilfe
+              </Button>
+            }
             labels={{ clear: 'Suche leeren', categories: 'Kategorien', count: (n) => `${n} Treffer` }}
           />
         </Header>
 
         <Stack as="main" gap="6" className="app-content">
-          <AddContactModal open={addingContact} onClose={() => setAddingContact(false)} onAdd={addContact} onImport={() => soon('Import')} labelOptions={contactLabels.options} owners={OWNERS} />
-          {heading ? <VisuallyHidden><Text as="h1" variant="h1">{heading}</Text></VisuallyHidden> : null}
+          <AddContactModal
+            open={addingContact}
+            onClose={() => setAddingContact(false)}
+            onAdd={addContact}
+            onImport={() => soon('Import')}
+            labelOptions={contactLabels.options}
+            owners={OWNERS}
+          />
+          {heading ? (
+            <VisuallyHidden>
+              <Text as="h1" variant="h1">
+                {heading}
+              </Text>
+            </VisuallyHidden>
+          ) : null}
 
           {route.name === 'organisation' ? (
             detail ? (
@@ -273,8 +419,14 @@ export function App() {
               />
             ) : (
               <Stack gap="4">
-                <Text as="h1" variant="h4">Organisation nicht gefunden</Text>
-                <Stack direction="horizontal"><Button variant="secondary" icon="arrow-left" onClick={() => go(hrefFor.view('organisations'))}>Zu den Organisationen</Button></Stack>
+                <Text as="h1" variant="h4">
+                  Organisation nicht gefunden
+                </Text>
+                <Stack direction="horizontal">
+                  <Button variant="secondary" icon="arrow-left" onClick={() => go(hrefFor.view('organisations'))}>
+                    Zu den Organisationen
+                  </Button>
+                </Stack>
               </Stack>
             )
           ) : listView === 'organisations' ? (
@@ -283,12 +435,28 @@ export function App() {
                 view="organisations"
                 onView={onView}
                 count={`${orgLabelFilter ? `${orgRows.length} von ${orgs.length}` : orgs.length} Organisationen`}
-                primary={<SplitButton icon="plus" onClick={() => setAdding(true)} menuLabel="Weitere Optionen zum Hinzufügen" items={[
-                  { label: 'Organisation hinzufügen', icon: 'building', onSelect: () => setAdding(true) },
-                  { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
-                  { label: 'Organisationen importieren', icon: 'upload', onSelect: () => soon('Import') },
-                ]}>Organisation</SplitButton>}
-                filter={<FilterMenu active={orgLabelFilter} activeName={orgLabels.name(orgLabelFilter)} options={orgLabels.options} onPick={setOrgLabelFilter} />}
+                primary={
+                  <SplitButton
+                    icon="plus"
+                    onClick={() => setAdding(true)}
+                    menuLabel="Weitere Optionen zum Hinzufügen"
+                    items={[
+                      { label: 'Organisation hinzufügen', icon: 'building', onSelect: () => setAdding(true) },
+                      { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
+                      { label: 'Organisationen importieren', icon: 'upload', onSelect: () => soon('Import') },
+                    ]}
+                  >
+                    Organisation
+                  </SplitButton>
+                }
+                filter={
+                  <FilterMenu
+                    active={orgLabelFilter}
+                    activeName={orgLabels.name(orgLabelFilter)}
+                    options={orgLabels.options}
+                    onPick={setOrgLabelFilter}
+                  />
+                }
                 sort={<SortMenu active={orgSort} sorts={ORG_SORTS} onPick={setOrgSort} />}
               />
               <Table
@@ -300,7 +468,14 @@ export function App() {
                 onSelectedChange={setOrgSelected}
                 labels={{ selectAll: 'Alle auswählen', selectRow: (o) => `${o.name} auswählen` }}
               />
-              <AddOrganisationModal open={adding} onClose={() => setAdding(false)} onAdd={addOrganisation} onImport={() => soon('Import')} labelOptions={orgLabels.options} owners={OWNERS} />
+              <AddOrganisationModal
+                open={adding}
+                onClose={() => setAdding(false)}
+                onAdd={addOrganisation}
+                onImport={() => soon('Import')}
+                labelOptions={orgLabels.options}
+                owners={OWNERS}
+              />
             </>
           ) : (
             <>
@@ -308,12 +483,35 @@ export function App() {
                 view={listView}
                 onView={onView}
                 count={`${contactsNarrowed ? `${contactRows.length} von ${TOTAL_CONTACTS}` : TOTAL_CONTACTS} Kontaktpersonen`}
-                primary={<SplitButton icon="plus" onClick={() => setAddingContact(true)} menuLabel="Weitere Optionen zum Hinzufügen" items={[
-                  { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
-                  { label: 'Organisation hinzufügen', icon: 'building', onSelect: () => { onView('organisations'); setAdding(true); } },
-                  { label: 'Kontakte importieren', icon: 'upload', onSelect: () => soon('Import') },
-                ]}>Kontakt</SplitButton>}
-                filter={<FilterMenu active={contactLabelFilter} activeName={contactLabels.name(contactLabelFilter)} options={contactLabels.options} onPick={setContactLabelFilter} />}
+                primary={
+                  <SplitButton
+                    icon="plus"
+                    onClick={() => setAddingContact(true)}
+                    menuLabel="Weitere Optionen zum Hinzufügen"
+                    items={[
+                      { label: 'Kontakt hinzufügen', icon: 'user', onSelect: () => setAddingContact(true) },
+                      {
+                        label: 'Organisation hinzufügen',
+                        icon: 'building',
+                        onSelect: () => {
+                          onView('organisations');
+                          setAdding(true);
+                        },
+                      },
+                      { label: 'Kontakte importieren', icon: 'upload', onSelect: () => soon('Import') },
+                    ]}
+                  >
+                    Kontakt
+                  </SplitButton>
+                }
+                filter={
+                  <FilterMenu
+                    active={contactLabelFilter}
+                    activeName={contactLabels.name(contactLabelFilter)}
+                    options={contactLabels.options}
+                    onPick={setContactLabelFilter}
+                  />
+                }
                 sort={<SortMenu active={contactSort} sorts={CONTACT_SORTS} onPick={setContactSort} />}
               />
               <Table

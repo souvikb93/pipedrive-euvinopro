@@ -62,7 +62,9 @@ export function LabelPicker({ value, options, onChange, onCreate, label, labels,
     setPos(up ? { bottom: window.innerHeight - r.top + gap, left, minWidth: r.width } : { top: r.bottom + gap, left, minWidth: r.width });
   }, []);
 
-  React.useLayoutEffect(() => { if (open) place(); }, [open, place, shown.length]);
+  React.useLayoutEffect(() => {
+    if (open) place();
+  }, [open, place, shown.length]);
   React.useEffect(() => {
     if (!open) return;
     search.current?.focus();
@@ -73,68 +75,129 @@ export function LabelPicker({ value, options, onChange, onCreate, label, labels,
     document.addEventListener('mousedown', onDown);
     window.addEventListener('scroll', place, true);
     window.addEventListener('resize', place);
-    return () => { document.removeEventListener('mousedown', onDown); window.removeEventListener('scroll', place, true); window.removeEventListener('resize', place); };
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      window.removeEventListener('scroll', place, true);
+      window.removeEventListener('resize', place);
+    };
   }, [open, place]);
   React.useEffect(() => setActive(0), [query]);
 
-  const close = (refocus = true) => { setOpen(false); setQuery(''); if (refocus) trigger.current?.focus(); };
-  const pick = (o: LabelOption) => { onChange(o.id); close(); };
+  const close = (refocus = true) => {
+    setOpen(false);
+    setQuery('');
+    if (refocus) trigger.current?.focus();
+  };
+  const pick = (o: LabelOption) => {
+    onChange(o.id);
+    close();
+  };
   const create = () => {
     if (!onCreate) return;
     const name = query.trim();
-    if (!name || exact) { search.current?.focus(); return; }
+    if (!name || exact) {
+      search.current?.focus();
+      return;
+    }
     onCreate(name);
     close();
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(a + 1, shown.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-    else if (e.key === 'Enter') { e.preventDefault(); if (shown[active]) pick(shown[active]); else create(); }
-    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
-    else if (e.key === 'Tab' && e.target === search.current && !e.shiftKey && !onCreate) close(false);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive((a) => Math.min(a + 1, shown.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((a) => Math.max(a - 1, 0));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (shown[active]) pick(shown[active]);
+      else create();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      close();
+    } else if (e.key === 'Tab' && e.target === search.current && !e.shiftKey && !onCreate) close(false);
   };
 
   const listId = `${id}-list`;
-  const addText = q && !exact ? (labels?.addNamed ?? ((n: string) => `Add "${n}"`))(query.trim()) : labels?.add ?? 'Add label';
+  const addText = q && !exact ? (labels?.addNamed ?? ((n: string) => `Add "${n}"`))(query.trim()) : (labels?.add ?? 'Add label');
   return (
     <span className={cn('eu-labelpick', open && 'is-open')}>
       <button
-        ref={trigger} type="button" aria-haspopup="listbox" aria-expanded={open}
-        aria-label={`${label}: ${current ? current.label : labels?.none ?? 'none'}`}
-        className="eu-labelpick__trigger" onClick={() => (open ? close() : setOpen(true))}
+        ref={trigger}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`${label}: ${current ? current.label : (labels?.none ?? 'none')}`}
+        className="eu-labelpick__trigger"
+        onClick={() => (open ? close() : setOpen(true))}
       >
-        {current ? <Badge size={size} status={current.status}>{current.label}</Badge> : <span className="eu-type-body-small eu-labelpick__none">{labels?.none ?? '–'}</span>}
-        <span className="eu-labelpick__edit" aria-hidden="true"><Icon name="edit" size="sm" /></span>
+        {current ? (
+          <Badge size={size} status={current.status}>
+            {current.label}
+          </Badge>
+        ) : (
+          <span className="eu-type-body-small eu-labelpick__none">{labels?.none ?? '–'}</span>
+        )}
+        <span className="eu-labelpick__edit" aria-hidden="true">
+          <Icon name="edit" size="sm" />
+        </span>
       </button>
       {open ? (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- arrow keys and Escape for the list are handled for the whole panel
         <div ref={panel} className="eu-labelpick__panel" style={pos} onKeyDown={onKeyDown}>
           <div className="eu-labelpick__search">
             <span className="eu-input eu-input--filled">
               <Icon name="search" size="md" className="eu-input__icon" />
               <input
-                ref={search} type="text" role="combobox" aria-expanded="true" aria-controls={listId} aria-autocomplete="list"
+                ref={search}
+                type="text"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls={listId}
+                aria-autocomplete="list"
                 aria-activedescendant={shown[active] ? `${id}-opt-${active}` : undefined}
-                aria-label={labels?.search ?? 'Search label'} placeholder={labels?.search ?? 'Search label'}
-                className="eu-input__el eu-type-body-small" value={query} onChange={(e) => setQuery(e.target.value)}
+                aria-label={labels?.search ?? 'Search label'}
+                placeholder={labels?.search ?? 'Search label'}
+                className="eu-input__el eu-type-body-small"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </span>
           </div>
           <ul id={listId} role="listbox" aria-label={label} className="eu-labelpick__list">
-            {shown.length === 0 ? <li role="presentation" className="eu-type-body-small eu-labelpick__empty">{labels?.empty ?? 'No label found'}</li> : shown.map((o, i) => (
-              <li
-                key={o.id} id={`${id}-opt-${i}`} role="option" aria-selected={o.id === value}
-                className={cn('eu-labelpick__opt', i === active && 'is-active')}
-                onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setActive(i)} onClick={() => pick(o)}
-              >
-                <Badge size="tiny" status={o.status}>{o.label}</Badge>
-                {o.id === value ? <Icon name="check" size="md" className="eu-labelpick__check" /> : null}
+            {shown.length === 0 ? (
+              <li role="presentation" className="eu-type-body-small eu-labelpick__empty">
+                {labels?.empty ?? 'No label found'}
               </li>
-            ))}
+            ) : (
+              shown.map((o, i) => (
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- listbox option: keys are handled on the search field (aria-activedescendant)
+                <li
+                  key={o.id}
+                  id={`${id}-opt-${i}`}
+                  role="option"
+                  aria-selected={o.id === value}
+                  className={cn('eu-labelpick__opt', i === active && 'is-active')}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onMouseEnter={() => setActive(i)}
+                  onClick={() => pick(o)}
+                >
+                  <Badge size="tiny" status={o.status}>
+                    {o.label}
+                  </Badge>
+                  {o.id === value ? <Icon name="check" size="md" className="eu-labelpick__check" /> : null}
+                </li>
+              ))
+            )}
           </ul>
           {onCreate ? (
             <div className="eu-labelpick__foot">
-              <Button variant="primary" icon="plus" fullWidth onClick={create}>{addText}</Button>
+              <Button variant="primary" icon="plus" fullWidth onClick={create}>
+                {addText}
+              </Button>
             </div>
           ) : null}
         </div>

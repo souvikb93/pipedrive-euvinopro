@@ -14,14 +14,21 @@ cpSync(`${src}/src/ds`, `${dest}/src/ds`, { recursive: true });
 cpSync(`${src}/src/styles`, `${dest}/src/styles`, { recursive: true });
 
 const pkg = JSON.parse(readFileSync(`${src}/package.json`, 'utf8'));
-writeFileSync(`${dest}/package.json`, JSON.stringify({
-  name: pkg.name,
-  version: pkg.version,
-  private: true,
-  type: 'module',
-  description: `${pkg.description} Vendored copy, do not edit: change ../euvinopro-ds and run npm run sync-ds.`,
-  exports: pkg.exports,
-  peerDependencies: pkg.peerDependencies,
-  dependencies: pkg.dependencies,
-}, null, 2) + '\n');
+writeFileSync(
+  `${dest}/package.json`,
+  JSON.stringify(
+    {
+      name: pkg.name,
+      version: pkg.version,
+      private: true,
+      type: 'module',
+      description: `${pkg.description} Vendored copy, do not edit: change ../euvinopro-ds and run npm run sync-ds.`,
+      exports: pkg.exports,
+      peerDependencies: pkg.peerDependencies,
+      dependencies: pkg.dependencies,
+    },
+    null,
+    2,
+  ) + '\n',
+);
 console.log(`Synced @euvino/ds ${pkg.version} into vendor/euvino-ds`);

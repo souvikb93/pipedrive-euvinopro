@@ -5,8 +5,8 @@ It is built entirely on the EuvinoPRO design system, which is maintained in code
 
 - **Live:** https://pipedrive-euvinopro.vercel.app
 - **Design system (code):** [souvikb93/winpro-ds](https://github.com/souvikb93/winpro-ds)
-- **Design system (Figma):** *EuvinoPRO Design System* library (`eoPfuJuIddL9imDtGiK2oX`)
-- **Screen designs (Figma):** *Pipedrive New* (`I3W13uloSbJdlSmy0rLRIK`)
+- **Design system (Figma):** _EuvinoPRO Design System_ library (`eoPfuJuIddL9imDtGiK2oX`)
+- **Screen designs (Figma):** _Pipedrive New_ (`I3W13uloSbJdlSmy0rLRIK`)
 
 ## How it was built
 
@@ -20,23 +20,28 @@ The product was built with an AI-native workflow: an AI agent writes the code, a
 ## Quality gates
 
 ```bash
-npm run check   # typecheck (strict, no unused code) → ds:check on every file → tests → production build
+npm run check   # typecheck → lint → format check → ds:check on every file → tests → production build
 ```
 
-| Gate | What it guarantees |
-|---|---|
-| `tsc` (strict, `noUnusedLocals`) | Types are sound and no dead code is left behind |
-| `ds:check` | Every source file uses design-system components and tokens only: no raw hex, px or rem, and no hand-made controls |
-| `vitest` | Data rules, such as exact "+N" counts, typed times, free slots and search, plus card behaviour: links, reply, details and mentions |
-| axe-core (manual run) | Zero violations on the lists, the organisation page, the drawer and the planner |
+CI runs the same gate on every push and pull request (`.github/workflows/check.yml`).
 
-Accessibility: every control has an accessible name, toggles use `aria-pressed`, and "+N" lists open on hover, click or keyboard. Links inside running text are underlined, so colour is never the only cue. Destructive actions ask for confirmation first.
+| Gate                                                       | What it guarantees                                                                                                                 |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `tsc` (strict, no unused code)                             | Types are sound and no dead code is left behind                                                                                    |
+| ESLint (`typescript-eslint` strict, React Hooks, jsx-a11y) | No `any`, no hook misuse, no inaccessible markup; every exception names its reason                                                 |
+| Prettier + EditorConfig                                    | One formatting style across the codebase                                                                                           |
+| `ds:check`                                                 | Every source file uses design-system components and tokens only: no raw hex, px or rem, and no hand-made controls                  |
+| Vitest + Testing Library                                   | Data rules, such as exact "+N" counts, typed times, free slots and search, plus card behaviour: links, reply, details and mentions |
+| axe-core (manual run)                                      | Zero violations on the lists, the organisation page, the drawer and the planner                                                    |
+
+The full checklist of typical AI-generated front-end mistakes, and how each is prevented here, is in [docs/quality-checklist.md](docs/quality-checklist.md).
 
 ## Structure
 
 ```
 src/
   App.tsx                 shell: side nav, header, search, list views, routing
+  ErrorBoundary.tsx       calm fallback instead of a blank page
   route.ts                hash routes (#/kontakte, #/organisationen/<id>)
   data/                   demo data and pure logic (history, availability, search)
   lib/                    small helpers (format, time parsing)
@@ -48,6 +53,8 @@ src/
     scheduling/           planner and reschedule modal (one data model, one hook)
   app.css                 page layout only, with tokens
 tests/                    vitest + Testing Library
+docs/                     quality checklist
+.github/workflows/        CI: the same gate as `npm run check`
 vendor/euvino-ds/         copy of the design system (do not edit)
 ```
 

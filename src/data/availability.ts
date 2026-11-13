@@ -23,7 +23,11 @@ export interface Participant {
   you?: boolean;
 }
 
-export interface Slot { day: string; start: number; end: number }
+export interface Slot {
+  day: string;
+  start: number;
+  end: number;
+}
 
 /** Visible hours of the timeline. */
 export const DAY_START = 8 * 60;
@@ -58,21 +62,48 @@ const DEMO: Record<string, CalEvent[]> = {
 };
 
 const PATTERNS: CalEvent[][] = [
-  [{ start: 540, end: 600, title: 'Kundentermin', status: 'busy' }, { start: 720, end: 780, title: 'Mittagspause', status: 'busy' }, { start: 900, end: 960, title: 'Team-Meeting', status: 'tentative' }],
-  [{ start: 540, end: 630, title: 'Messevorbereitung', status: 'busy' }, { start: 690, end: 750, title: 'Mittagspause', status: 'busy' }, { start: 840, end: 870, title: 'Telefonat', status: 'pending' }, { start: 990, end: 1020, title: 'Weinprobe', status: 'busy' }],
-  [{ start: 600, end: 660, title: 'Jour fixe', status: 'busy' }, { start: 780, end: 840, title: 'Mittagspause', status: 'busy' }, { start: 960, end: 1020, title: 'Abstimmung Marketing', status: 'tentative' }],
-  [{ start: 630, end: 690, title: 'Lieferantengespräch', status: 'busy' }, { start: 720, end: 750, title: 'Mittagspause', status: 'busy' }, { start: 870, end: 960, title: 'Workshop', status: 'busy' }],
+  [
+    { start: 540, end: 600, title: 'Kundentermin', status: 'busy' },
+    { start: 720, end: 780, title: 'Mittagspause', status: 'busy' },
+    { start: 900, end: 960, title: 'Team-Meeting', status: 'tentative' },
+  ],
+  [
+    { start: 540, end: 630, title: 'Messevorbereitung', status: 'busy' },
+    { start: 690, end: 750, title: 'Mittagspause', status: 'busy' },
+    { start: 840, end: 870, title: 'Telefonat', status: 'pending' },
+    { start: 990, end: 1020, title: 'Weinprobe', status: 'busy' },
+  ],
+  [
+    { start: 600, end: 660, title: 'Jour fixe', status: 'busy' },
+    { start: 780, end: 840, title: 'Mittagspause', status: 'busy' },
+    { start: 960, end: 1020, title: 'Abstimmung Marketing', status: 'tentative' },
+  ],
+  [
+    { start: 630, end: 690, title: 'Lieferantengespräch', status: 'busy' },
+    { start: 720, end: 750, title: 'Mittagspause', status: 'busy' },
+    { start: 870, end: 960, title: 'Workshop', status: 'busy' },
+  ],
 ];
 
 const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 export const dateOf = (iso: string) => new Date(`${iso}T00:00`);
 export const isoOf = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 export const isWeekend = (iso: string) => [0, 6].includes(dateOf(iso).getDay());
-export const addDays = (iso: string, n: number) => { const d = dateOf(iso); return isoOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)); };
+export const addDays = (iso: string, n: number) => {
+  const d = dateOf(iso);
+  return isoOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n));
+};
 /** Next or previous weekday. */
-export const stepWorkday = (iso: string, dir: 1 | -1) => { let d = addDays(iso, dir); while (isWeekend(d)) d = addDays(d, dir); return d; };
+export const stepWorkday = (iso: string, dir: 1 | -1) => {
+  let d = addDays(iso, dir);
+  while (isWeekend(d)) d = addDays(d, dir);
+  return d;
+};
 /** Monday of the week that holds `iso`. */
-export const mondayOf = (iso: string) => { const wd = (dateOf(iso).getDay() + 6) % 7; return addDays(iso, -wd); };
+export const mondayOf = (iso: string) => {
+  const wd = (dateOf(iso).getDay() + 6) % 7;
+  return addDays(iso, -wd);
+};
 
 /** Calendar entries of one person on one day. Weekends are empty. */
 export function eventsFor(p: Participant, iso: string): CalEvent[] {
@@ -86,7 +117,8 @@ export function eventsFor(p: Participant, iso: string): CalEvent[] {
 const overlaps = (a: number, b: number, e: { start: number; end: number }) => a < e.end && b > e.start;
 
 /** Entries of `p` that overlap the range. Tentative and pending entries count: they are not confirmed free. */
-export const clashesFor = (p: Participant, iso: string, start: number, end: number) => eventsFor(p, iso).filter((e) => overlaps(start, end, e));
+export const clashesFor = (p: Participant, iso: string, start: number, end: number) =>
+  eventsFor(p, iso).filter((e) => overlaps(start, end, e));
 
 /** True when `p` can attend: inside working hours, on a weekday, with nothing in the calendar. */
 export function isFree(p: Participant, iso: string, start: number, end: number): boolean {
@@ -103,7 +135,8 @@ export function commonFree(people: Participant[], iso: string): Array<{ start: n
   for (let t = DAY_START; t < DAY_END; t += STEP) {
     if (!people.every((p) => isFree(p, iso, t, t + STEP))) continue;
     const last = out[out.length - 1];
-    if (last && last.end === t) last.end = t + STEP; else out.push({ start: t, end: t + STEP });
+    if (last && last.end === t) last.end = t + STEP;
+    else out.push({ start: t, end: t + STEP });
   }
   return out;
 }
@@ -118,7 +151,12 @@ export function rankedSlots(people: Participant[], iso: string, duration: number
     const s = { day: iso, start: t, end: t + duration };
     if (allFree(people, s)) out.push(s);
   }
-  return out.sort((a, b) => (Number(a.start % 60 !== 0) - Number(b.start % 60 !== 0)) || (Math.abs(a.start - reference) - Math.abs(b.start - reference)) || (a.start - b.start));
+  return out.sort(
+    (a, b) =>
+      Number(a.start % 60 !== 0) - Number(b.start % 60 !== 0) ||
+      Math.abs(a.start - reference) - Math.abs(b.start - reference) ||
+      a.start - b.start,
+  );
 }
 
 /** First weekday after `iso` (within two weeks) that has a free slot for everyone. */
@@ -138,11 +176,23 @@ const WEEKDAYS_LONG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag'
 const MONTHS_SHORT = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
 const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 /** "Mi, 11. Nov. 2026". */
-export const shortDay = (iso: string) => { const d = dateOf(iso); return `${WEEKDAYS[d.getDay()]}, ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`; };
+export const shortDay = (iso: string) => {
+  const d = dateOf(iso);
+  return `${WEEKDAYS[d.getDay()]}, ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+};
 /** "Mi, 11. Nov.". */
-export const chipDay = (iso: string) => { const d = dateOf(iso); return `${WEEKDAYS[d.getDay()]}, ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]}`; };
+export const chipDay = (iso: string) => {
+  const d = dateOf(iso);
+  return `${WEEKDAYS[d.getDay()]}, ${d.getDate()}. ${MONTHS_SHORT[d.getMonth()]}`;
+};
 /** "Mittwoch, 11. November 2026". */
-export const longDay = (iso: string) => { const d = dateOf(iso); return `${WEEKDAYS_LONG[d.getDay()]}, ${d.getDate()}. ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; };
+export const longDay = (iso: string) => {
+  const d = dateOf(iso);
+  return `${WEEKDAYS_LONG[d.getDay()]}, ${d.getDate()}. ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+};
 /** "Mo 9.". */
-export const weekdayShort = (iso: string) => { const d = dateOf(iso); return `${WEEKDAYS[d.getDay()]} ${d.getDate()}.`; };
+export const weekdayShort = (iso: string) => {
+  const d = dateOf(iso);
+  return `${WEEKDAYS[d.getDay()]} ${d.getDate()}.`;
+};
 export const STATUS_LABEL: Record<EventStatus, string> = { busy: 'Beschäftigt', tentative: 'Vorläufig', pending: 'Details ausstehend' };

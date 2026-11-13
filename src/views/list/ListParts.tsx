@@ -17,7 +17,9 @@ export function Linked({ links, note, scheme }: { links: string[]; note: string 
       {links.map((l, i) => (
         <React.Fragment key={l}>
           {i > 0 ? ' ' : null}
-          <LinkButton variant="link" href={`${scheme}:${scheme === 'tel' ? l.replace(/[^+\d]/g, '') : l}`}>{l}</LinkButton>
+          <LinkButton variant="link" href={`${scheme}:${scheme === 'tel' ? l.replace(/[^+\d]/g, '') : l}`}>
+            {l}
+          </LinkButton>
         </React.Fragment>
       ))}
       {note ? ` (${note})` : null}
@@ -25,12 +27,28 @@ export function Linked({ links, note, scheme }: { links: string[]; note: string 
   );
 }
 
-export function Toolbar({ view, onView, count, primary, filter, sort }: { view: View; onView: (v: string) => void; count: string; primary: React.ReactNode; filter: React.ReactNode; sort: React.ReactNode }) {
+export function Toolbar({
+  view,
+  onView,
+  count,
+  primary,
+  filter,
+  sort,
+}: {
+  view: View;
+  onView: (v: string) => void;
+  count: string;
+  primary: React.ReactNode;
+  filter: React.ReactNode;
+  sort: React.ReactNode;
+}) {
   return (
     <Stack direction="horizontal" gap="4" justify="between" align="center" wrap className="app-toolbar">
       <SegmentedControl label="Ansicht" value={view} onChange={onView} options={VIEWS} />
       <Stack direction="horizontal" gap="4" align="end" wrap>
-        <Text variant="caption" tone="body">{count}</Text>
+        <Text variant="caption" tone="body">
+          {count}
+        </Text>
         <Stack direction="horizontal" gap="2" align="center">
           {primary}
           {filter}
@@ -41,11 +59,28 @@ export function Toolbar({ view, onView, count, primary, filter, sort }: { view: 
   );
 }
 
-export function FilterMenu({ active, activeName, options, onPick }: { active: string | null; activeName: string; options: LabelOption[]; onPick: (id: string | null) => void }) {
+export function FilterMenu({
+  active,
+  activeName,
+  options,
+  onPick,
+}: {
+  active: string | null;
+  activeName: string;
+  options: LabelOption[];
+  onPick: (id: string | null) => void;
+}) {
   return (
     <Menu
       label="Nach Label filtern"
-      trigger={<IconButton icon="filter" label={active ? `Filter einstellen (aktiv: ${activeName})` : 'Filter einstellen'} variant="secondary" indicator={Boolean(active)} />}
+      trigger={
+        <IconButton
+          icon="filter"
+          label={active ? `Filter einstellen (aktiv: ${activeName})` : 'Filter einstellen'}
+          variant="secondary"
+          indicator={Boolean(active)}
+        />
+      }
       items={[
         { label: 'Alle Labels', selected: active === null, onSelect: () => onPick(null) },
         ...options.map((o): MenuItemDef => ({ label: o.label, selected: active === o.id, onSelect: () => onPick(o.id) })),
@@ -54,11 +89,26 @@ export function FilterMenu({ active, activeName, options, onPick }: { active: st
   );
 }
 
-export function SortMenu<K extends string>({ active, sorts, onPick }: { active: K | null; sorts: Array<{ key: K; label: string }>; onPick: (k: K | null) => void }) {
+export function SortMenu<K extends string>({
+  active,
+  sorts,
+  onPick,
+}: {
+  active: K | null;
+  sorts: Array<{ key: K; label: string }>;
+  onPick: (k: K | null) => void;
+}) {
   return (
     <Menu
       label="Sortieren"
-      trigger={<IconButton icon="sort" label={active ? `Sortieren (${sorts.find((o) => o.key === active)?.label})` : 'Sortieren'} variant="secondary" indicator={Boolean(active)} />}
+      trigger={
+        <IconButton
+          icon="sort"
+          label={active ? `Sortieren (${sorts.find((o) => o.key === active)?.label})` : 'Sortieren'}
+          variant="secondary"
+          indicator={Boolean(active)}
+        />
+      }
       items={[
         { label: 'Standard', selected: active === null, onSelect: () => onPick(null) },
         ...sorts.map((o): MenuItemDef => ({ label: o.label, selected: active === o.key, onSelect: () => onPick(o.key) })),
@@ -75,7 +125,17 @@ export function RowActions({ name, email, onSoon }: { name: string; email?: stri
       trigger={<IconButton icon="more-horiz" label={`Aktionen für ${name}`} size="tiny" />}
       items={[
         { label: 'Bearbeiten', icon: 'edit', onSelect: () => onSoon(`${name} bearbeiten`) },
-        ...(email ? [{ label: 'E-Mail senden', icon: 'mail', onSelect: () => { window.location.href = `mailto:${email}`; } } as MenuItemDef] : []),
+        ...(email
+          ? [
+              {
+                label: 'E-Mail senden',
+                icon: 'mail',
+                onSelect: () => {
+                  window.location.href = `mailto:${email}`;
+                },
+              } as MenuItemDef,
+            ]
+          : []),
         { label: 'Löschen', icon: 'trash', danger: true, onSelect: () => onSoon(`${name} löschen`) },
       ]}
     />

@@ -6,17 +6,40 @@ import type { HistoryEntry } from '../src/data/history';
 
 afterEach(cleanup);
 
-const handlers = (): HistoryHandlers => ({ onDetails: vi.fn(), onEdit: vi.fn(), onDelete: vi.fn(), onReply: vi.fn(), onShare: vi.fn(), onLink: vi.fn(), onPerson: vi.fn() });
+const handlers = (): HistoryHandlers => ({
+  onDetails: vi.fn(),
+  onEdit: vi.fn(),
+  onDelete: vi.fn(),
+  onReply: vi.fn(),
+  onShare: vi.fn(),
+  onLink: vi.fn(),
+  onPerson: vi.fn(),
+});
 
 const email: HistoryEntry = {
-  id: 'e1', kind: 'email', day: '2026-10-28', time: '10:24', title: 'Produktdaten Saison 2027',
+  id: 'e1',
+  kind: 'email',
+  day: '2026-10-28',
+  time: '10:24',
+  title: 'Produktdaten Saison 2027',
   by: { name: 'Johannes Finzer' },
-  to: [{ name: 'info@weingut.de', email: 'info@weingut.de' }, { name: 'Andreas Geil', email: 'a@geil.de' }, { name: 'Monika Geil', email: 'm@geil.de' }],
+  to: [
+    { name: 'info@weingut.de', email: 'info@weingut.de' },
+    { name: 'Andreas Geil', email: 'a@geil.de' },
+    { name: 'Monika Geil', email: 'm@geil.de' },
+  ],
   preview: 'Hallo, anbei die Daten. @Andreas Geil prüft sie.',
   attachments: [{ name: 'Produktdaten_2027.pdf', size: '4,2 MB' }],
 };
 
-const renderCard = (e: HistoryEntry, h = handlers()) => { render(<Timeline label="Verlauf"><HistoryCard e={e} h={h} /></Timeline>); return h; };
+const renderCard = (e: HistoryEntry, h = handlers()) => {
+  render(
+    <Timeline label="Verlauf">
+      <HistoryCard e={e} h={h} />
+    </Timeline>,
+  );
+  return h;
+};
 
 describe('HistoryCard', () => {
   it('shows subject, sender → first recipient with an exact +N, and the attachment', () => {
@@ -38,7 +61,15 @@ describe('HistoryCard', () => {
     expect(h.onDetails).toHaveBeenCalledTimes(1);
   });
   it('links mentions of contacts and gives a note only its menu', () => {
-    const note: HistoryEntry = { id: 'n1', kind: 'note', day: '2026-10-20', time: '11:15', title: 'Nachfassen', by: { name: 'Johannes Finzer' }, preview: 'Mit @Andreas Geil gesprochen.' };
+    const note: HistoryEntry = {
+      id: 'n1',
+      kind: 'note',
+      day: '2026-10-20',
+      time: '11:15',
+      title: 'Nachfassen',
+      by: { name: 'Johannes Finzer' },
+      preview: 'Mit @Andreas Geil gesprochen.',
+    };
     renderCard(note);
     expect(screen.getByRole('link', { name: '@Andreas Geil' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Antworten/ })).toBeNull();

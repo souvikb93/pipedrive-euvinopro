@@ -1,20 +1,96 @@
 import * as React from 'react';
 import {
-  ArrowLeft, ArrowRight, Bell, Box, Calendar, Check, CheckCircle, Clock, CloudSync, Copy, Download, EditPencil, Eye, EyeClosed,
-  Filter, Globe, Group, HelpCircle, Home, InfoCircle, Link, Lock, LogOut, Mail, Menu, Minus, MoreHoriz, MoreVert, NavArrowDown,
-  NavArrowLeft, NavArrowRight, NavArrowUp, Page, Plus, Refresh, Search, Settings, SidebarCollapse, SidebarExpand, Sort, Star,
-  Trash, Upload, User, WarningCircle, WarningTriangle, Xmark,
-  AppWindow, Attachment, Book, Building, OpenNewWindow, Suitcase,
-  ArrowSeparateVertical, ChatBubble, Phone, Reply, UserCircle,
-  Label, MapPin,
-  AtSign, Bold, FloppyDisk, Italic, NumberedListLeft, Underline,
-  BoxIso, ChatBubbleCheck, Coins, CreditCards, List, PageEdit, PrecisionTool, SendMail, Shop, StatsDownSquare, ViewGrid,
+  ArrowLeft,
+  ArrowRight,
+  Bell,
+  Box,
+  Calendar,
+  Check,
+  CheckCircle,
+  Clock,
+  CloudSync,
+  Copy,
+  Download,
+  EditPencil,
+  Eye,
+  EyeClosed,
+  Filter,
+  Globe,
+  Group,
+  HelpCircle,
+  Home,
+  InfoCircle,
+  Link,
+  Lock,
+  LogOut,
+  Mail,
+  Menu,
+  Minus,
+  NavArrowDown,
+  NavArrowLeft,
+  NavArrowRight,
+  NavArrowUp,
+  Page,
+  Plus,
+  Refresh,
+  Search,
+  Settings,
+  SidebarCollapse,
+  SidebarExpand,
+  Sort,
+  Star,
+  Trash,
+  Upload,
+  User,
+  WarningCircle,
+  WarningTriangle,
+  Xmark,
+  AppWindow,
+  Attachment,
+  Book,
+  Building,
+  OpenNewWindow,
+  Suitcase,
+  ArrowSeparateVertical,
+  ChatBubble,
+  Phone,
+  Reply,
+  UserCircle,
+  Label,
+  MapPin,
+  AtSign,
+  Bold,
+  FloppyDisk,
+  Italic,
+  NumberedListLeft,
+  Underline,
+  BoxIso,
+  ChatBubbleCheck,
+  Coins,
+  CreditCards,
+  List,
+  PageEdit,
+  PrecisionTool,
+  SendMail,
+  Shop,
+  StatsDownSquare,
+  ViewGrid,
 } from 'iconoir-react';
 
 /** ID card: not in Iconoir, drawn on the same 24 grid with round 1.5 strokes so it sits with the others. Also in Figma (Icons, "id-card"). */
 function IdCard(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <svg
+      width="1.5em"
+      height="1.5em"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
       <rect x="2.75" y="5" width="18.5" height="14" rx="2" />
       <circle cx="8.5" cy="10.5" r="2" />
       <path d="M5.5 16c.45-1.6 1.6-2.5 3-2.5s2.55.9 3 2.5" />
@@ -22,7 +98,6 @@ function IdCard(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
 
 /** Organisation: building with a roof sign and a base line. Not in Iconoir; drawn from the EuvinoPRO artwork, filled, in its own 67×100 box. Also used as the organisation page mark. */
 function Organisation(props: React.SVGProps<SVGSVGElement>) {
@@ -37,24 +112,114 @@ function Organisation(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+/**
+ * "More" dots drawn as solid circles, about twice the diameter of the Iconoir outline dots, so the menu trigger is easy to see at
+ * 16 and 20 px. Same drawing in Figma (Icons & Brand › more-horiz, more-vert).
+ */
+function MoreHoriz(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor" stroke="none" {...props}>
+      <circle cx="5" cy="12" r="2.25" />
+      <circle cx="12" cy="12" r="2.25" />
+      <circle cx="19" cy="12" r="2.25" />
+    </svg>
+  );
+}
+
+function MoreVert(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor" stroke="none" {...props}>
+      <circle cx="12" cy="5" r="2.25" />
+      <circle cx="12" cy="12" r="2.25" />
+      <circle cx="12" cy="19" r="2.25" />
+    </svg>
+  );
+}
+
 const ICONS = {
-  'arrow-left': ArrowLeft, 'arrow-right': ArrowRight, bell: Bell, box: Box, calendar: Calendar, check: Check, 'check-circle': CheckCircle,
-  clock: Clock, 'cloud-sync': CloudSync, copy: Copy, download: Download, edit: EditPencil, eye: Eye, 'eye-off': EyeClosed, filter: Filter,
-  globe: Globe, group: Group, help: HelpCircle, home: Home, info: InfoCircle, link: Link, lock: Lock, logout: LogOut, mail: Mail, menu: Menu,
-  minus: Minus, 'more-horiz': MoreHoriz, 'more-vert': MoreVert, 'nav-down': NavArrowDown, 'nav-left': NavArrowLeft, 'nav-right': NavArrowRight,
-  'nav-up': NavArrowUp, page: Page, plus: Plus, refresh: Refresh, search: Search, settings: Settings, 'sidebar-collapse': SidebarCollapse,
-  'sidebar-expand': SidebarExpand, sort: Sort, star: Star, trash: Trash, upload: Upload, user: User, 'warning-circle': WarningCircle,
-  'warning-triangle': WarningTriangle, close: Xmark,
+  'arrow-left': ArrowLeft,
+  'arrow-right': ArrowRight,
+  bell: Bell,
+  box: Box,
+  calendar: Calendar,
+  check: Check,
+  'check-circle': CheckCircle,
+  clock: Clock,
+  'cloud-sync': CloudSync,
+  copy: Copy,
+  download: Download,
+  edit: EditPencil,
+  eye: Eye,
+  'eye-off': EyeClosed,
+  filter: Filter,
+  globe: Globe,
+  group: Group,
+  help: HelpCircle,
+  home: Home,
+  info: InfoCircle,
+  link: Link,
+  lock: Lock,
+  logout: LogOut,
+  mail: Mail,
+  menu: Menu,
+  minus: Minus,
+  'more-horiz': MoreHoriz,
+  'more-vert': MoreVert,
+  'nav-down': NavArrowDown,
+  'nav-left': NavArrowLeft,
+  'nav-right': NavArrowRight,
+  'nav-up': NavArrowUp,
+  page: Page,
+  plus: Plus,
+  refresh: Refresh,
+  search: Search,
+  settings: Settings,
+  'sidebar-collapse': SidebarCollapse,
+  'sidebar-expand': SidebarExpand,
+  sort: Sort,
+  star: Star,
+  trash: Trash,
+  upload: Upload,
+  user: User,
+  'warning-circle': WarningCircle,
+  'warning-triangle': WarningTriangle,
+  close: Xmark,
   // Added for the CRM screens (Pipedrive New). Names match the Figma Iconoir layers.
-  'box-iso': BoxIso, 'chat-bubble-check': ChatBubbleCheck, coin: Coins, 'credit-cards': CreditCards, list: List, 'page-edit': PageEdit,
-  'precision-tool': PrecisionTool, 'send-mail': SendMail, shop: Shop, 'stats-down-square': StatsDownSquare, 'view-grid': ViewGrid,
+  'box-iso': BoxIso,
+  'chat-bubble-check': ChatBubbleCheck,
+  coin: Coins,
+  'credit-cards': CreditCards,
+  list: List,
+  'page-edit': PageEdit,
+  'precision-tool': PrecisionTool,
+  'send-mail': SendMail,
+  shop: Shop,
+  'stats-down-square': StatsDownSquare,
+  'view-grid': ViewGrid,
   // Search categories.
-  'app-window': AppWindow, attachment: Attachment, book: Book, building: Building, 'open-new-window': OpenNewWindow, suitcase: Suitcase,
+  'app-window': AppWindow,
+  attachment: Attachment,
+  book: Book,
+  building: Building,
+  'open-new-window': OpenNewWindow,
+  suitcase: Suitcase,
   // Organisation detail.
-  'arrow-separate-vertical': ArrowSeparateVertical, 'chat-bubble': ChatBubble, 'id-card': IdCard, phone: Phone, reply: Reply, 'user-circle': UserCircle,
-  label: Label, 'map-pin': MapPin, organisation: Organisation,
+  'arrow-separate-vertical': ArrowSeparateVertical,
+  'chat-bubble': ChatBubble,
+  'id-card': IdCard,
+  phone: Phone,
+  reply: Reply,
+  'user-circle': UserCircle,
+  label: Label,
+  'map-pin': MapPin,
+  organisation: Organisation,
   // Editor toolbar.
-  at: AtSign, bold: Bold, italic: Italic, 'numbered-list': NumberedListLeft, save: FloppyDisk, underline: Underline,
+  at: AtSign,
+  bold: Bold,
+  italic: Italic,
+  'numbered-list': NumberedListLeft,
+  save: FloppyDisk,
+  underline: Underline,
 } as const;
 
 /** Every icon name the system ships. The Figma library's Iconoir set has more; add a name here when a screen needs it. */

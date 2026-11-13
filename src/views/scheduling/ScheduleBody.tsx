@@ -1,5 +1,19 @@
 import * as React from 'react';
-import { InlineList, AvailabilityTimeline, StatusSummary, PersonChip, Badge, Button, Combobox, DatePicker, FieldAction, Icon, Menu, Stack, Text } from '@euvino/ds';
+import {
+  InlineList,
+  AvailabilityTimeline,
+  StatusSummary,
+  PersonChip,
+  Badge,
+  Button,
+  Combobox,
+  DatePicker,
+  FieldAction,
+  Icon,
+  Menu,
+  Stack,
+  Text,
+} from '@euvino/ds';
 import {
   DAY_END,
   DAY_START,
@@ -33,7 +47,10 @@ const DURATIONS = [15, 30, 45, 60, 90, 120];
 export function suggestionsFor(s: Scheduling): Slot[] {
   return s.ranked
     .filter((x) => !(x.day === s.sel.day && x.start === s.sel.start))
-    .reduce<Slot[]>((acc, x) => (acc.length < 2 && acc.every((y) => y.day !== x.day || x.end < y.start || x.start > y.end) ? [...acc, x] : acc), []);
+    .reduce<Slot[]>(
+      (acc, x) => (acc.length < 2 && acc.every((y) => y.day !== x.day || x.end < y.start || x.start > y.end) ? [...acc, x] : acc),
+      [],
+    );
 }
 
 export interface ScheduleBodyProps {
@@ -75,16 +92,50 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
       {editable ? (
         <Stack gap="2">
           <div className="sched-fields">
-            <DatePicker label="Datum" locale="de-DE" placeholder="TT.MM.JJJJ" calendarLabel="Kalender öffnen" value={s.sel.day} onChange={s.setDay} />
-            <Combobox label="Beginn" toggleLabel="Uhrzeiten anzeigen" value={String(s.sel.start)} format={(v) => hm(Number(v))}
-              parse={(t) => { const v = parseTime(t); return v !== undefined && v < DAY_END ? String(v) : undefined; }}
-              onChange={(v) => s.setStart(Number(v))} options={TIMES.slice(0, -1).map((t) => ({ value: String(t), label: hm(t) }))} />
-            <Combobox label="Ende" toggleLabel="Uhrzeiten anzeigen" value={String(s.sel.end)} format={(v) => hm(Number(v))}
-              parse={(t) => { const v = parseTime(t); return v !== undefined && v > s.sel.start ? String(v) : undefined; }}
-              onChange={(v) => s.setEnd(Number(v))} options={TIMES.filter((t) => t > s.sel.start).map((t) => ({ value: String(t), label: hm(t) }))} />
-            <Combobox label="Dauer" toggleLabel="Dauer auswählen" value={String(s.duration)} format={(v) => durationLabel(Number(v))}
-              parse={(t) => { const v = parseDuration(t); return v !== undefined && s.sel.start + v <= DAY_END ? String(v) : undefined; }}
-              onChange={(v) => s.setDuration(Number(v))} options={durations.map((d) => ({ value: String(d), label: durationLabel(d) }))} />
+            <DatePicker
+              label="Datum"
+              locale="de-DE"
+              placeholder="TT.MM.JJJJ"
+              calendarLabel="Kalender öffnen"
+              value={s.sel.day}
+              onChange={s.setDay}
+            />
+            <Combobox
+              label="Beginn"
+              toggleLabel="Uhrzeiten anzeigen"
+              value={String(s.sel.start)}
+              format={(v) => hm(Number(v))}
+              parse={(t) => {
+                const v = parseTime(t);
+                return v !== undefined && v < DAY_END ? String(v) : undefined;
+              }}
+              onChange={(v) => s.setStart(Number(v))}
+              options={TIMES.slice(0, -1).map((t) => ({ value: String(t), label: hm(t) }))}
+            />
+            <Combobox
+              label="Ende"
+              toggleLabel="Uhrzeiten anzeigen"
+              value={String(s.sel.end)}
+              format={(v) => hm(Number(v))}
+              parse={(t) => {
+                const v = parseTime(t);
+                return v !== undefined && v > s.sel.start ? String(v) : undefined;
+              }}
+              onChange={(v) => s.setEnd(Number(v))}
+              options={TIMES.filter((t) => t > s.sel.start).map((t) => ({ value: String(t), label: hm(t) }))}
+            />
+            <Combobox
+              label="Dauer"
+              toggleLabel="Dauer auswählen"
+              value={String(s.duration)}
+              format={(v) => durationLabel(Number(v))}
+              parse={(t) => {
+                const v = parseDuration(t);
+                return v !== undefined && s.sel.start + v <= DAY_END ? String(v) : undefined;
+              }}
+              onChange={(v) => s.setDuration(Number(v))}
+              options={durations.map((d) => ({ value: String(d), label: durationLabel(d) }))}
+            />
           </div>
           <Text as="div" variant="caption" tone={s.valid ? 'success' : 'error'} aria-live="polite">
             <Stack direction="horizontal" gap="2" align="center">
@@ -99,7 +150,15 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
           tone={s.valid ? 'default' : 'error'}
           title={
             <>
-              <InlineList items={[shortDay(s.sel.day), range(s.sel), <Text as="span" variant="body-small" tone="muted">{durationLabel(s.duration)}</Text>]} />
+              <InlineList
+                items={[
+                  shortDay(s.sel.day),
+                  range(s.sel),
+                  <Text as="span" variant="body-small" tone="muted">
+                    {durationLabel(s.duration)}
+                  </Text>,
+                ]}
+              />
             </>
           }
           description={note}
@@ -114,7 +173,11 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
       )}
 
       <Stack as="section" gap="2" aria-labelledby={`${idPrefix}-people`}>
-        <Text as="h3" id={`${idPrefix}-people`} variant={editable ? 'caption-medium' : 'card-title'}>{`Teilnehmer (${s.people.length})`}</Text>
+        <Text
+          as="h3"
+          id={`${idPrefix}-people`}
+          variant={editable ? 'caption-medium' : 'card-title'}
+        >{`Teilnehmer (${s.people.length})`}</Text>
         <Stack direction="horizontal" gap="2" align="center" wrap>
           {s.people.map((p) => (
             <PersonChip
@@ -158,7 +221,12 @@ export function ScheduleBody({ s, candidates, idPrefix, before, saveError, edita
             ],
           }}
           columns={days.map((d) => ({ id: d, label: weekdayShort(d) }))}
-          rows={s.people.map((p) => ({ id: p.id, name: p.you ? `${p.name} (Sie)` : p.name, photo: p.photo, events: Object.fromEntries(days.map((d) => [d, eventsFor(p, d)])) }))}
+          rows={s.people.map((p) => ({
+            id: p.id,
+            name: p.you ? `${p.name} (Sie)` : p.name,
+            photo: p.photo,
+            events: Object.fromEntries(days.map((d) => [d, eventsFor(p, d)])),
+          }))}
           free={days.flatMap((d) => commonFree(s.people, d).map((f) => ({ column: d, ...f })))}
           selection={{ column: s.sel.day, start: s.sel.start, end: s.sel.end, valid: s.valid }}
           planned={conflict ? { column: conflict.day, start: conflict.start, end: conflict.end } : null}

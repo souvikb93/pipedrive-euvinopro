@@ -12,7 +12,10 @@
     "ds:check": "node scripts/ds-check.mjs",
     "sync-ds": "node scripts/sync-ds.mjs && npm install",
     "test": "vitest run",
-    "check": "npm run typecheck && npm run ds:check && npm run test && vite build"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run ds:check && npm run test && vite build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@euvino/ds": "file:./vendor/euvino-ds",
@@ -20,13 +23,20 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
     "jsdom": "^25.0.1",
+    "prettier": "^3.10.1",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.72.2",
     "vite": "^5.4.21",
     "vitest": "^2.1.9"
   }

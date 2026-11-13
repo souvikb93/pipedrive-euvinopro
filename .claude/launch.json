@@ -1,6 +1,4 @@
 {
   "version": "0.0.1",
-  "configurations": [
-    { "name": "pipedrive-euvino", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 4340 }
-  ]
+  "configurations": [{ "name": "pipedrive-euvino", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 4340 }]
 }

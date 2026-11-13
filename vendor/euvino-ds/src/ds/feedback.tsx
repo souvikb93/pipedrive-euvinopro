@@ -5,7 +5,13 @@ import { Button } from './button';
 import { CloseButton } from './field-action';
 
 export type Status = 'default' | 'success' | 'info' | 'warning' | 'error';
-const STATUS_ICON: Record<Status, IconName> = { default: 'info', success: 'check-circle', info: 'info', warning: 'warning-triangle', error: 'warning-circle' };
+const STATUS_ICON: Record<Status, IconName> = {
+  default: 'info',
+  success: 'check-circle',
+  info: 'info',
+  warning: 'warning-triangle',
+  error: 'warning-circle',
+};
 
 export interface LoaderProps {
   /** `tiny` 16, `small` 20, `medium` 24, `large` 32, `giant` 48. */
@@ -16,7 +22,14 @@ export interface LoaderProps {
 
 /** Indeterminate loading indicator. Use Skeleton when the layout is known and ProgressBar when the duration is known. */
 export function Loader({ size = 'medium', label = 'Loading' }: LoaderProps) {
-  return <span className={cn('eu-loader', `eu-loader--${size}`)} role={label ? 'status' : undefined} aria-label={label || undefined} aria-hidden={label ? undefined : true} />;
+  return (
+    <span
+      className={cn('eu-loader', `eu-loader--${size}`)}
+      role={label ? 'status' : undefined}
+      aria-label={label || undefined}
+      aria-hidden={label ? undefined : true}
+    />
+  );
 }
 
 export interface SkeletonProps {
@@ -28,7 +41,13 @@ export interface SkeletonProps {
 
 /** Placeholder while content loads. Match the layout that will appear. Hidden from screen readers; announce loading with `aria-busy` on the region. */
 export function Skeleton({ type = 'text', count = 1 }: SkeletonProps) {
-  return <span className="eu-skel-wrap" aria-hidden="true">{Array.from({ length: count }, (_, i) => <span key={i} className={cn('eu-skel', `eu-skel--${type}`)} />)}</span>;
+  return (
+    <span className="eu-skel-wrap" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <span key={i} className={cn('eu-skel', `eu-skel--${type}`)} />
+      ))}
+    </span>
+  );
 }
 
 export interface ProgressBarProps {
@@ -49,8 +68,15 @@ export function ProgressBar({ value, label, showLabel, showValue, disabled }: Pr
   const v = Math.max(0, Math.min(100, value));
   return (
     <div className={cn('eu-progress', disabled && 'is-disabled')}>
-      {showLabel || showValue ? <div className="eu-field__foot">{showLabel ? <span className="eu-type-body-small">{label}</span> : <span />}{showValue ? <span className="eu-type-body-caption">{v}%</span> : null}</div> : null}
-      <span className="eu-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}><span className="eu-bar__fill" style={{ width: `${v}%` }} /></span>
+      {showLabel || showValue ? (
+        <div className="eu-field__foot">
+          {showLabel ? <span className="eu-type-body-small">{label}</span> : <span />}
+          {showValue ? <span className="eu-type-body-caption">{v}%</span> : null}
+        </div>
+      ) : null}
+      <span className="eu-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
+        <span className="eu-bar__fill" style={{ width: `${v}%` }} />
+      </span>
     </div>
   );
 }
@@ -71,12 +97,27 @@ export interface AlertProps extends Omit<React.HTMLAttributes<HTMLDivElement>, '
 }
 
 /** A message that stays on the page until resolved. `error` and `warning` announce themselves. Use Toast for a passing confirmation. */
-export function Alert({ status = 'default', variant = 'outline', title, actions, onDismiss, dismissLabel = 'Dismiss', className, children, role, ...rest }: AlertProps) {
+export function Alert({
+  status = 'default',
+  variant = 'outline',
+  title,
+  actions,
+  onDismiss,
+  dismissLabel = 'Dismiss',
+  className,
+  children,
+  role,
+  ...rest
+}: AlertProps) {
   return (
-    <div {...rest} role={role ?? (status === 'error' || status === 'warning' ? 'alert' : 'status')} className={cn('eu-alert', `eu-alert--${status}`, `eu-alert--${variant}`, className)}>
+    <div
+      {...rest}
+      role={role ?? (status === 'error' || status === 'warning' ? 'alert' : 'status')}
+      className={cn('eu-alert', `eu-alert--${status}`, `eu-alert--${variant}`, className)}
+    >
       <Icon name={STATUS_ICON[status]} size="md" className="eu-alert__icon" />
       <div className="eu-alert__body">
-        {title ? <div className="eu-type-ui-card-title eu-alert__title">{title}</div> : null}
+        {title ? <div className="eu-type-ui-label eu-alert__title">{title}</div> : null}
         {children ? <div className="eu-type-body-small eu-alert__text">{children}</div> : null}
         {actions ? <div className="eu-alert__actions">{actions}</div> : null}
       </div>
@@ -98,7 +139,12 @@ export interface BadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 
 
 /** Shows a status, count or category. It is not interactive; use Chip for something people click. */
 export function Badge({ status = 'default', variant = 'subtle', size = 'small', icon, className, children, ...rest }: BadgeProps) {
-  return <span {...rest} className={cn('eu-badge', `eu-badge--${status}`, `eu-badge--${variant}`, `eu-badge--${size}`, className)}>{icon ? <Icon name={icon} size={size === 'medium' ? 'sm' : 'xs'} /> : null}{children}</span>;
+  return (
+    <span {...rest} className={cn('eu-badge', `eu-badge--${status}`, `eu-badge--${variant}`, `eu-badge--${size}`, className)}>
+      {icon ? <Icon name={icon} size={size === 'medium' ? 'sm' : 'xs'} /> : null}
+      {children}
+    </span>
+  );
 }
 
 // ---- Toast
@@ -114,7 +160,9 @@ export interface ToastOptions {
   /** An undo or view action. */
   action?: { label: string; onClick: () => void };
 }
-interface ToastItem extends ToastOptions { id: number }
+interface ToastItem extends ToastOptions {
+  id: number;
+}
 const ToastCtx = React.createContext<((t: ToastOptions) => void) | null>(null);
 
 export interface ToastProviderProps {
@@ -129,11 +177,14 @@ export function ToastProvider({ children, dismissLabel = 'Dismiss' }: ToastProvi
   const [items, setItems] = React.useState<ToastItem[]>([]);
   const next = React.useRef(1);
   const remove = React.useCallback((id: number) => setItems((l) => l.filter((t) => t.id !== id)), []);
-  const show = React.useCallback((t: ToastOptions) => {
-    const id = next.current++;
-    setItems((l) => [...l, { ...t, id }]);
-    if ((t.duration ?? 5000) > 0) window.setTimeout(() => remove(id), t.duration ?? 5000);
-  }, [remove]);
+  const show = React.useCallback(
+    (t: ToastOptions) => {
+      const id = next.current++;
+      setItems((l) => [...l, { ...t, id }]);
+      if ((t.duration ?? 5000) > 0) window.setTimeout(() => remove(id), t.duration ?? 5000);
+    },
+    [remove],
+  );
   return (
     <ToastCtx.Provider value={show}>
       {children}
@@ -141,8 +192,22 @@ export function ToastProvider({ children, dismissLabel = 'Dismiss' }: ToastProvi
         {items.map((t) => (
           <div key={t.id} role={t.status === 'error' ? 'alert' : 'status'} className={cn('eu-toast', `eu-alert--${t.status ?? 'default'}`)}>
             <Icon name={STATUS_ICON[t.status ?? 'default']} size="md" className="eu-alert__icon" />
-            <div className="eu-alert__body"><div className="eu-type-ui-card-title eu-alert__title">{t.title}</div>{t.description ? <div className="eu-type-body-small eu-alert__text">{t.description}</div> : null}</div>
-            {t.action ? <button type="button" className="eu-link eu-link--primary eu-type-ui-button" onClick={() => { t.action?.onClick(); remove(t.id); }}>{t.action.label}</button> : null}
+            <div className="eu-alert__body">
+              <div className="eu-type-ui-card-title eu-alert__title">{t.title}</div>
+              {t.description ? <div className="eu-type-body-small eu-alert__text">{t.description}</div> : null}
+            </div>
+            {t.action ? (
+              <button
+                type="button"
+                className="eu-link eu-link--primary eu-type-ui-button"
+                onClick={() => {
+                  t.action?.onClick();
+                  remove(t.id);
+                }}
+              >
+                {t.action.label}
+              </button>
+            ) : null}
             <CloseButton label={dismissLabel} size="small" onClick={() => remove(t.id)} />
           </div>
         ))}
@@ -162,16 +227,25 @@ export function useToast(): (t: ToastOptions) => void {
 function useDialog(open: boolean, onClose: () => void) {
   const ref = React.useRef<HTMLDialogElement>(null);
   React.useEffect(() => {
-    const d = ref.current; if (!d) return;
+    const d = ref.current;
+    if (!d) return;
     if (open && !d.open) {
       d.showModal?.();
       // Start in the content, not on the close button: first field, else whatever the dialog chose.
-      const first = d.querySelector<HTMLElement>('.eu-modal__body input:not([type=hidden]):not(:disabled), .eu-modal__body textarea:not(:disabled), .eu-drawer__body input:not([type=hidden]):not(:disabled), .eu-drawer__body textarea:not(:disabled)');
+      const first = d.querySelector<HTMLElement>(
+        '.eu-modal__body input:not([type=hidden]):not(:disabled), .eu-modal__body textarea:not(:disabled), .eu-drawer__body input:not([type=hidden]):not(:disabled), .eu-drawer__body textarea:not(:disabled)',
+      );
       first?.focus();
     }
     if (!open && d.open) d.close?.();
   }, [open]);
-  return { ref, onCancel: (e: React.SyntheticEvent) => { e.preventDefault(); onClose(); } };
+  return {
+    ref,
+    onCancel: (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      onClose();
+    },
+  };
 }
 
 export interface ModalProps {
@@ -196,19 +270,48 @@ export interface ModalProps {
 }
 
 /** A focused task above the page, with a free content area such as a short form. For a yes-or-no confirmation use ConfirmDialog. */
-export function Modal({ open, onClose, title, description, footer, footerStart, size = 'medium', closeLabel = 'Close', children }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  description,
+  footer,
+  footerStart,
+  size = 'medium',
+  closeLabel = 'Close',
+  children,
+}: ModalProps) {
   const d = useDialog(open, onClose);
   const tid = React.useId();
   return (
-    <dialog ref={d.ref} onCancel={d.onCancel} aria-labelledby={tid} className={cn('eu-modal', `eu-modal--${size}`)} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- backdrop click closes; keyboard closes with Escape (native dialog cancel)
+    <dialog
+      ref={d.ref}
+      onCancel={d.onCancel}
+      aria-labelledby={tid}
+      className={cn('eu-modal', `eu-modal--${size}`)}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       {open ? (
         <div className="eu-modal__box">
           <header className="eu-modal__head">
-            <div><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2>{description ? <div className="eu-type-body-small eu-check__desc">{description}</div> : null}</div>
+            <div>
+              <h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">
+                {title}
+              </h2>
+              {description ? <div className="eu-type-body-small eu-check__desc">{description}</div> : null}
+            </div>
             <CloseButton label={closeLabel} onClick={onClose} />
           </header>
           {children ? <div className="eu-modal__body">{children}</div> : null}
-          {footer || footerStart ? <footer className="eu-modal__foot">{footerStart ? <div className="eu-modal__foot-start">{footerStart}</div> : null}{footer}</footer> : null}
+          {footer || footerStart ? (
+            <footer className="eu-modal__foot">
+              {footerStart ? <div className="eu-modal__foot-start">{footerStart}</div> : null}
+              {footer}
+            </footer>
+          ) : null}
         </div>
       ) : null}
     </dialog>
@@ -237,18 +340,51 @@ export interface ConfirmDialogProps {
 }
 
 /** The Pop-Up in Figma: a short confirmation before a consequential action. Use it for every delete or anything that cannot be undone. Focus starts on the safe choice. */
-export function ConfirmDialog({ open, onCancel, onConfirm, title, children, confirmLabel, cancelLabel = 'Cancel', tone = 'default', busy }: ConfirmDialogProps) {
+export function ConfirmDialog({
+  open,
+  onCancel,
+  onConfirm,
+  title,
+  children,
+  confirmLabel,
+  cancelLabel = 'Cancel',
+  tone = 'default',
+  busy,
+}: ConfirmDialogProps) {
   const d = useDialog(open, onCancel);
-  const tid = React.useId(); const did = React.useId();
+  const tid = React.useId();
+  const did = React.useId();
   return (
-    <dialog ref={d.ref} onCancel={d.onCancel} role="alertdialog" aria-labelledby={tid} aria-describedby={did} className="eu-modal eu-modal--small" onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- backdrop click cancels; keyboard cancels with Escape (native dialog cancel)
+    <dialog
+      ref={d.ref}
+      onCancel={d.onCancel}
+      role="alertdialog"
+      aria-labelledby={tid}
+      aria-describedby={did}
+      className="eu-modal eu-modal--small"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
       {open ? (
         <div className="eu-modal__box">
-          <header className="eu-modal__head"><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2></header>
-          <div id={did} className="eu-modal__body eu-type-body-small eu-check__desc">{children}</div>
+          <header className="eu-modal__head">
+            <h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">
+              {title}
+            </h2>
+          </header>
+          <div id={did} className="eu-modal__body eu-type-body-small eu-check__desc">
+            {children}
+          </div>
           <footer className="eu-modal__foot">
-            <Button variant="secondary" autoFocus onClick={onCancel}>{cancelLabel}</Button>
-            <Button variant={tone === 'danger' ? 'danger' : 'primary'} loading={busy} onClick={onConfirm}>{confirmLabel}</Button>
+            {/* eslint-disable-next-line jsx-a11y/no-autofocus -- a danger confirmation starts on Cancel, the safe choice */}
+            <Button variant="secondary" autoFocus onClick={onCancel}>
+              {cancelLabel}
+            </Button>
+            <Button variant={tone === 'danger' ? 'danger' : 'primary'} loading={busy} onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
           </footer>
         </div>
       ) : null}
@@ -278,10 +414,24 @@ export function Drawer({ open, onClose, title, position = 'right', footer, close
   const d = useDialog(open, onClose);
   const tid = React.useId();
   return (
-    <dialog ref={d.ref} onCancel={d.onCancel} aria-labelledby={tid} className={cn('eu-drawer', `eu-drawer--${position}`)} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- backdrop click closes; keyboard closes with Escape (native dialog cancel)
+    <dialog
+      ref={d.ref}
+      onCancel={d.onCancel}
+      aria-labelledby={tid}
+      className={cn('eu-drawer', `eu-drawer--${position}`)}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       {open ? (
         <div className="eu-drawer__box">
-          <header className="eu-modal__head"><h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">{title}</h2><CloseButton label={closeLabel} onClick={onClose} /></header>
+          <header className="eu-modal__head">
+            <h2 id={tid} className="eu-type-desktop-h5 eu-modal__title">
+              {title}
+            </h2>
+            <CloseButton label={closeLabel} onClick={onClose} />
+          </header>
           <div className="eu-modal__body eu-drawer__body">{children}</div>
           {footer ? <footer className="eu-modal__foot">{footer}</footer> : null}
         </div>
@@ -304,9 +454,23 @@ export function Tooltip({ content, children, position = 'top' }: TooltipProps) {
   const [open, setOpen] = React.useState(false);
   const id = React.useId();
   return (
-    <span className="eu-tip-wrap" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}>
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- hover and focus of the trigger inside open the tooltip; the trigger is the focusable element
+    <span
+      className="eu-tip-wrap"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') setOpen(false);
+      }}
+    >
       {React.cloneElement(children as React.ReactElement<{ 'aria-describedby'?: string }>, { 'aria-describedby': open ? id : undefined })}
-      {open ? <span id={id} role="tooltip" className={cn('eu-tip', `eu-tip--${position}`, 'eu-type-body-caption')}>{content}</span> : null}
+      {open ? (
+        <span id={id} role="tooltip" className={cn('eu-tip', `eu-tip--${position}`, 'eu-type-body-caption')}>
+          {content}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -328,20 +492,43 @@ export interface PopoverProps {
 export function Popover({ trigger, title, children, open: controlled, onOpenChange }: PopoverProps) {
   const [own, setOwn] = React.useState(false);
   const open = controlled ?? own;
-  const set = (v: boolean) => { setOwn(v); onOpenChange?.(v); };
+  const set = (v: boolean) => {
+    setOwn(v);
+    onOpenChange?.(v);
+  };
   const root = React.useRef<HTMLSpanElement>(null);
   React.useEffect(() => {
     if (!open) return;
-    const h = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) set(false); };
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') set(false); };
-    document.addEventListener('mousedown', h); document.addEventListener('keydown', k);
-    return () => { document.removeEventListener('mousedown', h); document.removeEventListener('keydown', k); };
+    const h = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) set(false);
+    };
+    const k = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') set(false);
+    };
+    document.addEventListener('mousedown', h);
+    document.addEventListener('keydown', k);
+    return () => {
+      document.removeEventListener('mousedown', h);
+      document.removeEventListener('keydown', k);
+    };
   });
   const t = trigger as React.ReactElement<{ onClick?: () => void; 'aria-expanded'?: boolean; 'aria-haspopup'?: 'dialog' }>;
   return (
     <span className="eu-tip-wrap" ref={root}>
-      {React.cloneElement(t, { onClick: () => { t.props.onClick?.(); set(!open); }, 'aria-expanded': open, 'aria-haspopup': 'dialog' })}
-      {open ? <div role="dialog" aria-label={title} className="eu-popover">{title ? <div className="eu-type-ui-card-title eu-alert__title">{title}</div> : null}<div className="eu-type-body-small eu-check__desc">{children}</div></div> : null}
+      {React.cloneElement(t, {
+        onClick: () => {
+          t.props.onClick?.();
+          set(!open);
+        },
+        'aria-expanded': open,
+        'aria-haspopup': 'dialog',
+      })}
+      {open ? (
+        <div role="dialog" aria-label={title} className="eu-popover">
+          {title ? <div className="eu-type-ui-card-title eu-alert__title">{title}</div> : null}
+          <div className="eu-type-body-small eu-check__desc">{children}</div>
+        </div>
+      ) : null}
     </span>
   );
 }
@@ -379,25 +566,71 @@ export function Menu({ trigger, items, label }: MenuProps) {
   React.useEffect(() => {
     if (!open) return;
     list.current?.focus();
-    const h = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    const h = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
     document.addEventListener('mousedown', h);
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
   const t = trigger as React.ReactElement<{ onClick?: () => void; 'aria-expanded'?: boolean; 'aria-haspopup'?: 'menu' }>;
-  const pick = (i: number) => { const it = items[i]; if (it && !it.disabled) { setOpen(false); it.onSelect(); } };
+  const pick = (i: number) => {
+    const it = items[i];
+    if (it && !it.disabled) {
+      setOpen(false);
+      it.onSelect();
+    }
+  };
   return (
     <span className="eu-tip-wrap" ref={root}>
-      {React.cloneElement(t, { onClick: () => { t.props.onClick?.(); setActive(0); setOpen((o) => !o); }, 'aria-expanded': open, 'aria-haspopup': 'menu' })}
+      {React.cloneElement(t, {
+        onClick: () => {
+          t.props.onClick?.();
+          setActive(0);
+          setOpen((o) => !o);
+        },
+        'aria-expanded': open,
+        'aria-haspopup': 'menu',
+      })}
       {open ? (
-        <ul ref={list} role="menu" aria-label={label} tabIndex={-1} className="eu-menu eu-menu--pop" onKeyDown={(e) => {
-          if (e.key === 'Escape') setOpen(false);
-          else if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => (a + 1) % items.length); }
-          else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => (a - 1 + items.length) % items.length); }
-          else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(active); }
-        }}>
+        <ul
+          ref={list}
+          role="menu"
+          aria-label={label}
+          tabIndex={-1}
+          className="eu-menu eu-menu--pop"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setOpen(false);
+            else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setActive((a) => (a + 1) % items.length);
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              setActive((a) => (a - 1 + items.length) % items.length);
+            } else if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              pick(active);
+            }
+          }}
+        >
           {items.map((it, i) => (
-            <li key={it.label} role={it.selected === undefined ? 'menuitem' : 'menuitemradio'} aria-checked={it.selected === undefined ? undefined : it.selected} aria-disabled={it.disabled || undefined} className={cn('eu-menu__item eu-type-body-small', i === active && 'is-active', it.disabled && 'is-disabled', it.danger && 'is-danger', it.selected && 'is-selected')} onMouseEnter={() => setActive(i)} onClick={() => pick(i)}>
-              {it.icon ? <Icon name={it.icon} size="md" /> : null}<span className="eu-menu__label">{it.label}</span>
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- menu keys (arrows, Enter, Escape) are handled on the menu list
+            <li
+              key={it.label}
+              role={it.selected === undefined ? 'menuitem' : 'menuitemradio'}
+              aria-checked={it.selected === undefined ? undefined : it.selected}
+              aria-disabled={it.disabled || undefined}
+              className={cn(
+                'eu-menu__item eu-type-body-small',
+                i === active && 'is-active',
+                it.disabled && 'is-disabled',
+                it.danger && 'is-danger',
+                it.selected && 'is-selected',
+              )}
+              onMouseEnter={() => setActive(i)}
+              onClick={() => pick(i)}
+            >
+              {it.icon ? <Icon name={it.icon} size="md" /> : null}
+              <span className="eu-menu__label">{it.label}</span>
               {it.selected ? <Icon name="check" size="md" className="eu-menu__check" /> : null}
             </li>
           ))}

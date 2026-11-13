@@ -36,7 +36,18 @@ export function PlanActivity({ from, participants, candidates, onCancel, onPlan 
       setSaveError(true);
       return;
     }
-    onPlan({ kind: 'activity', type: 'Termin', title: title.trim(), day: s.sel.day, start: s.sel.start, end: s.sel.end, assignee: s.people.find((p) => p.you)?.name ?? '' }, s.people);
+    onPlan(
+      {
+        kind: 'activity',
+        type: 'Termin',
+        title: title.trim(),
+        day: s.sel.day,
+        start: s.sel.start,
+        end: s.sel.end,
+        assignee: s.people.find((p) => p.you)?.name ?? '',
+      },
+      s.people,
+    );
   };
 
   return (

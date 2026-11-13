@@ -60,15 +60,30 @@ export interface EditorProps {
 }
 
 const GROUPS: Array<Array<{ id: Format; icon: IconName }>> = [
-  [{ id: 'bold', icon: 'bold' }, { id: 'italic', icon: 'italic' }, { id: 'underline', icon: 'underline' }],
-  [{ id: 'bullets', icon: 'list' }, { id: 'numbers', icon: 'numbered-list' }],
+  [
+    { id: 'bold', icon: 'bold' },
+    { id: 'italic', icon: 'italic' },
+    { id: 'underline', icon: 'underline' },
+  ],
+  [
+    { id: 'bullets', icon: 'list' },
+    { id: 'numbers', icon: 'numbered-list' },
+  ],
   [{ id: 'link', icon: 'link' }],
   [{ id: 'mention', icon: 'at' }],
 ];
 
 const NAMES: Required<EditorLabels> = {
-  toolbar: 'Formatting', bold: 'Bold', italic: 'Italic', underline: 'Underline', bullets: 'Bulleted list', numbers: 'Numbered list',
-  link: 'Link', mention: 'Mention someone', cancel: 'Cancel', save: 'Save',
+  toolbar: 'Formatting',
+  bold: 'Bold',
+  italic: 'Italic',
+  underline: 'Underline',
+  bullets: 'Bulleted list',
+  numbers: 'Numbered list',
+  link: 'Link',
+  mention: 'Mention someone',
+  cancel: 'Cancel',
+  save: 'Save',
 };
 
 /**
@@ -84,7 +99,10 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
   const [open, setOpen] = React.useState(defaultExpanded);
   const [sel, setSel] = React.useState<[number, number]>([0, 0]);
   const pending = React.useRef<[number, number] | null>(null);
-  const track = () => { const el = field.current; if (el) setSel([el.selectionStart, el.selectionEnd]); };
+  const track = () => {
+    const el = field.current;
+    if (el) setSel([el.selectionStart, el.selectionEnd]);
+  };
   const active = (m: Mark) => markAround(value, m, sel[0], sel[1]) !== null;
   const expanded = open || value.length > 0;
   const canSave = value.trim().length > 0;
@@ -115,11 +133,19 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
     if (f === 'bullets' || f === 'numbers') {
       const lineStart = value.lastIndexOf('\n', a - 1) + 1;
       const block = value.slice(lineStart, b) || '';
-      const lines = block.split('\n').map((l, i) => `${f === 'bullets' ? '- ' : `${i + 1}. `}${l}`).join('\n');
+      const lines = block
+        .split('\n')
+        .map((l, i) => `${f === 'bullets' ? '- ' : `${i + 1}. `}${l}`)
+        .join('\n');
       replace(lineStart, b, lines, lineStart + lines.length, lineStart + lines.length);
       return;
     }
-    const wrap: Record<'bold' | 'italic' | 'underline' | 'mention', [string, string]> = { bold: ['**', '**'], italic: ['_', '_'], underline: ['<u>', '</u>'], mention: ['@', ''] };
+    const wrap: Record<'bold' | 'italic' | 'underline' | 'mention', [string, string]> = {
+      bold: ['**', '**'],
+      italic: ['_', '_'],
+      underline: ['<u>', '</u>'],
+      mention: ['@', ''],
+    };
     if (f === 'link') {
       const text = `[${picked}](https://)`;
       const urlStart = a + picked.length + 3;
@@ -139,12 +165,27 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
     replace(a, b, `${l}${picked}${r}`, a + l.length, a + l.length + picked.length);
   };
 
-  const cancel = () => { onChange(''); setOpen(false); field.current?.blur(); onCancel?.(); };
-  const save = () => { if (canSave) { onSave(value); setOpen(false); } };
+  const cancel = () => {
+    onChange('');
+    setOpen(false);
+    field.current?.blur();
+    onCancel?.();
+  };
+  const save = () => {
+    if (canSave) {
+      onSave(value);
+      setOpen(false);
+    }
+  };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); save(); }
-    else if (e.key === 'Escape' && expanded) { e.preventDefault(); cancel(); }
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      save();
+    } else if (e.key === 'Escape' && expanded) {
+      e.preventDefault();
+      cancel();
+    }
   };
   const onBlur = (e: React.FocusEvent) => {
     if (!value && !root.current?.contains(e.relatedTarget as Node | null)) setOpen(false);
@@ -153,9 +194,20 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
   return (
     <div ref={root} className={cn('eu-editor', expanded && 'is-open')} onBlur={onBlur}>
       <textarea
-        ref={field} aria-label={label} placeholder={placeholder} value={value} rows={expanded ? 3 : 1}
-        onChange={(e) => { onChange(e.target.value); setSel([e.target.selectionStart, e.target.selectionEnd]); }} onFocus={() => setOpen(true)} onKeyDown={onKeyDown}
-        onSelect={track} onKeyUp={track} onMouseUp={track}
+        ref={field}
+        aria-label={label}
+        placeholder={placeholder}
+        value={value}
+        rows={expanded ? 3 : 1}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setSel([e.target.selectionStart, e.target.selectionEnd]);
+        }}
+        onFocus={() => setOpen(true)}
+        onKeyDown={onKeyDown}
+        onSelect={track}
+        onKeyUp={track}
+        onMouseUp={track}
         className="eu-editor__field eu-type-body-small"
       />
       {expanded ? (
@@ -169,10 +221,14 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
                   const on = toggle && active(b.id as Mark);
                   return (
                     <IconButton
-                      key={b.id} icon={b.icon} label={t[b.id]} size="small"
+                      key={b.id}
+                      icon={b.icon}
+                      label={t[b.id]}
+                      size="small"
                       aria-pressed={toggle ? on : undefined}
                       className={cn('eu-editor__tool', on && 'is-active eu-mode-icon-weight-selected')}
-                      onMouseDown={(e) => e.preventDefault()} onClick={() => format(b.id)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => format(b.id)}
                     />
                   );
                 })}
@@ -180,8 +236,12 @@ export function Editor({ label, value, onChange, onSave, onCancel, placeholder, 
             ))}
           </div>
           <div className="eu-editor__actions">
-            <Button variant="tertiary" size="small" onClick={cancel}>{t.cancel}</Button>
-            <Button variant="primary" size="small" disabled={!canSave} onClick={save}>{t.save}</Button>
+            <Button variant="tertiary" size="small" onClick={cancel}>
+              {t.cancel}
+            </Button>
+            <Button variant="primary" size="small" disabled={!canSave} onClick={save}>
+              {t.save}
+            </Button>
           </div>
         </div>
       ) : null}

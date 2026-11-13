@@ -37,9 +37,22 @@
 }
 
 /* Landscape form modals: equal columns. Missing in the DS: a column grid layout component. */
-.form-columns > * { flex: 1 1 0; min-width: 0; }
-.entry-row > .entry-row__value { flex: 1 1 auto; min-width: 0; }
-.entry-row > .entry-row__type { flex: none; width: var(--eu-size-field-xs); }
+.form-columns > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.entry-row > .entry-row__value {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.entry-row > .entry-row__type {
+  flex: none;
+  width: var(--eu-size-field-xs);
+}
 
 /* Planner: Datum, Beginn, Ende and Dauer as four equal form fields, as in Teams. Missing in the DS: a column grid layout component (same as form-columns). */
-.sched-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--eu-spacing-s); }
+.sched-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--eu-spacing-s);
+}

@@ -65,7 +65,11 @@ function Highlight({ text, query }: { text: string; query: string }) {
   let from = 0;
   for (let at = lower.indexOf(needle); at !== -1; at = lower.indexOf(needle, from)) {
     if (at > from) parts.push(text.slice(from, at));
-    parts.push(<mark key={at} className="eu-gsearch__mark">{text.slice(at, at + q.length)}</mark>);
+    parts.push(
+      <mark key={at} className="eu-gsearch__mark">
+        {text.slice(at, at + q.length)}
+      </mark>,
+    );
     from = at + q.length;
   }
   parts.push(text.slice(from));
@@ -78,8 +82,19 @@ function Highlight({ text, query }: { text: string; query: string }) {
  * For a simple field with a short suggestion list use SearchField.
  */
 export function GlobalSearch({
-  label, value, onChange, categories, category, onCategoryChange, results, onSelect, heading,
-  placeholder, emptyText = 'No matches', footer, labels,
+  label,
+  value,
+  onChange,
+  categories,
+  category,
+  onCategoryChange,
+  results,
+  onSelect,
+  heading,
+  placeholder,
+  emptyText = 'No matches',
+  footer,
+  labels,
 }: GlobalSearchProps) {
   const id = React.useId();
   const input = React.useRef<HTMLInputElement>(null);
@@ -94,35 +109,77 @@ export function GlobalSearch({
     el?.scrollIntoView?.({ block: 'nearest' });
   }, [active]);
 
-  const close = () => { setOpen(false); input.current?.focus(); };
-  const choose = (hit: GlobalSearchHit) => { onSelect(hit); setOpen(false); };
+  const close = () => {
+    setOpen(false);
+    input.current?.focus();
+  };
+  const choose = (hit: GlobalSearchHit) => {
+    onSelect(hit);
+    setOpen(false);
+  };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      if (show) { e.preventDefault(); close(); } else if (value) onChange('');
+      if (show) {
+        e.preventDefault();
+        close();
+      } else if (value) onChange('');
       return;
     }
     if (!show) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(a + 1, results.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-    else if (e.key === 'Enter' && e.target === input.current && results[active]) { e.preventDefault(); choose(results[active]); }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive((a) => Math.min(a + 1, results.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((a) => Math.max(a - 1, 0));
+    } else if (e.key === 'Enter' && e.target === input.current && results[active]) {
+      e.preventDefault();
+      choose(results[active]);
+    }
   };
 
   const listId = `${id}-results`;
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- arrow keys and Escape for the results are handled for the whole search
     <div className={cn('eu-gsearch', show && 'is-open')} onKeyDown={onKeyDown}>
-      <label htmlFor={`${id}-input`} className="eu-sr">{label}</label>
+      <label htmlFor={`${id}-input`} className="eu-sr">
+        {label}
+      </label>
       <span className="eu-input eu-input--filled eu-gsearch__field">
         <Icon name="search" size="md" className="eu-input__icon" />
         <input
-          ref={input} id={`${id}-input`} type="search" role="combobox" autoComplete="off"
-          aria-expanded={show} aria-controls={listId} aria-autocomplete="list"
+          ref={input}
+          id={`${id}-input`}
+          type="search"
+          role="combobox"
+          autoComplete="off"
+          aria-expanded={show}
+          aria-controls={listId}
+          aria-autocomplete="list"
           aria-activedescendant={show && results[active] ? `${id}-hit-${active}` : undefined}
-          className="eu-input__el eu-type-body-small" placeholder={placeholder} value={value}
-          onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+          className="eu-input__el eu-type-body-small"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setOpen(true);
+          }}
           onFocus={() => setOpen(true)}
         />
-        {value ? <button type="button" className="eu-input__btn" aria-label={labels?.clear ?? 'Clear search'} onClick={() => { onChange(''); input.current?.focus(); }}><Icon name="close" size="md" /></button> : null}
+        {value ? (
+          <button
+            type="button"
+            className="eu-input__btn"
+            aria-label={labels?.clear ?? 'Clear search'}
+            onClick={() => {
+              onChange('');
+              input.current?.focus();
+            }}
+          >
+            <Icon name="close" size="md" />
+          </button>
+        ) : null}
       </span>
 
       {show ? (
@@ -133,9 +190,14 @@ export function GlobalSearch({
               <div role="group" aria-label={labels?.categories ?? 'Categories'} className="eu-gsearch__cats">
                 {categories.map((c) => (
                   <button
-                    key={c.id} type="button" aria-pressed={c.id === category}
+                    key={c.id}
+                    type="button"
+                    aria-pressed={c.id === category}
                     className={cn('eu-gsearch__cat eu-type-body-small', c.id === category && 'is-selected')}
-                    onClick={() => { onCategoryChange(c.id); input.current?.focus(); }}
+                    onClick={() => {
+                      onCategoryChange(c.id);
+                      input.current?.focus();
+                    }}
                   >
                     {c.icon ? <Icon name={c.icon} size="md" /> : null}
                     <span className="eu-gsearch__cat-label">{c.label}</span>
@@ -147,21 +209,38 @@ export function GlobalSearch({
             </div>
 
             <div className="eu-gsearch__main">
-              <p className="eu-type-ui-card-title eu-gsearch__heading" id={`${id}-heading`}>{heading}</p>
-              {results.length === 0 ? <p className="eu-type-body-small eu-gsearch__empty">{emptyText}</p> : (
+              <p className="eu-type-ui-card-title eu-gsearch__heading" id={`${id}-heading`}>
+                {heading}
+              </p>
+              {results.length === 0 ? (
+                <p className="eu-type-body-small eu-gsearch__empty">{emptyText}</p>
+              ) : (
                 <ul ref={list} id={listId} role="listbox" aria-labelledby={`${id}-heading`} className="eu-gsearch__hits">
                   {results.map((h, i) => (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- listbox option: keys are handled on the search input (aria-activedescendant)
                     <li
-                      key={h.id} id={`${id}-hit-${i}`} data-index={i} role="option" aria-selected={i === active}
+                      key={h.id}
+                      id={`${id}-hit-${i}`}
+                      data-index={i}
+                      role="option"
+                      aria-selected={i === active}
                       className={cn('eu-gsearch__hit', i === active && 'is-active')}
-                      onMouseDown={(e) => e.preventDefault()} onMouseEnter={() => setActive(i)} onClick={() => choose(h)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onMouseEnter={() => setActive(i)}
+                      onClick={() => choose(h)}
                     >
                       <span className="eu-gsearch__lead">
                         {h.person ? <Avatar name={h.person} size="tiny" /> : <Icon name={h.icon ?? 'page'} size="md" />}
                       </span>
                       <span className="eu-gsearch__text">
-                        <span className="eu-type-ui-card-title eu-gsearch__title"><Highlight text={h.title} query={value} /></span>
-                        {h.lines?.map((l, j) => <span key={j} className="eu-type-body-caption eu-gsearch__line"><Highlight text={l} query={value} /></span>)}
+                        <span className="eu-type-ui-card-title eu-gsearch__title">
+                          <Highlight text={h.title} query={value} />
+                        </span>
+                        {h.lines?.map((l, j) => (
+                          <span key={j} className="eu-type-body-caption eu-gsearch__line">
+                            <Highlight text={l} query={value} />
+                          </span>
+                        ))}
                       </span>
                     </li>
                   ))}
@@ -171,7 +250,9 @@ export function GlobalSearch({
           </div>
         </>
       ) : null}
-      <span className="eu-sr" aria-live="polite">{show ? (labels?.count ?? ((n: number) => `${n} results`))(results.length) : ''}</span>
+      <span className="eu-sr" aria-live="polite">
+        {show ? (labels?.count ?? ((n: number) => `${n} results`))(results.length) : ''}
+      </span>
     </div>
   );
 }

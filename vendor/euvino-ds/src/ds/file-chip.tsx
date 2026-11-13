@@ -15,7 +15,9 @@ export function FileChip({ name, onDownload, downloadLabel }: FileChipProps) {
   return (
     <span className="eu-filechip">
       <Icon name="attachment" size="sm" />
-      <span className="eu-type-body-caption eu-filechip__name" title={name}>{name}</span>
+      <span className="eu-type-body-caption eu-filechip__name" title={name}>
+        {name}
+      </span>
       <IconButton icon="download" size="tiny" label={downloadLabel ?? `Download ${name}`} onClick={onDownload} />
     </span>
   );
@@ -36,7 +38,11 @@ export interface FileChipListProps {
 export function FileChipList({ files, onDownload, downloadLabel, label = 'Attachments' }: FileChipListProps) {
   return (
     <ul className="eu-filechips" aria-label={label}>
-      {files.map((f) => <li key={f.name}><FileChip name={f.name} onDownload={() => onDownload(f.name)} downloadLabel={downloadLabel?.(f.name)} /></li>)}
+      {files.map((f) => (
+        <li key={f.name}>
+          <FileChip name={f.name} onDownload={() => onDownload(f.name)} downloadLabel={downloadLabel?.(f.name)} />
+        </li>
+      ))}
     </ul>
   );
 }

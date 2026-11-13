@@ -28,8 +28,17 @@ export interface PeopleListProps {
 
 function Name({ p }: { p: PersonItem }) {
   if (p.current || (!p.href && !p.onClick)) return <span>{p.name}</span>;
-  if (p.href) return <a href={p.href} className="eu-link eu-link--link" onClick={p.onClick}>{p.name}</a>;
-  return <button type="button" className="eu-link eu-link--link" onClick={p.onClick}>{p.name}</button>;
+  if (p.href)
+    return (
+      <a href={p.href} className="eu-link eu-link--link" onClick={p.onClick}>
+        {p.name}
+      </a>
+    );
+  return (
+    <button type="button" className="eu-link eu-link--link" onClick={p.onClick}>
+      {p.name}
+    </button>
+  );
 }
 
 /**
@@ -42,11 +51,22 @@ export function PeopleList({ people, max = 2, moreLabel = (n) => `${n} more`, cl
   const [open, setOpen] = React.useState(false);
   const timer = React.useRef<number | undefined>(undefined);
   React.useEffect(() => () => window.clearTimeout(timer.current), []);
-  const show = () => { window.clearTimeout(timer.current); setOpen(true); };
-  const hide = () => { window.clearTimeout(timer.current); timer.current = window.setTimeout(() => setOpen(false), 150); };
+  const show = () => {
+    window.clearTimeout(timer.current);
+    setOpen(true);
+  };
+  const hide = () => {
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setOpen(false), 150);
+  };
   return (
     <span className={cn('eu-people', className)}>
-      {shown.map((p, i) => <React.Fragment key={`${p.name}-${i}`}>{i > 0 ? ', ' : null}<Name p={p} /></React.Fragment>)}
+      {shown.map((p, i) => (
+        <React.Fragment key={`${p.name}-${i}`}>
+          {i > 0 ? ', ' : null}
+          <Name p={p} />
+        </React.Fragment>
+      ))}
       {rest.length ? (
         <>
           {' '}
@@ -55,12 +75,16 @@ export function PeopleList({ people, max = 2, moreLabel = (n) => `${n} more`, cl
               open={open}
               onOpenChange={setOpen}
               title={moreLabel(rest.length)}
-              trigger={<button type="button" className="eu-link eu-link--link" aria-label={moreLabel(rest.length)}>{`+${rest.length}`}</button>}
+              trigger={
+                <button type="button" className="eu-link eu-link--link" aria-label={moreLabel(rest.length)}>{`+${rest.length}`}</button>
+              }
             >
               <ul className="eu-people__list">
                 {rest.map((p, i) => (
                   <li key={`${p.name}-${i}`} className="eu-people__item">
-                    <span className="eu-type-body-small"><Name p={p} /></span>
+                    <span className="eu-type-body-small">
+                      <Name p={p} />
+                    </span>
                     {p.detail && p.detail !== p.name ? <span className="eu-type-body-caption eu-people__detail">{p.detail}</span> : null}
                   </li>
                 ))}

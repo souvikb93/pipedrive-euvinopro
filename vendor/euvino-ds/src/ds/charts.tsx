@@ -15,7 +15,16 @@ export interface ChartDatum {
 }
 
 function Legend({ data }: { data: ChartDatum[] }) {
-  return <ul className="eu-legend eu-type-body-caption">{data.map((d, i) => <li key={d.label}><span className="eu-legend__sw" style={{ background: series(i) }} />{d.label}</li>)}</ul>;
+  return (
+    <ul className="eu-legend eu-type-body-caption">
+      {data.map((d, i) => (
+        <li key={d.label}>
+          <span className="eu-legend__sw" style={{ background: series(i) }} />
+          {d.label}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export interface BarChartProps {
@@ -30,7 +39,16 @@ export interface BarChartProps {
 /** Compare values across categories. Colours come from chart/1 to chart/6. */
 export function BarChart({ data, label, legend }: BarChartProps) {
   const max = Math.max(1, ...data.map((d) => d.value));
-  return <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}><div className="eu-bars">{data.map((d, i) => <span key={d.label} className="eu-bars__bar" style={{ height: `${(d.value / max) * 100}%`, background: series(i) }} />)}</div>{legend ? <Legend data={data} /> : null}</figure>;
+  return (
+    <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}>
+      <div className="eu-bars">
+        {data.map((d, i) => (
+          <span key={d.label} className="eu-bars__bar" style={{ height: `${(d.value / max) * 100}%`, background: series(i) }} />
+        ))}
+      </div>
+      {legend ? <Legend data={data} /> : null}
+    </figure>
+  );
 }
 
 export interface LineChartProps {
@@ -44,7 +62,13 @@ export interface LineChartProps {
 export function LineChart({ data, label }: LineChartProps) {
   const max = Math.max(1, ...data.map((d) => d.value));
   const pts = data.map((d, i) => `${(i / Math.max(1, data.length - 1)) * 100},${40 - (d.value / max) * 38}`).join(' ');
-  return <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}><svg viewBox="0 0 100 40" preserveAspectRatio="none" className="eu-line"><polyline points={pts} fill="none" stroke="var(--eu-chart-1)" strokeWidth="1" vectorEffect="non-scaling-stroke" /></svg></figure>;
+  return (
+    <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}>
+      <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="eu-line">
+        <polyline points={pts} fill="none" stroke="var(--eu-chart-1)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </figure>
+  );
 }
 
 export interface DonutChartProps {
@@ -62,8 +86,21 @@ export interface DonutChartProps {
 export function DonutChart({ data, label, center, legend = true }: DonutChartProps) {
   const total = data.reduce((s, d) => s + d.value, 0) || 1;
   let at = 0;
-  const stops = data.map((d, i) => { const a = at; at += (d.value / total) * 100; return `${series(i)} ${a}% ${at}%`; }).join(', ');
-  return <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}><span className="eu-donut" style={{ background: `conic-gradient(${stops})` }}><span className="eu-donut__hole eu-type-ui-label">{center}</span></span>{legend ? <Legend data={data} /> : null}</figure>;
+  const stops = data
+    .map((d, i) => {
+      const a = at;
+      at += (d.value / total) * 100;
+      return `${series(i)} ${a}% ${at}%`;
+    })
+    .join(', ');
+  return (
+    <figure className="eu-chart" role="img" aria-label={`${label}: ${data.map((d) => `${d.label} ${d.value}`).join(', ')}`}>
+      <span className="eu-donut" style={{ background: `conic-gradient(${stops})` }}>
+        <span className="eu-donut__hole eu-type-ui-label">{center}</span>
+      </span>
+      {legend ? <Legend data={data} /> : null}
+    </figure>
+  );
 }
 
 export interface GaugeProps {
@@ -76,7 +113,24 @@ export interface GaugeProps {
 /** One score against a full range, drawn as a half circle. */
 export function Gauge({ value, label }: GaugeProps) {
   const v = Math.max(0, Math.min(100, value));
-  return <figure className="eu-chart eu-gauge" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}><svg viewBox="0 0 100 54"><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-background-static-muted)" strokeWidth="9" /><path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-chart-1)" strokeWidth="9" pathLength={100} strokeDasharray={`${v} 100`} /></svg><figcaption className="eu-type-body-small">{label}: {v}</figcaption></figure>;
+  return (
+    <figure className="eu-chart eu-gauge" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={v}>
+      <svg viewBox="0 0 100 54">
+        <path d="M5 50a45 45 0 0 1 90 0" fill="none" stroke="var(--eu-background-static-muted)" strokeWidth="9" />
+        <path
+          d="M5 50a45 45 0 0 1 90 0"
+          fill="none"
+          stroke="var(--eu-chart-1)"
+          strokeWidth="9"
+          pathLength={100}
+          strokeDasharray={`${v} 100`}
+        />
+      </svg>
+      <figcaption className="eu-type-body-small">
+        {label}: {v}
+      </figcaption>
+    </figure>
+  );
 }
 
 export interface ProgressListProps {
@@ -86,7 +140,13 @@ export interface ProgressListProps {
 
 /** Labelled progress bars in a list. */
 export function ProgressList({ items }: ProgressListProps) {
-  return <div className="eu-progresslist">{items.map((i) => <ProgressBar key={i.label} value={i.value} label={i.label} showLabel showValue />)}</div>;
+  return (
+    <div className="eu-progresslist">
+      {items.map((i) => (
+        <ProgressBar key={i.label} value={i.value} label={i.label} showLabel showValue />
+      ))}
+    </div>
+  );
 }
 
 export interface BreakdownDatum extends ChartDatum {
@@ -106,12 +166,24 @@ export function BreakdownBar({ label, items }: BreakdownBarProps) {
   const total = items.reduce((n, i) => n + i.value, 0) || 1;
   return (
     <figure className="eu-chart eu-breakdown" aria-label={label}>
-      <span className="eu-breakdown__bar" aria-hidden="true">{items.map((d, i) => <span key={d.label} className="eu-breakdown__seg" style={{ flexGrow: d.value, background: series(i) }} />)}</span>
+      <span className="eu-breakdown__bar" aria-hidden="true">
+        {items.map((d, i) => (
+          <span key={d.label} className="eu-breakdown__seg" style={{ flexGrow: d.value, background: series(i) }} />
+        ))}
+      </span>
       <ul className="eu-breakdown__list eu-type-body-small">
         {items.map((d, i) => (
           <li key={d.label} className="eu-breakdown__row">
             <span className="eu-legend__sw" style={{ background: series(i) }} aria-hidden="true" />
-            <span className="eu-breakdown__name">{d.href ? <LinkButton variant="link" href={d.href}>{d.label}</LinkButton> : d.label}</span>
+            <span className="eu-breakdown__name">
+              {d.href ? (
+                <LinkButton variant="link" href={d.href}>
+                  {d.label}
+                </LinkButton>
+              ) : (
+                d.label
+              )}
+            </span>
             <span className="eu-breakdown__num">{d.value}</span>
             <span className="eu-breakdown__num">{Math.round((d.value / total) * 100)}%</span>
           </li>
@@ -134,7 +206,18 @@ export interface StatProps {
 
 /** One KPI: label, value and change. */
 export function Stat({ label, value, delta, trend = 'none' }: StatProps) {
-  return <div className="eu-stat"><span className="eu-type-body-small eu-check__desc">{label}</span><span className="eu-type-mobile-h4 eu-stat__value">{value}</span>{delta && trend !== 'none' ? <span className={cn('eu-type-body-caption-strong eu-stat__delta', `is-${trend}`)}><Icon name={trend === 'up' ? 'nav-up' : 'nav-down'} size="sm" />{delta}</span> : null}</div>;
+  return (
+    <div className="eu-stat">
+      <span className="eu-type-body-small eu-check__desc">{label}</span>
+      <span className="eu-type-mobile-h4 eu-stat__value">{value}</span>
+      {delta && trend !== 'none' ? (
+        <span className={cn('eu-type-body-caption-strong eu-stat__delta', `is-${trend}`)}>
+          <Icon name={trend === 'up' ? 'nav-up' : 'nav-down'} size="sm" />
+          {delta}
+        </span>
+      ) : null}
+    </div>
+  );
 }
 
 export interface DataCardProps {
@@ -152,5 +235,10 @@ export interface DataCardProps {
 
 /** Card for any chart, with an optional row of Stat. */
 export function DataCard({ title, description, headerAction, stats, children }: DataCardProps) {
-  return <Card title={title} description={description} headerAction={headerAction}>{stats ? <div className="eu-datacard__stats">{stats}</div> : null}{children}</Card>;
+  return (
+    <Card title={title} description={description} headerAction={headerAction}>
+      {stats ? <div className="eu-datacard__stats">{stats}</div> : null}
+      {children}
+    </Card>
+  );
 }

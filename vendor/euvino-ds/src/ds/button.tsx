@@ -10,7 +10,7 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
    * `danger` = the final irreversible action inside a confirmation. `danger-secondary` = the entry point that opens that confirmation.
    */
   variant?: 'primary' | 'secondary' | 'tertiary' | 'primary-2' | 'danger' | 'danger-secondary' | 'danger-tertiary';
-  /** Height: `tiny` 24, `small` 32, `medium` 40 (default), `large` 48, `giant` 56. */
+  /** Height: `tiny` 24, `small` 28 (Figma Tiny), `medium` 38 (default, Figma Small), `large` 44 (Figma Medium), `giant` 56. */
   size?: 'tiny' | 'small' | 'medium' | 'large' | 'giant';
   /** Which icon to show. Buttons are text-only by default; add an icon only when it adds meaning. Pick the side with `iconPosition`. */
   icon?: IconName;
@@ -24,10 +24,24 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 
 /** Runs an action. Start the label with a verb and name the result: "Create request", not "OK". Default type is `button`, so set `type="submit"` in forms. */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = 'primary', size = 'medium', icon, iconPosition = 'left', loading, fullWidth, className, children, disabled, type = 'button', onClick, ...rest },
+  {
+    variant = 'primary',
+    size = 'medium',
+    icon,
+    iconPosition = 'left',
+    loading,
+    fullWidth,
+    className,
+    children,
+    disabled,
+    type = 'button',
+    onClick,
+    ...rest
+  },
   ref,
 ) {
-  const iconSize = size === 'tiny' || size === 'small' ? 'sm' : 'md';
+  // Figma Button: Tiny and Small 16, Medium 24 (code small, medium, large).
+  const iconSize = size === 'large' || size === 'giant' ? 'lg' : 'sm';
   return (
     <button
       {...rest}
@@ -36,7 +50,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
       disabled={disabled}
       aria-busy={loading || undefined}
       onClick={loading ? (e) => e.preventDefault() : onClick}
-      className={cn('eu-btn', `eu-btn--${variant}`, `eu-btn--${size}`, fullWidth && 'eu-btn--full', loading && 'eu-btn--loading', className)}
+      className={cn(
+        'eu-btn',
+        `eu-btn--${variant}`,
+        `eu-btn--${size}`,
+        fullWidth && 'eu-btn--full',
+        loading && 'eu-btn--loading',
+        className,
+      )}
     >
       {loading ? <Loader size="tiny" label="" /> : icon && iconPosition === 'left' ? <Icon name={icon} size={iconSize} /> : null}
       {children}
@@ -60,10 +81,18 @@ export interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
 
 /** A Button that shows only an icon (Content = Only Icons in Figma). The label is required because nothing else names it. */
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, label, variant = 'tertiary', size = 'medium', indicator, className, type = 'button', ...rest }, ref,
+  { icon, label, variant = 'tertiary', size = 'medium', indicator, className, type = 'button', ...rest },
+  ref,
 ) {
   return (
-    <button {...rest} ref={ref} type={type} aria-label={label} title={label} className={cn('eu-btn', 'eu-btn--icon', `eu-btn--${variant}`, `eu-btn--${size}`, className)}>
+    <button
+      {...rest}
+      ref={ref}
+      type={type}
+      aria-label={label}
+      title={label}
+      className={cn('eu-btn', 'eu-btn--icon', `eu-btn--${variant}`, `eu-btn--${size}`, className)}
+    >
       <Icon name={icon} size={size === 'tiny' || size === 'small' ? 'sm' : size === 'giant' ? 'lg' : 'md'} />
       {indicator ? <span className="eu-btn__dot" aria-hidden="true" /> : null}
     </button>
@@ -76,8 +105,15 @@ export interface LinkButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorEl
 }
 
 /** A text link that navigates. Use Button when it runs an action. */
-export function LinkButton({ variant = 'primary', className, ...rest }: LinkButtonProps) {
-  return <a {...rest} className={cn('eu-link', `eu-link--${variant}`, variant !== 'link' && variant !== 'plain' && 'eu-type-ui-button', className)} />;
+export function LinkButton({ variant = 'primary', className, children, ...rest }: LinkButtonProps) {
+  return (
+    <a
+      {...rest}
+      className={cn('eu-link', `eu-link--${variant}`, variant !== 'link' && variant !== 'plain' && 'eu-type-ui-button', className)}
+    >
+      {children}
+    </a>
+  );
 }
 
 export interface SegmentOption {
@@ -98,7 +134,7 @@ export interface SegmentedControlProps {
   onChange: (value: string) => void;
   /** Accessible name of the group, such as "View". */
   label: string;
-  /** `medium` 40 high (default). `small` 32 high with caption text, for toolbars inside cards. */
+  /** `medium` 46 high (default). `small` 34 high with caption text, for toolbars inside cards. */
   size?: 'medium' | 'small';
   /** Extra class. */
   className?: string;
@@ -109,9 +145,22 @@ export function SegmentedControl({ options, value, onChange, label, size = 'medi
   return (
     <div role="radiogroup" aria-label={label} className={cn('eu-seg', size === 'small' && 'eu-seg--small', className)}>
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={o.value === value} className={cn('eu-seg__item', size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small', o.value === value && 'is-selected eu-mode-icon-weight-selected')} onClick={() => onChange(o.value)}>
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={o.value === value}
+          className={cn(
+            'eu-seg__item',
+            size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small',
+            o.value === value && 'is-selected eu-mode-icon-weight-selected',
+          )}
+          onClick={() => onChange(o.value)}
+        >
           {o.icon ? <Icon name={o.icon} size="sm" /> : null}
-          <span className="eu-seg__label" data-label={o.label}>{o.label}</span>
+          <span className="eu-seg__label" data-label={o.label}>
+            {o.label}
+          </span>
         </button>
       ))}
     </div>
@@ -133,11 +182,21 @@ export interface ChipProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonEle
 export function Chip({ selected, icon, onRemove, removeLabel = 'Remove', className, children, disabled, ...rest }: ChipProps) {
   return (
     <span className={cn('eu-chip', selected && 'is-selected', disabled && 'is-disabled', className)}>
-      <button {...rest} type="button" disabled={disabled} aria-pressed={selected === undefined ? undefined : selected} className="eu-chip__main eu-type-body-small">
+      <button
+        {...rest}
+        type="button"
+        disabled={disabled}
+        aria-pressed={selected === undefined ? undefined : selected}
+        className="eu-chip__main eu-type-body-small"
+      >
         {icon ? <Icon name={icon} size="sm" /> : null}
         {children}
       </button>
-      {onRemove ? <button type="button" className="eu-chip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}><Icon name="close" size="xs" /></button> : null}
+      {onRemove ? (
+        <button type="button" className="eu-chip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}>
+          <Icon name="close" size="xs" />
+        </button>
+      ) : null}
     </span>
   );
 }
@@ -165,17 +224,45 @@ export interface PersonChipProps {
  * Not a filter: use Chip for filters and tags. Grey fill, no stroke; the avatar sits inset on the left.
  */
 export function PersonChip({ name, photo, suffix, onRemove, removeLabel = 'Remove', onClick, size = 'medium', disabled }: PersonChipProps) {
-  const initials = name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+  const initials = name
+    .split(/\s+/)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
   const body = (
     <>
-      <span className="eu-pchip__avatar" aria-hidden="true">{photo ? <img src={photo} alt="" /> : initials}</span>
-      <span className="eu-pchip__name">{name}{suffix ? ` ${suffix}` : ''}</span>
+      <span className="eu-pchip__avatar" aria-hidden="true">
+        {photo ? <img src={photo} alt="" /> : initials}
+      </span>
+      <span className="eu-pchip__name">
+        {name}
+        {suffix ? ` ${suffix}` : ''}
+      </span>
     </>
   );
   return (
-    <span className={cn('eu-pchip', `eu-pchip--${size}`, size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small', onClick && 'is-clickable', disabled && 'is-disabled')}>
-      {onClick ? <button type="button" className="eu-pchip__main" onClick={onClick} disabled={disabled}>{body}</button> : <span className="eu-pchip__main">{body}</span>}
-      {onRemove ? <button type="button" className="eu-pchip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}><Icon name="close" size="xs" /></button> : null}
+    <span
+      className={cn(
+        'eu-pchip',
+        `eu-pchip--${size}`,
+        size === 'small' ? 'eu-type-body-caption' : 'eu-type-body-small',
+        onClick && 'is-clickable',
+        disabled && 'is-disabled',
+      )}
+    >
+      {onClick ? (
+        <button type="button" className="eu-pchip__main" onClick={onClick} disabled={disabled}>
+          {body}
+        </button>
+      ) : (
+        <span className="eu-pchip__main">{body}</span>
+      )}
+      {onRemove ? (
+        <button type="button" className="eu-pchip__remove" aria-label={removeLabel} disabled={disabled} onClick={onRemove}>
+          <Icon name="close" size="xs" />
+        </button>
+      ) : null}
     </span>
   );
 }

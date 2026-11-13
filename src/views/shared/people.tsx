@@ -7,6 +7,7 @@ import { hrefFor } from '../../route';
 
 // One rule for people everywhere (timeline, Fokus card, organisation table):
 // other people's names are blue links to their contact record; team members without a record run `PersonAction`;
+// anyone else (no record, not on the team) is plain text, so there is never a link that leads nowhere;
 // the signed-in user's own name is plain text; "+N" lists exactly the hidden people.
 
 /** The signed-in user. */
@@ -19,18 +20,23 @@ export const morePeople = (n: number) => (n === 1 ? '1 weitere Person' : `${n} w
 export const PersonAction = React.createContext<(name: string) => void>(() => {});
 
 const CONTACT_ID = new Map(contacts.map((c) => [c.name, c.id]));
+const TEAM_NAMES = new Set(TEAM.map((t) => t.name));
 
 /** Maps a person to a PeopleList item. `label` replaces the shown name, such as "@Anna Berg" for a mention. */
 export function usePersonItem() {
   const onPerson = React.useContext(PersonAction);
-  return React.useCallback((p: PersonRef, label?: string): PersonItem => {
-    const name = label ?? p.name;
-    if (p.name === CURRENT_USER) return { name, current: true };
-    const id = CONTACT_ID.get(p.name);
-    if (id) return { name, href: hrefFor.contact(id), detail: p.email };
-    if (p.name.includes('@')) return { name, href: `mailto:${p.email ?? p.name}` };
-    return { name, onClick: () => onPerson(p.name), detail: p.email };
-  }, [onPerson]);
+  return React.useCallback(
+    (p: PersonRef, label?: string): PersonItem => {
+      const name = label ?? p.name;
+      if (p.name === CURRENT_USER) return { name, current: true };
+      const id = CONTACT_ID.get(p.name);
+      if (id) return { name, href: hrefFor.contact(id), detail: p.email };
+      if (p.name.includes('@')) return { name, href: `mailto:${p.email ?? p.name}` };
+      if (TEAM_NAMES.has(p.name)) return { name, onClick: () => onPerson(p.name), detail: p.email };
+      return { name, detail: p.email };
+    },
+    [onPerson],
+  );
 }
 
 /** Names with "+N" for the rest. */

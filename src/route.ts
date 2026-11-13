@@ -27,6 +27,8 @@ export function useRoute(): [Route, (href: string) => void] {
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
-  const go = React.useCallback((href: string) => { window.location.hash = href.replace(/^#/, ''); }, []);
+  const go = React.useCallback((href: string) => {
+    window.location.hash = href.replace(/^#/, '');
+  }, []);
   return [route, go];
 }

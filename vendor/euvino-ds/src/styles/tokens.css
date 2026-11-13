@@ -15,16 +15,7 @@
   --eu-font-heading: "Roboto Condensed", Roboto, system-ui, sans-serif;
 
   /* Primitives: raw values. Never use directly in product code. */
-  --eu-prim-white: var(--eu-prim-white);
-  --eu-prim-blue-gray-20: var(--eu-prim-blue-gray-20);
-  --eu-prim-blue-gray-30: var(--eu-prim-blue-gray-30);
-  --eu-prim-blue-gray-40: var(--eu-prim-blue-gray-40);
-  --eu-prim-blue-gray-50: var(--eu-prim-blue-gray-50);
-  --eu-prim-blue-gray-90: var(--eu-prim-blue-gray-90);
-  --eu-prim-purple-100: var(--eu-prim-purple-100);
-  --eu-prim-purple-dark: var(--eu-prim-purple-dark);
   --eu-prim-brand-teal: var(--eu-prim-purple-80);
-  --eu-prim-blue-dark: var(--eu-prim-blue-dark);
   --eu-prim-blue-dark-hover: var(--eu-prim-blue-dark);
   --eu-prim-gray-100: var(--eu-prim-blue-gray-10);
   --eu-prim-gray-400: var(--eu-prim-blue-gray-50);
@@ -38,7 +29,6 @@
   --eu-prim-status-amber-50: var(--eu-prim-yellow-light);
   --eu-prim-status-red-600: var(--eu-prim-red-dark);
   --eu-prim-status-red-50: var(--eu-prim-red-light);
-  --eu-prim-purple-50: var(--eu-prim-purple-10);
   --eu-prim-gray-50: var(--eu-prim-blue-gray-surface);
   --eu-prim-purple-200: var(--eu-prim-purple-40);
   --eu-prim-purple-300: var(--eu-prim-purple-60);

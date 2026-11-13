@@ -38,8 +38,22 @@ const INDUSTRY = ['Erzeuger', 'Importeur', 'Distributor', 'Einzelhandel', 'Groß
 const ERP = ['SAP', 'Microsoft Dynamics', 'DATEV', 'Sage', 'Kein ERP'];
 
 const empty = (owner: string): NewOrganisation => ({
-  name: '', owner, label: null, visibleTo: VISIBILITY[0], address: '', postalCode: '', website: '', email: '', phone: '',
-  managingDirector: '', industry: '', producerType: '', customerCategory: '', cooperation: '', association: '', erp: '',
+  name: '',
+  owner,
+  label: null,
+  visibleTo: VISIBILITY[0],
+  address: '',
+  postalCode: '',
+  website: '',
+  email: '',
+  phone: '',
+  managingDirector: '',
+  industry: '',
+  producerType: '',
+  customerCategory: '',
+  cooperation: '',
+  association: '',
+  erp: '',
 });
 
 /** One part in aligned rows of two fields, same rhythm as the Kontakt modal. */
@@ -47,7 +61,10 @@ export function AddOrganisationModal({ open, onClose, onAdd, onImport, labelOpti
   const [f, setF] = React.useState<NewOrganisation>(empty(owners[0] ?? ''));
   const [error, setError] = React.useState<string | undefined>(undefined);
   const nameRef = React.useRef<HTMLInputElement>(null);
-  const set = <K extends keyof NewOrganisation>(k: K) => (v: NewOrganisation[K]) => setF((p) => ({ ...p, [k]: v }));
+  const set =
+    <K extends keyof NewOrganisation>(k: K) =>
+    (v: NewOrganisation[K]) =>
+      setF((p) => ({ ...p, [k]: v }));
 
   React.useEffect(() => {
     if (!open) return;
@@ -72,34 +89,89 @@ export function AddOrganisationModal({ open, onClose, onAdd, onImport, labelOpti
       size="xlarge"
       title="Unternehmen hinzufügen"
       closeLabel="Schließen"
-      footerStart={<Button variant="tertiary" icon="upload" onClick={onImport}>Import</Button>}
+      footerStart={
+        <Button variant="tertiary" icon="upload" onClick={onImport}>
+          Import
+        </Button>
+      }
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>Abbrechen</Button>
-          <Button variant="primary" type="submit" form="add-organisation">Speichern</Button>
+          <Button variant="secondary" onClick={onClose}>
+            Abbrechen
+          </Button>
+          <Button variant="primary" type="submit" form="add-organisation">
+            Speichern
+          </Button>
         </>
       }
     >
       <Stack as="form" id="add-organisation" noValidate gap="4" onSubmit={submit}>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
-          <Input ref={nameRef} label="Name" required placeholder="z. B. Weingut Muster GmbH" value={f.name} error={error} onChange={(e) => { set('name')(e.target.value); if (error) setError(undefined); }} />
+          <Input
+            ref={nameRef}
+            label="Name"
+            required
+            placeholder="z. B. Weingut Muster GmbH"
+            value={f.name}
+            error={error}
+            onChange={(e) => {
+              set('name')(e.target.value);
+              if (error) setError(undefined);
+            }}
+          />
           <Dropdown label="Besitzer" value={f.owner} onChange={set('owner')} options={ownerOpts(owners)} />
         </Stack>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
           <Input label="Adresse" placeholder="Straße, Hausnummer, Ort" value={f.address} onChange={(e) => set('address')(e.target.value)} />
-          <Dropdown label="Label" placeholder="Label hinzufügen" value={f.label ?? undefined} onChange={(v) => set('label')(v)} options={labelOptions.map((o) => ({ value: o.id, label: o.label }))} />
+          <Dropdown
+            label="Label"
+            placeholder="Label hinzufügen"
+            value={f.label ?? undefined}
+            onChange={(v) => set('label')(v)}
+            options={labelOptions.map((o) => ({ value: o.id, label: o.label }))}
+          />
         </Stack>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
-          <Input label="Website" type="url" placeholder="https://www.firma.de" value={f.website} onChange={(e) => set('website')(e.target.value)} />
+          <Input
+            label="Website"
+            type="url"
+            placeholder="https://www.firma.de"
+            value={f.website}
+            onChange={(e) => set('website')(e.target.value)}
+          />
           <Input label="E-Mail" type="email" placeholder="info@firma.de" value={f.email} onChange={(e) => set('email')(e.target.value)} />
         </Stack>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
-          <Input label="Telefonnummer" type="tel" placeholder="z. B. +49 30 1234567" value={f.phone} onChange={(e) => set('phone')(e.target.value)} />
-          <Input label="Geschäftsführer" iconLeft="user" placeholder="Vor- und Nachname" value={f.managingDirector} onChange={(e) => set('managingDirector')(e.target.value)} />
+          <Input
+            label="Telefonnummer"
+            type="tel"
+            placeholder="z. B. +49 30 1234567"
+            value={f.phone}
+            onChange={(e) => set('phone')(e.target.value)}
+          />
+          <Input
+            label="Geschäftsführer"
+            iconLeft="user"
+            placeholder="Vor- und Nachname"
+            value={f.managingDirector}
+            onChange={(e) => set('managingDirector')(e.target.value)}
+          />
         </Stack>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
-          <Dropdown label="Branchenzweig" placeholder="Branchenzweig auswählen" value={f.industry || undefined} onChange={set('industry')} options={opts(INDUSTRY)} />
-          <Input label="PLZ" inputMode="numeric" placeholder="z. B. 10115" value={f.postalCode} onChange={(e) => set('postalCode')(e.target.value)} />
+          <Dropdown
+            label="Branchenzweig"
+            placeholder="Branchenzweig auswählen"
+            value={f.industry || undefined}
+            onChange={set('industry')}
+            options={opts(INDUSTRY)}
+          />
+          <Input
+            label="PLZ"
+            inputMode="numeric"
+            placeholder="z. B. 10115"
+            value={f.postalCode}
+            onChange={(e) => set('postalCode')(e.target.value)}
+          />
         </Stack>
         <Stack direction="horizontal" gap="8" align="start" className="form-columns">
           <Dropdown label="ERP" placeholder="ERP-System auswählen" value={f.erp || undefined} onChange={set('erp')} options={opts(ERP)} />

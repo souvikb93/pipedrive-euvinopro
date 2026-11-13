@@ -11,8 +11,15 @@ const LABELS: Record<ContactLabel, { text: string; status: Status }> = {
   'hot-lead': { text: 'Hot Lead', status: 'error' },
   lead: { text: 'Lead', status: 'info' },
 };
-export const baseLabelOptions = (): LabelOption[] => (Object.keys(LABELS) as ContactLabel[]).map((id) => ({ id, label: LABELS[id].text, status: LABELS[id].status }));
-export const LABEL_TEXTS = { search: 'Label suchen', add: 'Label hinzufügen', addNamed: (n: string) => `„${n}“ als Label hinzufügen`, empty: 'Kein Label gefunden', none: 'Kein Label' };
+export const baseLabelOptions = (): LabelOption[] =>
+  (Object.keys(LABELS) as ContactLabel[]).map((id) => ({ id, label: LABELS[id].text, status: LABELS[id].status }));
+export const LABEL_TEXTS = {
+  search: 'Label suchen',
+  add: 'Label hinzufügen',
+  addNamed: (n: string) => `„${n}“ als Label hinzufügen`,
+  empty: 'Kein Label gefunden',
+  none: 'Kein Label',
+};
 
 /** Label column, label filter and sort menu behave the same in every view; each view keeps its own state. */
 export function useLabels<T extends { id: string; label: string }>(rows: T[]) {

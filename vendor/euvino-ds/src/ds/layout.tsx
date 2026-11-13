@@ -4,8 +4,22 @@ import { cn } from './cn';
 type SpaceToken = '0' | '0-5' | '1' | '1-5' | '2' | '2-5' | '3' | '4' | '5' | '6' | '8' | '10' | '12' | '16' | '20' | '24';
 /** Steps of the old numeric scale, mapped to the current `spacing/*` variables in Figma. */
 const SPACE: Record<SpaceToken, string> = {
-  '0': 'none', '0-5': '4xs', '1': '3xs', '1-5': '2xs', '2': '2xs', '2-5': 'xs', '3': 'xs', '4': 's',
-  '5': 'm', '6': 'm', '8': 'l', '10': 'xl', '12': '2xl', '16': '4xl', '20': '5xl', '24': '6xl',
+  '0': 'none',
+  '0-5': '4xs',
+  '1': '3xs',
+  '1-5': '2xs',
+  '2': '2xs',
+  '2-5': 'xs',
+  '3': 'xs',
+  '4': 's',
+  '5': 'm',
+  '6': 'm',
+  '8': 'l',
+  '10': 'xl',
+  '12': '2xl',
+  '16': '4xl',
+  '20': '5xl',
+  '24': '6xl',
 };
 const space = (t: SpaceToken) => `var(--eu-spacing-${SPACE[t]})`;
 
@@ -29,7 +43,18 @@ export interface StackProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 /** Lays out a row or column with a space token between children. Use it instead of hand-written flex and margins. It is the code form of auto layout in Figma. */
-export function Stack({ direction = 'vertical', gap = '4', padding, align, justify, wrap, as: As = 'div', className, style, ...rest }: StackProps) {
+export function Stack({
+  direction = 'vertical',
+  gap = '4',
+  padding,
+  align,
+  justify,
+  wrap,
+  as: As = 'div',
+  className,
+  style,
+  ...rest
+}: StackProps) {
   return (
     <As
       {...rest}
@@ -38,7 +63,8 @@ export function Stack({ direction = 'vertical', gap = '4', padding, align, justi
         flexDirection: direction === 'horizontal' ? 'row' : 'column',
         gap: gap === '0' ? 0 : space(gap),
         padding: padding ? (padding === '0' ? 0 : space(padding)) : undefined,
-        alignItems: align && ({ start: 'flex-start', center: 'center', end: 'flex-end', stretch: 'stretch', baseline: 'baseline' } as const)[align],
+        alignItems:
+          align && ({ start: 'flex-start', center: 'center', end: 'flex-end', stretch: 'stretch', baseline: 'baseline' } as const)[align],
         justifyContent: justify && ({ start: 'flex-start', center: 'center', end: 'flex-end', between: 'space-between' } as const)[justify],
         flexWrap: wrap ? 'wrap' : undefined,
         ...style,
@@ -49,23 +75,73 @@ export function Stack({ direction = 'vertical', gap = '4', padding, align, justi
 
 /** Every text style in the Figma library. */
 export type TextStyle =
-  | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'body-large' | 'body' | 'body-small' | 'caption' | 'caption-strong' | 'micro'
-  | 'label' | 'card-title' | 'button' | 'caption-medium';
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'body-large'
+  | 'body'
+  | 'body-small'
+  | 'caption'
+  | 'caption-strong'
+  | 'micro'
+  | 'label'
+  | 'card-title'
+  | 'button'
+  | 'caption-medium';
 /** Text colour tokens, from `text/*`. */
-export type TextTone = 'primary' | 'body' | 'strong-body' | 'muted' | 'disabled' | 'inverse' | 'link' | 'success' | 'info' | 'warning' | 'error';
+export type TextTone =
+  'primary' | 'body' | 'strong-body' | 'muted' | 'disabled' | 'inverse' | 'link' | 'success' | 'info' | 'warning' | 'error';
 /** Each tone's current `foreground/*` or `status/text/*` variable in Figma. */
 const TONE: Record<TextTone, string> = {
-  primary: 'foreground-static-base', body: 'foreground-static-body', 'strong-body': 'foreground-static-body', muted: 'foreground-static-neutral',
-  disabled: 'foreground-disabled', inverse: 'foreground-static-invert', link: 'foreground-interactive-default',
-  success: 'status-text-success', info: 'status-text-info', warning: 'status-text-warning', error: 'status-text-error',
+  primary: 'foreground-static-base',
+  body: 'foreground-static-body',
+  'strong-body': 'foreground-static-body',
+  muted: 'foreground-static-neutral',
+  disabled: 'foreground-disabled',
+  inverse: 'foreground-static-invert',
+  link: 'foreground-interactive-default',
+  success: 'status-text-success',
+  info: 'status-text-info',
+  warning: 'status-text-warning',
+  error: 'status-text-error',
 };
 
 const TYPE_CLASS: Record<TextStyle, string> = {
-  h1: 'desktop-h1', h2: 'desktop-h2', h3: 'desktop-h3', h4: 'desktop-h4', h5: 'desktop-h5', h6: 'desktop-h6',
-  'body-large': 'body-large', body: 'body-base', 'body-small': 'body-small', caption: 'body-caption', 'caption-strong': 'body-caption-strong', micro: 'body-micro',
-  label: 'ui-label', 'card-title': 'ui-card-title', button: 'ui-button', 'caption-medium': 'body-caption-medium-13',
+  h1: 'desktop-h1',
+  h2: 'desktop-h2',
+  h3: 'desktop-h3',
+  h4: 'desktop-h4',
+  h5: 'desktop-h5',
+  h6: 'desktop-h6',
+  'body-large': 'body-large',
+  body: 'body-base',
+  'body-small': 'body-small',
+  caption: 'body-caption',
+  'caption-strong': 'body-caption-strong',
+  micro: 'body-micro',
+  label: 'ui-label',
+  'card-title': 'ui-card-title',
+  button: 'ui-button',
+  'caption-medium': 'body-caption-medium-13',
 };
-const DEFAULT_ELEMENT: Partial<Record<TextStyle, React.ElementType>> = { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', caption: 'span', 'caption-strong': 'span', micro: 'span', label: 'span', 'card-title': 'h3', button: 'span', 'caption-medium': 'span' };
+const DEFAULT_ELEMENT: Partial<Record<TextStyle, React.ElementType>> = {
+  h1: 'h1',
+  h2: 'h2',
+  h3: 'h3',
+  h4: 'h4',
+  h5: 'h5',
+  h6: 'h6',
+  caption: 'span',
+  'caption-strong': 'span',
+  micro: 'span',
+  label: 'span',
+  'card-title': 'h3',
+  button: 'span',
+  'caption-medium': 'span',
+};
 
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
   /** Text style from the library. `h1` to `h6` are Roboto Condensed Bold; everything else is Roboto. `caption-medium` is the field-label style (13 medium), for headings that sit among form fields. */
@@ -80,7 +156,13 @@ export interface TextProps extends React.HTMLAttributes<HTMLElement> {
 export function Text({ variant = 'body', tone, as, className, style, ...rest }: TextProps) {
   const As = as ?? DEFAULT_ELEMENT[variant] ?? 'p';
   const heading = /^h\d$/.test(variant) || variant === 'label' || variant === 'card-title' || variant === 'caption-medium';
-  return <As {...rest} className={cn(`eu-text eu-type-${TYPE_CLASS[variant]}`, className)} style={{ color: `var(--eu-${TONE[tone ?? (heading ? 'primary' : 'body')]})`, ...style }} />;
+  return (
+    <As
+      {...rest}
+      className={cn(`eu-text eu-type-${TYPE_CLASS[variant]}`, className)}
+      style={{ color: `var(--eu-${TONE[tone ?? (heading ? 'primary' : 'body')]})`, ...style }}
+    />
+  );
 }
 
 export interface VisuallyHiddenProps extends React.HTMLAttributes<HTMLSpanElement> {

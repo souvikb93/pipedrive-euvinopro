@@ -1,0 +1,33 @@
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      # The design-system lint lives in the design-system repo, next to this one, as on a developer machine.
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/checkout@v4
+        with:
+          repository: souvikb93/winpro-ds
+          path: euvinopro-ds
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            app/package-lock.json
+            euvinopro-ds/package-lock.json
+      - run: npm ci
+        working-directory: euvinopro-ds
+      - run: npm ci
+        working-directory: app
+      # Strict types, lint, format, design-system lint on every file, tests, production build.
+      - run: npm run check
+        working-directory: app

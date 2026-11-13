@@ -20,9 +20,15 @@ export interface DateNavProps {
 export function DateNav({ label, onPrevious, onNext, previousLabel = 'Previous', nextLabel = 'Next' }: DateNavProps) {
   return (
     <div className="eu-datenav">
-      <button type="button" className="eu-datenav__btn" aria-label={previousLabel} onClick={onPrevious}><Icon name="nav-left" size="sm" /></button>
-      <span className="eu-datenav__label eu-type-body-small" aria-live="polite">{label}</span>
-      <button type="button" className="eu-datenav__btn" aria-label={nextLabel} onClick={onNext}><Icon name="nav-right" size="sm" /></button>
+      <button type="button" className="eu-datenav__btn" aria-label={previousLabel} onClick={onPrevious}>
+        <Icon name="nav-left" size="sm" />
+      </button>
+      <span className="eu-datenav__label eu-type-body-small" aria-live="polite">
+        {label}
+      </span>
+      <button type="button" className="eu-datenav__btn" aria-label={nextLabel} onClick={onNext}>
+        <Icon name="nav-right" size="sm" />
+      </button>
     </div>
   );
 }
@@ -53,12 +59,21 @@ export function ActivityCard({ title, type, rows, onOpen }: ActivityCardProps) {
   return (
     <div className="eu-actcard">
       <div className="eu-actcard__head">
-        <h3 className="eu-actcard__title eu-type-ui-card-title"><button type="button" className="eu-actcard__open" onClick={onOpen}>{title}</button></h3>
+        <h3 className="eu-actcard__title eu-type-ui-card-title">
+          <button type="button" className="eu-actcard__open" onClick={onOpen}>
+            {title}
+          </button>
+        </h3>
         {type ? <span className="eu-actcard__type eu-type-body-small">{type}</span> : null}
       </div>
       {rows?.length ? (
         <ul className="eu-actcard__rows eu-type-body-small">
-          {rows.map((r, i) => <li key={i}><Icon name={r.icon} size="sm" className="eu-actcard__icon" /><span className="eu-actcard__content">{r.content}</span></li>)}
+          {rows.map((r, i) => (
+            <li key={i}>
+              <Icon name={r.icon} size="sm" className="eu-actcard__icon" />
+              <span className="eu-actcard__content">{r.content}</span>
+            </li>
+          ))}
         </ul>
       ) : null}
     </div>
@@ -139,8 +154,18 @@ export interface AvailabilityTimelineProps {
 }
 
 const LABELS: Required<AvailabilityTimelineLabels> = {
-  all: 'All participants', allHint: 'Shared availability', selected: 'Selected', planned: 'Planned', conflict: 'Conflict', free: 'Free for all',
-  busy: 'Busy', tentative: 'Tentative', pending: 'Details pending', previous: 'Previous', next: 'Next', legend: 'Legend',
+  all: 'All participants',
+  allHint: 'Shared availability',
+  selected: 'Selected',
+  planned: 'Planned',
+  conflict: 'Conflict',
+  free: 'Free for all',
+  busy: 'Busy',
+  tentative: 'Tentative',
+  pending: 'Details pending',
+  previous: 'Previous',
+  next: 'Next',
+  legend: 'Legend',
 };
 
 const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
@@ -151,8 +176,21 @@ const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${Stri
  * Fills sit behind calendar entries and grid lines, so nothing under them is hidden. Entries show no titles.
  */
 export function AvailabilityTimeline({
-  columns, rows, free, selection, planned, onPick, title, onPrevious, onNext, view,
-  hours = { start: 480, end: 1080 }, workHours = { start: 510, end: 1050 }, step = 30, labels, legend: legendKeys = ['selected', 'conflict', 'free', 'busy', 'tentative'],
+  columns,
+  rows,
+  free,
+  selection,
+  planned,
+  onPick,
+  title,
+  onPrevious,
+  onNext,
+  view,
+  hours = { start: 480, end: 1080 },
+  workHours = { start: 510, end: 1050 },
+  step = 30,
+  labels,
+  legend: legendKeys = ['selected', 'conflict', 'free', 'busy', 'tentative'],
 }: AvailabilityTimelineProps) {
   const t = { ...LABELS, ...labels };
   const span = hours.end - hours.start;
@@ -174,20 +212,29 @@ export function AvailabilityTimeline({
     onPick(col, Math.min(Math.max(m, hours.start), hours.end - step));
   };
 
-  const offHours = (key: string) => ids.flatMap((c) => [
-    <span key={`${key}-${c}-am`} className="eu-avail__off" style={place(c, hours.start, workHours.start)} />,
-    <span key={`${key}-${c}-pm`} className="eu-avail__off" style={place(c, workHours.end, hours.end)} />,
-  ]);
+  const offHours = (key: string) =>
+    ids.flatMap((c) => [
+      <span key={`${key}-${c}-am`} className="eu-avail__off" style={place(c, hours.start, workHours.start)} />,
+      <span key={`${key}-${c}-pm`} className="eu-avail__off" style={place(c, workHours.end, hours.end)} />,
+    ]);
   const status = (s: AvailabilityStatus) => (s === 'busy' ? t.busy : s === 'tentative' ? t.tentative : t.pending);
   // Fixed legend: the same entries in every state, so it never shifts while people pick a time.
-  const LEGEND = { selected: ['selected', t.selected], conflict: ['planned', t.conflict], free: ['free', t.free], busy: ['busy', t.busy], tentative: ['tentative', t.tentative] } as const;
+  const LEGEND = {
+    selected: ['selected', t.selected],
+    conflict: ['planned', t.conflict],
+    free: ['free', t.free],
+    busy: ['busy', t.busy],
+    tentative: ['tentative', t.tentative],
+  } as const;
   const legend = legendKeys.map((k) => LEGEND[k]);
 
   return (
     <div className="eu-avail">
       <div className="eu-avail__head">
         <DateNav label={title} onPrevious={onPrevious} onNext={onNext} previousLabel={t.previous} nextLabel={t.next} />
-        {view ? <SegmentedControl size="small" label={view.label} value={view.value} onChange={view.onChange} options={view.options} /> : null}
+        {view ? (
+          <SegmentedControl size="small" label={view.label} value={view.value} onChange={view.onChange} options={view.options} />
+        ) : null}
       </div>
       <div className="eu-avail__body">
         <div className="eu-avail__labels">
@@ -206,35 +253,90 @@ export function AvailabilityTimeline({
         <div className="eu-avail__grid">
           <div className="eu-avail__axis" aria-hidden="true">
             {n === 1
-              ? hourMarks.map((h, i) => <span key={h} className={cn('eu-avail__tick eu-type-body-caption', i === 0 && 'is-first', i === hourMarks.length - 1 && 'is-last')} style={{ left: `${x(ids[0], h)}%` }}>{hm(h)}</span>)
-              : columns.map((c) => <span key={c.id} className="eu-avail__tick is-day eu-type-body-caption-strong" style={{ left: `${x(c.id, hours.start)}%`, width: `${100 / n}%` }}>{c.label}</span>)}
+              ? hourMarks.map((h, i) => (
+                  <span
+                    key={h}
+                    className={cn('eu-avail__tick eu-type-body-caption', i === 0 && 'is-first', i === hourMarks.length - 1 && 'is-last')}
+                    style={{ left: `${x(ids[0], h)}%` }}
+                  >
+                    {hm(h)}
+                  </span>
+                ))
+              : columns.map((c) => (
+                  <span
+                    key={c.id}
+                    className="eu-avail__tick is-day eu-type-body-caption-strong"
+                    style={{ left: `${x(c.id, hours.start)}%`, width: `${100 / n}%` }}
+                  >
+                    {c.label}
+                  </span>
+                ))}
           </div>
           <div className={cn('eu-avail__tracks', onPick && 'is-pickable')} onClick={pick} role="presentation">
             <span className="eu-avail__allbg" aria-hidden="true" />
-            {free.filter(inView).map((f) => <span key={`f-${f.column}-${f.start}`} className="eu-avail__fill eu-avail__fill--free" style={place(f.column, f.start, f.end)} title={`${t.free} · ${hm(f.start)}–${hm(f.end)}`} />)}
-            {inView(planned) ? <span className="eu-avail__fill eu-avail__fill--planned" style={place(planned.column, planned.start, planned.end)} title={`${t.planned} · ${hm(planned.start)}–${hm(planned.end)}`} /> : null}
-            {inView(selection) && !selection.valid ? <span className="eu-avail__fill eu-avail__fill--planned" style={place(selection.column, selection.start, selection.end)} /> : null}
+            {free.filter(inView).map((f) => (
+              <span
+                key={`f-${f.column}-${f.start}`}
+                className="eu-avail__fill eu-avail__fill--free"
+                style={place(f.column, f.start, f.end)}
+                title={`${t.free} · ${hm(f.start)}–${hm(f.end)}`}
+              />
+            ))}
+            {inView(planned) ? (
+              <span
+                className="eu-avail__fill eu-avail__fill--planned"
+                style={place(planned.column, planned.start, planned.end)}
+                title={`${t.planned} · ${hm(planned.start)}–${hm(planned.end)}`}
+              />
+            ) : null}
+            {inView(selection) && !selection.valid ? (
+              <span className="eu-avail__fill eu-avail__fill--planned" style={place(selection.column, selection.start, selection.end)} />
+            ) : null}
             <span className="eu-avail__lines" aria-hidden="true">
-              {lines.map((m) => <span key={m} className={cn('eu-avail__line', m % 60 !== 0 && 'is-half')} style={{ left: `${x(ids[0], m)}%` }} />)}
-              {n > 1 ? ids.slice(1).map((c) => <span key={c} className="eu-avail__line is-day" style={{ left: `${x(c, hours.start)}%` }} />) : null}
+              {lines.map((m) => (
+                <span key={m} className={cn('eu-avail__line', m % 60 !== 0 && 'is-half')} style={{ left: `${x(ids[0], m)}%` }} />
+              ))}
+              {n > 1
+                ? ids.slice(1).map((c) => <span key={c} className="eu-avail__line is-day" style={{ left: `${x(c, hours.start)}%` }} />)
+                : null}
             </span>
             <div className="eu-avail__track eu-avail__track--all">{offHours('all')}</div>
             {rows.map((r) => (
               <div key={r.id} className="eu-avail__track">
                 {offHours(r.id)}
-                {ids.flatMap((c) => (r.events[c] ?? []).map((e) => (
-                  <span key={`${c}-${e.start}`} className={cn('eu-avail__event', `eu-avail__event--${e.status}`)} style={place(c, e.start, e.end)} title={`${status(e.status)} · ${hm(e.start)}–${hm(e.end)}`} aria-label={`${r.name}: ${status(e.status)}, ${hm(e.start)}–${hm(e.end)}`} role="img" />
-                )))}
+                {ids.flatMap((c) =>
+                  (r.events[c] ?? []).map((e) => (
+                    <span
+                      key={`${c}-${e.start}`}
+                      className={cn('eu-avail__event', `eu-avail__event--${e.status}`)}
+                      style={place(c, e.start, e.end)}
+                      title={`${status(e.status)} · ${hm(e.start)}–${hm(e.end)}`}
+                      aria-label={`${r.name}: ${status(e.status)}, ${hm(e.start)}–${hm(e.end)}`}
+                      role="img"
+                    />
+                  )),
+                )}
               </div>
             ))}
             {inView(selection) ? (
-              <span className={cn('eu-avail__mark', selection.valid ? 'eu-avail__mark--selected' : 'eu-avail__mark--conflict')} style={place(selection.column, selection.start, selection.end)} title={`${selection.valid ? t.selected : t.planned} · ${hm(selection.start)}–${hm(selection.end)}`}>
-                <span className="eu-avail__mark-icon"><Icon name={selection.valid ? 'check-circle' : 'warning-triangle'} size="md" /></span>
+              <span
+                className={cn('eu-avail__mark', selection.valid ? 'eu-avail__mark--selected' : 'eu-avail__mark--conflict')}
+                style={place(selection.column, selection.start, selection.end)}
+                title={`${selection.valid ? t.selected : t.planned} · ${hm(selection.start)}–${hm(selection.end)}`}
+              >
+                <span className="eu-avail__mark-icon">
+                  <Icon name={selection.valid ? 'check-circle' : 'warning-triangle'} size="md" />
+                </span>
               </span>
             ) : null}
           </div>
           <ul className="eu-avail__legend" aria-label={t.legend}>
-            {legend.map(([k, label]) => <li key={k}><span className={`eu-avail__key eu-avail__key--${k}`} aria-hidden="true" /><span className="eu-type-body-caption-strong">{label}</span></li>)}
+            {legend.map(([k, label]) => (
+              <li key={k}>
+                <span className={`eu-avail__key eu-avail__key--${k}`} aria-hidden="true" />
+                <span className="eu-type-body-caption-strong">{label}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
@@ -261,7 +363,9 @@ export interface StatusSummaryProps {
 export function StatusSummary({ icon, title, description, tone = 'default', trailing }: StatusSummaryProps) {
   return (
     <div className={cn('eu-summary', tone === 'error' && 'is-error')} aria-live="polite">
-      <span className="eu-summary__icon" aria-hidden="true"><Icon name={icon} size="md" /></span>
+      <span className="eu-summary__icon" aria-hidden="true">
+        <Icon name={icon} size="md" />
+      </span>
       <span className="eu-summary__text">
         <span className="eu-summary__title eu-type-ui-card-title">{title}</span>
         {description ? <span className="eu-summary__desc eu-type-body-caption">{description}</span> : null}

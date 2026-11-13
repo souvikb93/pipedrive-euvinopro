@@ -29,7 +29,28 @@ export interface TopNavProps {
 export function TopNav({ items, label }: TopNavProps) {
   return (
     <nav aria-label={label} className="eu-topnav">
-      {items.map((i) => <a key={i.label} href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined} onClick={i.onClick ? (e) => { e.preventDefault(); i.onClick?.(); } : undefined} className={cn('eu-topnav__item eu-type-ui-nav-link-mobile', i.selected && 'is-selected', i.selected && 'eu-mode-icon-weight-selected')}>{i.icon ? <Icon name={i.icon} size="md" /> : null}{i.label}</a>)}
+      {items.map((i) => (
+        <a
+          key={i.label}
+          href={i.href ?? '#'}
+          aria-current={i.selected ? 'page' : undefined}
+          onClick={
+            i.onClick
+              ? (e) => {
+                  e.preventDefault();
+                  i.onClick?.();
+                }
+              : undefined
+          }
+          className={cn(
+            'eu-topnav__item',
+            i.selected ? 'eu-type-ui-card-title is-selected eu-mode-icon-weight-selected' : 'eu-type-body-small',
+          )}
+        >
+          {i.icon ? <Icon name={i.icon} size="md" /> : null}
+          {i.label}
+        </a>
+      ))}
     </nav>
   );
 }
@@ -88,7 +109,10 @@ function useFit(list: React.RefObject<HTMLUListElement | null>, enabled: boolean
   const [fit, setFit] = React.useState(total);
   React.useLayoutEffect(() => {
     const ul = list.current;
-    if (!enabled || !ul || typeof ResizeObserver === 'undefined') { setFit(total); return; }
+    if (!enabled || !ul || typeof ResizeObserver === 'undefined') {
+      setFit(total);
+      return;
+    }
     const measure = () => {
       const first = ul.querySelector(':scope > li');
       if (!first) return;
@@ -107,7 +131,20 @@ function useFit(list: React.RefObject<HTMLUListElement | null>, enabled: boolean
 }
 
 /** Left navigation between app sections, 240 wide or a 72 rail when collapsed. A collapsed rail can be `expandable`; with `overflow` it never runs out of room. */
-export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLabel, sticky, expandable, overflow, moreItems, labels, footer }: SideNavProps) {
+export function SideNav({
+  items,
+  label,
+  collapsed,
+  theme = 'light',
+  logo,
+  logoLabel,
+  sticky,
+  expandable,
+  overflow,
+  moreItems,
+  labels,
+  footer,
+}: SideNavProps) {
   const [open, setOpen] = React.useState(false);
   const [menu, setMenu] = React.useState(false);
   const [active, setActive] = React.useState(0);
@@ -134,18 +171,32 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       const typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
-      if (e.key === '[' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); setOpen((o) => !o); }
-      if (e.key === 'Escape' && open) { setOpen(false); toggle.current?.focus(); }
+      if (e.key === '[' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setOpen((o) => !o);
+      }
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+        toggle.current?.focus();
+      }
     };
-    const onDown = (e: MouseEvent) => { if (open && !nav.current?.contains(e.target as Node)) setOpen(false); };
+    const onDown = (e: MouseEvent) => {
+      if (open && !nav.current?.contains(e.target as Node)) setOpen(false);
+    };
     document.addEventListener('keydown', onKey);
     document.addEventListener('mousedown', onDown);
-    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown); };
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onDown);
+    };
   }, [canExpand, open]);
 
   React.useEffect(() => {
     if (!menu) {
-      if (refocus.current) { refocus.current = false; more.current?.focus(); }
+      if (refocus.current) {
+        refocus.current = false;
+        more.current?.focus();
+      }
       return;
     }
     (menuList.current?.querySelectorAll('a')[0] as HTMLElement | undefined)?.focus();
@@ -158,35 +209,62 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
     return () => document.removeEventListener('mousedown', onDown);
   }, [menu]);
 
-  const done = () => { setMenu(false); setOpen(false); };
+  const done = () => {
+    setMenu(false);
+    setOpen(false);
+  };
   const onMenuKey = (e: React.KeyboardEvent) => {
     const links = Array.from(menuList.current?.querySelectorAll('a') ?? []) as HTMLElement[];
-    const move = (n: number) => { e.preventDefault(); const i = (n + links.length) % links.length; setActive(i); links[i]?.focus(); };
+    const move = (n: number) => {
+      e.preventDefault();
+      const i = (n + links.length) % links.length;
+      setActive(i);
+      links[i]?.focus();
+    };
     if (e.key === 'ArrowDown') move(active + 1);
     else if (e.key === 'ArrowUp') move(active - 1);
     else if (e.key === 'Home') move(0);
     else if (e.key === 'End') move(links.length - 1);
-    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); refocus.current = true; setMenu(false); }
-    else if (e.key === 'Tab') setMenu(false);
+    else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      refocus.current = true;
+      setMenu(false);
+    } else if (e.key === 'Tab') setMenu(false);
   };
 
   const link = (i: SideNavItem) => (
     <a
-      href={i.href ?? '#'} aria-current={i.selected ? 'page' : undefined}
+      href={i.href ?? '#'}
+      aria-current={i.selected ? 'page' : undefined}
       aria-label={rail ? (i.count !== undefined ? `${i.label}, ${i.count}` : i.label) : undefined}
-      onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } done(); }}
+      onClick={(e) => {
+        if (i.onClick) {
+          e.preventDefault();
+          i.onClick();
+        }
+        done();
+      }}
       className={cn('eu-sidenav__item', i.selected && 'is-selected eu-mode-icon-weight-selected')}
     >
       {i.icon ? <Icon name={i.icon} size={collapsed ? 'lg' : 'md'} /> : null}
       {rail ? null : <span className="eu-sidenav__text">{i.label}</span>}
-      {i.count !== undefined ? <span aria-hidden={rail || undefined} className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
+      {i.count !== undefined ? (
+        <span aria-hidden={rail || undefined} className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>
+          {i.count}
+        </span>
+      ) : null}
     </a>
   );
 
   const moreLabel = labels?.more ?? 'More';
   const moreButton = (
     <button
-      ref={more} type="button" aria-haspopup="menu" aria-expanded={menu} aria-label={rail ? moreLabel : undefined}
+      ref={more}
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded={menu}
+      aria-label={rail ? moreLabel : undefined}
       className={cn('eu-sidenav__item', (menu || moreSelected) && 'is-selected', moreSelected && 'eu-mode-icon-weight-selected')}
       onClick={() => setMenu((m) => !m)}
     >
@@ -196,32 +274,72 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
   );
 
   return (
-    <nav ref={nav} aria-label={label} className={cn('eu-sidenav', collapsed && 'is-collapsed', rail && 'is-rail', open && 'is-open', theme === 'dark' && 'eu-sidenav--dark', sticky && 'is-sticky')}>
+    <nav
+      ref={nav}
+      aria-label={label}
+      className={cn(
+        'eu-sidenav',
+        collapsed && 'is-collapsed',
+        rail && 'is-rail',
+        open && 'is-open',
+        theme === 'dark' && 'eu-sidenav--dark',
+        sticky && 'is-sticky',
+      )}
+    >
       {open ? <div className="eu-sidenav__scrim" aria-hidden="true" onMouseDown={() => setOpen(false)} /> : null}
       <div className="eu-sidenav__panel">
         {logo ? (
           <div className="eu-sidenav__brand">
-            <span className="eu-sidenav__tile"><BottleMark className="eu-sidenav__mark" /></span>
+            <span className="eu-sidenav__tile">
+              <BottleMark className="eu-sidenav__mark" />
+            </span>
             {!rail && logoLabel ? <span className="eu-type-desktop-h6 eu-sidenav__name">{logoLabel}</span> : null}
           </div>
         ) : null}
         <ul ref={list} className={cn('eu-sidenav__list', overflow && 'is-fitted')}>
-          {shown.map((i) => <li key={i.label}>{rail ? <Tooltip content={i.label} position="right">{link(i)}</Tooltip> : link(i)}</li>)}
+          {shown.map((i) => (
+            <li key={i.label}>
+              {rail ? (
+                <Tooltip content={i.label} position="right">
+                  {link(i)}
+                </Tooltip>
+              ) : (
+                link(i)
+              )}
+            </li>
+          ))}
           {hasMore && menuItems.length > 0 ? (
             <li className="eu-sidenav__more">
-              {rail && !menu ? <Tooltip content={moreLabel} position="right">{moreButton}</Tooltip> : moreButton}
+              {rail && !menu ? (
+                <Tooltip content={moreLabel} position="right">
+                  {moreButton}
+                </Tooltip>
+              ) : (
+                moreButton
+              )}
               {menu ? (
                 <ul ref={menuList} role="menu" aria-label={moreLabel} className="eu-menu eu-sidenav__menu" onKeyDown={onMenuKey}>
                   {menuItems.map((i, n) => (
                     <li key={i.label} role="none">
                       <a
-                        role="menuitem" href={i.href ?? '#'} tabIndex={n === active ? 0 : -1} aria-current={i.selected ? 'page' : undefined}
+                        role="menuitem"
+                        href={i.href ?? '#'}
+                        tabIndex={n === active ? 0 : -1}
+                        aria-current={i.selected ? 'page' : undefined}
                         className={cn('eu-menu__item eu-type-body-small', i.selected && 'is-selected')}
-                        onClick={(e) => { if (i.onClick) { e.preventDefault(); i.onClick(); } done(); }}
+                        onClick={(e) => {
+                          if (i.onClick) {
+                            e.preventDefault();
+                            i.onClick();
+                          }
+                          done();
+                        }}
                       >
                         {i.icon ? <Icon name={i.icon} size="md" /> : null}
                         <span className="eu-sidenav__text">{i.label}</span>
-                        {i.count !== undefined ? <span className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span> : null}
+                        {i.count !== undefined ? (
+                          <span className={cn('eu-sidenav__count', i.countStatus === 'error' && 'is-error')}>{i.count}</span>
+                        ) : null}
                       </a>
                     </li>
                   ))}
@@ -233,9 +351,13 @@ export function SideNav({ items, label, collapsed, theme = 'light', logo, logoLa
         {footer ? <div className="eu-sidenav__foot">{footer}</div> : null}
         {canExpand ? (
           <button
-            ref={toggle} type="button" aria-expanded={open} aria-keyshortcuts="["
-            aria-label={rail ? labels?.expand ?? 'Expand navigation' : undefined}
-            className="eu-sidenav__item eu-sidenav__toggle" onClick={() => setOpen((o) => !o)}
+            ref={toggle}
+            type="button"
+            aria-expanded={open}
+            aria-keyshortcuts="["
+            aria-label={rail ? (labels?.expand ?? 'Expand navigation') : undefined}
+            className="eu-sidenav__item eu-sidenav__toggle"
+            onClick={() => setOpen((o) => !o)}
           >
             <Icon name={open ? 'sidebar-collapse' : 'sidebar-expand'} size="lg" />
             {rail ? null : <span className="eu-sidenav__text">{labels?.collapse ?? 'Collapse'}</span>}
@@ -260,7 +382,18 @@ export function Breadcrumbs({ items, label = 'Breadcrumb' }: BreadcrumbsProps) {
       <ol className="eu-crumbs eu-type-body-small">
         {items.map((it, i) => {
           const last = i === items.length - 1;
-          return <li key={`${i}-${it.label}`}>{last ? <span aria-current="page" className="eu-crumbs__cur">{it.label}</span> : <a href={it.href ?? '#'}>{it.label}</a>}{last ? null : <Icon name="nav-right" size="xs" />}</li>;
+          return (
+            <li key={`${i}-${it.label}`}>
+              {last ? (
+                <span aria-current="page" className="eu-crumbs__cur">
+                  {it.label}
+                </span>
+              ) : (
+                <a href={it.href ?? '#'}>{it.label}</a>
+              )}
+              {last ? null : <Icon name="nav-right" size="sm" />}
+            </li>
+          );
         })}
       </ol>
     </nav>
@@ -287,11 +420,42 @@ export function Pagination({ page, pageCount, onChange, labels }: PaginationProp
   }
   return (
     <nav aria-label={labels?.nav ?? 'Pagination'} className="eu-pages">
-      <button type="button" className="eu-pages__item" aria-label={labels?.previous ?? 'Previous page'} disabled={page <= 1} onClick={() => onChange(page - 1)}><Icon name="nav-left" size="md" /></button>
-      {pages.map((p, i) => p === '...' ? <span key={`e${i}`} className="eu-pages__gap" aria-hidden="true">...</span> : (
-        <button key={p} type="button" className={cn('eu-pages__item eu-type-ui-button', p === page && 'is-selected')} aria-label={`${labels?.page ?? 'Page'} ${p}`} aria-current={p === page ? 'page' : undefined} onClick={() => onChange(p)}>{p}</button>
-      ))}
-      <button type="button" className="eu-pages__item" aria-label={labels?.next ?? 'Next page'} disabled={page >= pageCount} onClick={() => onChange(page + 1)}><Icon name="nav-right" size="md" /></button>
+      <button
+        type="button"
+        className="eu-pages__item"
+        aria-label={labels?.previous ?? 'Previous page'}
+        disabled={page <= 1}
+        onClick={() => onChange(page - 1)}
+      >
+        <Icon name="nav-left" size="md" />
+      </button>
+      {pages.map((p, i) =>
+        p === '...' ? (
+          <span key={`e${i}`} className="eu-pages__gap" aria-hidden="true">
+            ...
+          </span>
+        ) : (
+          <button
+            key={p}
+            type="button"
+            className={cn('eu-pages__item eu-type-ui-button', p === page && 'is-selected')}
+            aria-label={`${labels?.page ?? 'Page'} ${p}`}
+            aria-current={p === page ? 'page' : undefined}
+            onClick={() => onChange(p)}
+          >
+            {p}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        className="eu-pages__item"
+        aria-label={labels?.next ?? 'Next page'}
+        disabled={page >= pageCount}
+        onClick={() => onChange(page + 1)}
+      >
+        <Icon name="nav-right" size="md" />
+      </button>
     </nav>
   );
 }
@@ -324,8 +488,19 @@ export function Steps({ steps, current, orientation = 'horizontal', errorStep, l
         const state = i === errorStep ? 'error' : i < current ? 'complete' : i === current ? 'current' : 'upcoming';
         return (
           <li key={s.title} aria-current={i === current ? 'step' : undefined} className={cn('eu-step', `is-${state}`)}>
-            <span className="eu-step__mark eu-type-body-caption-strong">{state === 'complete' ? <Icon name="check" size="sm" label="Completed" /> : state === 'error' ? <Icon name="warning-circle" size="sm" label="Error" /> : i + 1}</span>
-            <span><span className="eu-type-ui-card-title eu-step__title">{s.title}</span>{s.description ? <span className="eu-type-body-caption eu-check__desc eu-step__desc">{s.description}</span> : null}</span>
+            <span className="eu-step__mark eu-type-body-caption-strong">
+              {state === 'complete' ? (
+                <Icon name="check" size="sm" label="Completed" />
+              ) : state === 'error' ? (
+                <Icon name="warning-circle" size="sm" label="Error" />
+              ) : (
+                i + 1
+              )}
+            </span>
+            <span>
+              <span className="eu-type-ui-card-title eu-step__title">{s.title}</span>
+              {s.description ? <span className="eu-type-body-caption eu-check__desc eu-step__desc">{s.description}</span> : null}
+            </span>
           </li>
         );
       })}
@@ -347,12 +522,22 @@ export interface UserMenuProps extends Omit<React.ButtonHTMLAttributes<HTMLButto
 }
 
 /** Profile trigger for the Header. Wrap it in Menu to add the account commands. */
-export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu({ name, subtitle, src, compact, size = 'medium', className, ...rest }, ref) {
+export const UserMenu = React.forwardRef<HTMLButtonElement, UserMenuProps>(function UserMenu(
+  { name, subtitle, src, compact, size = 'medium', className, ...rest },
+  ref,
+) {
   return (
     <button {...rest} ref={ref} type="button" className={cn('eu-usermenu', className)}>
       {compact ? <span className="eu-sr">{name}</span> : null}
-      <span aria-hidden="true" className="eu-usermenu__avatar"><Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} /></span>
-      {compact ? null : <span className="eu-usermenu__text"><span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>{subtitle ? <span className="eu-type-body-caption eu-usermenu__sub">{subtitle}</span> : null}</span>}
+      <span aria-hidden="true" className="eu-usermenu__avatar">
+        <Avatar name={name} src={src} size={size === 'large' ? 'large' : 'small'} />
+      </span>
+      {compact ? null : (
+        <span className="eu-usermenu__text">
+          <span className="eu-type-ui-card-title eu-usermenu__name">{name}</span>
+          {subtitle ? <span className="eu-type-body-caption eu-usermenu__sub">{subtitle}</span> : null}
+        </span>
+      )}
       <Icon name="nav-down" size={size === 'large' ? 'md' : 'sm'} />
     </button>
   );
@@ -387,7 +572,13 @@ export interface HeaderProps {
 
 /** App header bar. Renders a `header` landmark. */
 export function Header({ brand, children, actions, size = 'medium', layout = 'fill' }: HeaderProps) {
-  return <header className={cn('eu-header', `eu-header--${size}`, layout === 'between' && 'eu-header--between')}>{brand ?? <BrandLogo />}<div className="eu-header__mid">{children}</div><div className="eu-header__actions">{actions}</div></header>;
+  return (
+    <header className={cn('eu-header', `eu-header--${size}`, layout === 'between' && 'eu-header--between')}>
+      {brand ?? <BrandLogo />}
+      <div className="eu-header__mid">{children}</div>
+      <div className="eu-header__actions">{actions}</div>
+    </header>
+  );
 }
 
 export interface PageHeaderProps {
@@ -409,13 +600,24 @@ export interface PageHeaderProps {
 
 /** Page title, subtitle and primary action. Use one per page, at the top of the content. */
 export function PageHeader({ title, subtitle, breadcrumbs, actions, size = 'large', icon, meta }: PageHeaderProps) {
-  const tile = icon ? <span className={cn('eu-pagehead__icon', meta != null && 'eu-pagehead__icon--tile')} aria-hidden="true"><Icon name={icon} size="lg" /></span> : null;
+  const tile = icon ? (
+    <span className={cn('eu-pagehead__icon', meta !== undefined && meta !== null && 'eu-pagehead__icon--tile')} aria-hidden="true">
+      <Icon name={icon} size="lg" />
+    </span>
+  ) : null;
   return (
     <div className={cn('eu-pagehead', `eu-pagehead--${size}`)}>
       {breadcrumbs}
       <div className="eu-pagehead__row">
         {meta ? tile : null}
-        <div className="eu-pagehead__text"><h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>{meta ? null : tile}{title}</h1>{meta ? <div className="eu-type-body-small eu-pagehead__meta">{meta}</div> : null}{subtitle ? <p className="eu-type-body-large eu-pagehead__sub eu-text">{subtitle}</p> : null}</div>
+        <div className="eu-pagehead__text">
+          <h1 className={cn(size === 'medium' ? 'eu-type-desktop-h4' : 'eu-type-desktop-h1', 'eu-pagehead__title')}>
+            {meta ? null : tile}
+            {title}
+          </h1>
+          {meta ? <div className="eu-type-body-small eu-pagehead__meta">{meta}</div> : null}
+          {subtitle ? <p className="eu-type-body-large eu-pagehead__sub eu-text">{subtitle}</p> : null}
+        </div>
         {actions ? <div className="eu-pagehead__actions">{actions}</div> : null}
       </div>
     </div>
@@ -431,7 +633,18 @@ export interface FooterProps {
 
 /** Page footer with legal text and links. */
 export function Footer({ legal, links }: FooterProps) {
-  return <footer className="eu-footer eu-type-ui-footer-link"><span>{legal}</span><nav aria-label="Legal">{links?.map((l) => <a key={l.label} href={l.href}>{l.label}</a>)}</nav></footer>;
+  return (
+    <footer className="eu-footer eu-type-ui-footer-link">
+      <span>{legal}</span>
+      <nav aria-label="Legal">
+        {links?.map((l) => (
+          <a key={l.label} href={l.href}>
+            {l.label}
+          </a>
+        ))}
+      </nav>
+    </footer>
+  );
 }
 
 export interface FilterTabItem {
@@ -468,19 +681,39 @@ export function FilterTabs({ items, value, onChange, label, variant = 'pill' }: 
       {items.map((i) => {
         const text = i.count !== undefined ? `${i.label} (${i.count})` : i.label;
         if (variant === 'chip') {
-          if (i.inert) return <span key={i.id} className="eu-chip is-inert"><span className="eu-chip__main eu-type-body-small">{text}</span></span>;
+          if (i.inert)
+            return (
+              <span key={i.id} className="eu-chip is-inert">
+                <span className="eu-chip__main eu-type-body-small">{text}</span>
+              </span>
+            );
           const on = i.id === value;
           return (
             <span key={i.id} className={cn('eu-chip', on && 'is-selected')}>
-              <button type="button" aria-pressed={on} className="eu-chip__main eu-type-body-small" onClick={() => onChange(i.id)}>{text}</button>
+              <button type="button" aria-pressed={on} className="eu-chip__main eu-type-body-small" onClick={() => onChange(i.id)}>
+                {text}
+              </button>
             </span>
           );
         }
-        if (i.inert) return <span key={i.id} className="eu-ftabs__item is-inert eu-type-body-small">{text}</span>;
+        if (i.inert)
+          return (
+            <span key={i.id} className="eu-ftabs__item is-inert eu-type-body-small">
+              {text}
+            </span>
+          );
         const on = i.id === value;
         return (
-          <button key={i.id} type="button" aria-pressed={on} className={cn('eu-ftabs__item eu-type-body-small', on && 'is-selected')} onClick={() => onChange(i.id)}>
-            <span className="eu-ftabs__label" data-label={text}>{text}</span>
+          <button
+            key={i.id}
+            type="button"
+            aria-pressed={on}
+            className={cn('eu-ftabs__item eu-type-body-small', on && 'is-selected')}
+            onClick={() => onChange(i.id)}
+          >
+            <span className="eu-ftabs__label" data-label={text}>
+              {text}
+            </span>
           </button>
         );
       })}

@@ -8,7 +8,8 @@ export const parseTime = (text: string) => {
   const t = text.toLowerCase().replace(/uhr/g, '').trim();
   const m = /^(\d{1,2})(?:[:.,h ]?(\d{2}))?$/.exec(t);
   if (!m) return undefined;
-  const h = Number(m[1]); const min = Number(m[2] ?? 0);
+  const h = Number(m[1]);
+  const min = Number(m[2] ?? 0);
   if (h > 23 || min > 59) return undefined;
   const v = snap(h * 60 + min);
   return v >= DAY_START && v <= DAY_END ? v : undefined;
@@ -27,4 +28,5 @@ export const parseDuration = (text: string) => {
   v = snap(v);
   return v >= 5 && v <= 480 ? v : undefined;
 };
-export const durationLabel = (m: number) => (m < 60 ? `${m} Min.` : m % 60 ? `${Math.floor(m / 60)} Std. ${m % 60} Min.` : `${m / 60} Std.`);
+export const durationLabel = (m: number) =>
+  m < 60 ? `${m} Min.` : m % 60 ? `${Math.floor(m / 60)} Std. ${m % 60} Min.` : `${m / 60} Std.`;
