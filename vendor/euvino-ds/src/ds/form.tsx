@@ -202,6 +202,36 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
   );
 });
 
+/**
+ * Opens a field's list or calendar upward when it does not fit below. Measures against the nearest scrolling area (such as a
+ * modal body) or the window, so a list at the bottom of a form is never cut off.
+ */
+function useFlip(open: boolean, root: React.RefObject<HTMLElement | null>) {
+  const [up, setUp] = React.useState(false);
+  React.useLayoutEffect(() => {
+    const el = root.current;
+    if (!open || !el) {
+      setUp(false);
+      return;
+    }
+    const pop = el.querySelector<HTMLElement>('.eu-dd__list, .eu-dd__pop');
+    if (!pop) return;
+    let box = { top: 0, bottom: window.innerHeight };
+    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+      if (getComputedStyle(a).overflowY !== 'visible') {
+        const r = a.getBoundingClientRect();
+        box = { top: Math.max(r.top, 0), bottom: Math.min(r.bottom, window.innerHeight) };
+        break;
+      }
+    }
+    const field = el.getBoundingClientRect();
+    const below = box.bottom - field.bottom;
+    const above = field.top - box.top;
+    setUp(pop.offsetHeight > below && above > below);
+  }, [open, root]);
+  return up;
+}
+
 /** Keeps the highlighted option of an open list visible while it scrolls. */
 function useScrollIntoView(open: boolean, optionId: string) {
   const wasOpen = React.useRef(false);
@@ -278,6 +308,7 @@ export function Dropdown({
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(0);
   const root = React.useRef<HTMLDivElement>(null);
+  const up = useFlip(open, root);
   const sel = options.find((o) => o.value === value);
   React.useEffect(() => {
     if (!open) return;
@@ -353,7 +384,7 @@ export function Dropdown({
           <Icon name={open ? 'nav-up' : 'nav-down'} size="md" />
         </button>
         {open ? (
-          <ul id={`${f.id}-list`} role="listbox" className="eu-menu eu-dd__list">
+          <ul id={`${f.id}-list`} role="listbox" className={cn('eu-menu eu-dd__list', up && 'is-up')}>
             {options.map((o, i) => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- listbox option: keys are handled on the combobox (aria-activedescendant)
               <li
@@ -445,6 +476,7 @@ export function Combobox({
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(0);
   const root = React.useRef<HTMLDivElement>(null);
+  const up = useFlip(open, root);
   const input = React.useRef<HTMLInputElement>(null);
   const editing = React.useRef(false);
   React.useEffect(() => {
@@ -576,7 +608,7 @@ export function Combobox({
           </button>
         </span>
         {open ? (
-          <ul id={`${f.id}-list`} role="listbox" aria-label={label} className="eu-menu eu-dd__list">
+          <ul id={`${f.id}-list`} role="listbox" aria-label={label} className={cn('eu-menu eu-dd__list', up && 'is-up')}>
             {options.map((o, i) => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events -- listbox option: keys are handled on the combobox (aria-activedescendant)
               <li
@@ -1127,6 +1159,7 @@ export function DatePicker({
     v ? new Date(v + 'T00:00').toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
   const [text, setText] = React.useState(fmt(value));
   const root = React.useRef<HTMLDivElement>(null);
+  const up = useFlip(open, root);
   React.useEffect(() => setText(fmt(value)), [value, locale]); // eslint-disable-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!open) return;
@@ -1188,7 +1221,7 @@ export function DatePicker({
           </button>
         </span>
         {open ? (
-          <div role="dialog" aria-label={label} className="eu-dd__pop">
+          <div role="dialog" aria-label={label} className={cn('eu-dd__pop', up && 'is-up')}>
             <Calendar
               value={value}
               min={min}

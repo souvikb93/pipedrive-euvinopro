@@ -697,6 +697,12 @@ button {
   top: calc(100% + var(--eu-spacing-3xs));
   left: 0;
 }
+/* Not enough room below: open above the field. */
+.eu-dd__list.is-up,
+.eu-dd__pop.is-up {
+  top: auto;
+  bottom: calc(100% + var(--eu-spacing-3xs));
+}
 .eu-dd__list {
   right: 0;
   max-height: var(--eu-size-dialog-sm);
@@ -1350,6 +1356,10 @@ button {
   padding: 0;
   background: transparent;
   max-width: calc(100vw - var(--eu-spacing-l));
+}
+/* Same minimum space on the sides as above and below. */
+.eu-modal {
+  max-width: calc(100vw - 2 * var(--eu-spacing-xl));
   color: var(--eu-foreground-static-body);
 }
 .eu-modal::backdrop,
@@ -3196,11 +3206,23 @@ button.eu-ftabs__item:hover:not(.is-selected) {
   display: flex;
   gap: var(--eu-spacing-2xs);
 }
+/* Every modal keeps at least spacing/xl above and below. When the window is too short, only the body scrolls: title and buttons stay in view. */
+.eu-modal,
 .eu-modal__box {
-  max-height: calc(100vh - var(--eu-spacing-2xl));
+  max-height: calc(100dvh - 2 * var(--eu-spacing-xl));
+}
+.eu-modal {
+  overflow: visible;
+}
+.eu-modal__box {
+  min-height: 0;
 }
 .eu-modal__body {
+  min-height: 0;
   overflow-y: auto;
+  /* Room for focus rings of fields at the edge of the scrolling area. */
+  padding: var(--eu-border-width-md);
+  margin: calc(var(--eu-border-width-md) * -1);
 }
 .eu-modal--xlarge .eu-modal__head,
 .eu-modal--xlarge .eu-modal__foot {
@@ -3219,15 +3241,6 @@ button.eu-ftabs__item:hover:not(.is-selected) {
 }
 .eu-modal--xlarge .eu-modal__head {
   align-items: center;
-}
-/* XLarge forms never scroll: the whole form is visible, and popovers (dropdown lists, focus rings) are not clipped. */
-.eu-modal--xlarge,
-.eu-modal--xlarge .eu-modal__box,
-.eu-modal--xlarge .eu-modal__body {
-  overflow: visible;
-}
-.eu-modal--xlarge .eu-modal__box {
-  max-height: none;
 }
 .eu-card--medium {
   gap: var(--eu-spacing-xs);
