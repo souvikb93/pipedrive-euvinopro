@@ -77,4 +77,4 @@ npm run ds:check   # design-system lint on every source file (needs ../euvinopro
 
 ## Demo data
 
-Contacts and organisations come from the Figma frame. History, calendars and attachments are generated demo data: downloads save a placeholder file, and replying, linking items and user profiles are not built yet, so they do nothing when clicked. The app shows no toast messages.
+Contacts and organisations come from the Figma frame. History, calendars and attachments are generated demo data: downloads save a placeholder file, and replying, linking items and user profiles are not built yet, so they do nothing when clicked.
