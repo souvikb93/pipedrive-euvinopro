@@ -14,7 +14,7 @@ export interface FileChipProps {
 export function FileChip({ name, onDownload, downloadLabel }: FileChipProps) {
   return (
     <span className="eu-filechip">
-      <Icon name="attachment" size="sm" />
+      <Icon name="attachment" size="xs" />
       <span className="eu-type-body-caption eu-filechip__name" title={name}>
         {name}
       </span>
