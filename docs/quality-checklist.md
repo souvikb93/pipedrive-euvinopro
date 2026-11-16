@@ -44,13 +44,13 @@ Run everything automated with `npm run check`. CI runs the same gate on every pu
 
 ## Product behaviour
 
-| Typical failure                   | How it is prevented here                                                                                     | Audit result                                      |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| Typical failure                   | How it is prevented here                                                                              | Audit result                                      |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | Buttons and links that do nothing | Placeholder features are inactive and show no toast; real actions use `tel:`, `mailto:` and downloads | 13 dead `#` links and 5 no-op menu items replaced |
-| Crashes show a blank page         | Root `ErrorBoundary` with a reload action                                                                    | Added                                             |
-| Broken layout on small screens    | Header, breadcrumb, tabs, filters, titles and cards shrink or scroll within themselves                       | No horizontal page scroll at 375px                |
-| Mixed languages                   | All UI copy and accessible names in German; design-system defaults overridden                                | No English found in UI or labels                  |
-| Console noise                     | Checked in a fresh tab                                                                                       | No errors or warnings                             |
+| Crashes show a blank page         | Root `ErrorBoundary` with a reload action                                                             | Added                                             |
+| Broken layout on small screens    | Header, breadcrumb, tabs, filters, titles and cards shrink or scroll within themselves                | No horizontal page scroll at 375px                |
+| Mixed languages                   | All UI copy and accessible names in German; design-system defaults overridden                         | No English found in UI or labels                  |
+| Console noise                     | Checked in a fresh tab                                                                                | No errors or warnings                             |
 
 ## Known limits (demo)
 
