@@ -19,7 +19,7 @@ Organisation page:
 - Side card: Fokus (ActivityCard; names via PeopleList), Organisationsdetails, Kontakte (call/mail open tel:/mailto:), Überblick, Leads. Sticky only while beside the main column.
 - Composer: Notizen (Editor with B/I/U toggle states) and Aktivität (planner). The other tabs show hover only.
 - Verlauf: `src/views/timeline/` on DS ActivityItem + PeopleList + FileChipList + InlineList. Filters show only categories with entries; Alle, Notizen, Aktivitäten, E-Mails and Dateien always show. Card click and "Details anzeigen" open a Drawer. Notes can be edited and deleted (with confirmation).
-- People rule (`src/views/shared/people.tsx`): other people are blue links to `#/kontakte/<id>`, your own name is plain, and team members show the "coming later" message. "+N" lists exactly the hidden people.
+- People rule (`src/views/shared/people.tsx`): other people are blue links to `#/kontakte/<id>`, your own name is plain, and team member names do nothing when clicked. "+N" lists exactly the hidden people.
 - Lists: Kontaktperson column uses the same people rule; header "Organisation"; activity dates use InlineList.
 
 Scheduling: one data model (`src/data/availability.ts`), state in `src/views/scheduling/useScheduling.ts`, and typed input parsing in `src/lib/time.ts`. Planner fields are four equal columns.
@@ -57,5 +57,5 @@ Scheduling: one data model (`src/data/availability.ts`), state in `src/views/sch
 
 - Publish the Figma library by hand.
 - Build the Figma screens of this app (the user will say when).
-- Gaps (demo): Reply/Weiterleiten, Mit Element verbinden, profiles, row Bearbeiten/Löschen show "coming later"; downloads are placeholder files; calendars are demo data; no call recordings.
+- Gaps (demo): Reply/Weiterleiten, Mit Element verbinden, profiles, row Bearbeiten/Löschen do nothing (no toasts, by design); downloads are placeholder files; calendars are demo data; no call recordings.
 - Figma timeline tentative stripes are drawn shapes (variables cannot do patterns).

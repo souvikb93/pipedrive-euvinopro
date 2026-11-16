@@ -46,7 +46,7 @@ Run everything automated with `npm run check`. CI runs the same gate on every pu
 
 | Typical failure                   | How it is prevented here                                                                                     | Audit result                                      |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| Buttons and links that do nothing | Placeholder features say "folgt in einer späteren Version"; real actions use `tel:`, `mailto:` and downloads | 13 dead `#` links and 5 no-op menu items replaced |
+| Buttons and links that do nothing | Placeholder features are inactive and show no toast; real actions use `tel:`, `mailto:` and downloads | 13 dead `#` links and 5 no-op menu items replaced |
 | Crashes show a blank page         | Root `ErrorBoundary` with a reload action                                                                    | Added                                             |
 | Broken layout on small screens    | Header, breadcrumb, tabs, filters, titles and cards shrink or scroll within themselves                       | No horizontal page scroll at 375px                |
 | Mixed languages                   | All UI copy and accessible names in German; design-system defaults overridden                                | No English found in UI or labels                  |
@@ -55,5 +55,5 @@ Run everything automated with `npm run check`. CI runs the same gate on every pu
 ## Known limits (demo)
 
 - Contacts, organisations and history are demo data; downloads save a placeholder file.
-- Reply, Weiterleiten, profiles and some list actions are announced as coming later.
+- Reply, Weiterleiten, profiles and some list actions are not built yet and do nothing when clicked.
 - Contact photos are sample portraits loaded from randomuser.me.
