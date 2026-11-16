@@ -23,7 +23,7 @@ export interface Organisation {
 export const organisations: Organisation[] = [
   {
     id: 'schlumberger',
-    name: 'Schlumberger Vertriebsgesellschaft mbH & Co. KG',
+    name: 'Schlumberger Vertriebsgesellschaft GmbH & Co. KG',
     kind: 'Sektkellerei',
     contactOrg: 'Schlumberger Vertriebsgesellsch',
     owner: 'Johannes',

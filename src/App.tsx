@@ -15,7 +15,6 @@ import {
   Text,
   UserMenu,
   VisuallyHidden,
-  useToast,
   type GlobalSearchHit,
   type SideNavItem,
   type TableColumn,
@@ -57,9 +56,8 @@ const MORE: SideNavItem[] = [
 
 export function App() {
   const [route, go] = useRoute();
-  const toast = useToast();
-  // Placeholder for actions this prototype does not build yet.
-  const soon = (what: string) => toast({ title: `${what} folgt in einer späteren Version`, status: 'info' });
+  // Actions this prototype does not build yet do nothing: no undesigned messages.
+  const soon: (what: string) => void = () => undefined;
   const listView: View = route.name === 'list' ? route.view : 'organisations';
   // Timeline has no page yet: it looks like the other options, but choosing it keeps the current view.
   const onView = (v: string) => {
@@ -142,7 +140,6 @@ export function App() {
     if (n.label) orgLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
     else orgLabels.setLabelOf((m) => Object.fromEntries(Object.entries(m).filter(([key]) => key !== id)));
     setAdding(false);
-    toast({ title: `${n.name} hinzugefügt`, status: 'success' });
   };
 
   const OWNERS = ['Johannes', 'Maximilian Eul', 'Beate Schmitt'];
@@ -171,7 +168,6 @@ export function App() {
     setPeople((list) => [c, ...list]);
     if (n.label) contactLabels.setLabelOf((m) => ({ ...m, [id]: n.label as string }));
     setAddingContact(false);
-    toast({ title: `${n.name} hinzugefügt`, status: 'success' });
   };
 
   // ---- Global search
@@ -415,7 +411,7 @@ export function App() {
                 onLabelCreate={(n) => orgLabels.create(detail.id, n)}
                 onAddContact={() => setAddingContact(true)}
                 onSoon={soon}
-                onNotify={(title) => toast({ title, status: 'success' })}
+                onNotify={soon}
               />
             ) : (
               <Stack gap="4">
